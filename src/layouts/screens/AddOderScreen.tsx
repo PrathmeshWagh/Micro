@@ -15,7 +15,7 @@ const AddOderScreen = ({navigation}:any) => {
         //value={number}
         keyboardType="numeric"
       />
-<Text style={styles.inputText}>Sizee / Qty</Text>
+<Text style={styles.inputText}>Size / Qty</Text>
 <TextInput
         style={styles.input}
         //onChangeText={onChangeNumber}
