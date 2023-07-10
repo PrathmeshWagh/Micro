@@ -1,26 +1,35 @@
 import {LogBox} from 'react-native';
-import React,{useEffect} from 'react';
+import React,{useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {Provider as PaperProvider} from 'react-native-paper';
 import AppNavigation from "./src/layouts/navigation/AppNavigation";
 import { CombinedDefaultTheme } from './src/utils/theme';
 import SplashScreen from 'react-native-splash-screen'
+import {AuthContext } from './src/utils/appContext.js';
+import { getStorageData } from './src/utils/helper';
+import AuthNavigation from './src/layouts/navigation/AuthNavigation';
 
 
 export default function App() {
+  const [user, setUser] = useState(null);
+
+  
     useEffect(() => {
         Launchscreen();
       }, []);
-    
+     
     return (
+      <AuthContext.Provider value={{ user, setUser }}>
         <PaperProvider theme={CombinedDefaultTheme}>
         <NavigationContainer theme={CombinedDefaultTheme}>
-                <AppNavigation/>
+              <AppNavigation /> 
             </NavigationContainer>
         </PaperProvider>
+        </AuthContext.Provider>
     );
 }
 const Launchscreen = async () => {
     SplashScreen.hide();
   };
 LogBox.ignoreAllLogs()
+

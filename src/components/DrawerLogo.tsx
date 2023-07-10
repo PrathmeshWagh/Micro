@@ -1,92 +1,135 @@
-import React from "react";
-import {Text, View,StyleSheet, Image } from "react-native";
+import React, { useContext, useState } from "react";
+import { Text, View, StyleSheet, Image } from "react-native";
 import Colors from "../style/Colors/colors";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
-import IonIcon from 'react-native-vector-icons/Ionicons'
 import { useNavigation } from "@react-navigation/native";
+import { AuthContext } from "../utils/appContext";
+import { getStorageData, postMethod } from "../utils/helper";
+import Snackbar from "react-native-snackbar";
 
 
-const DrawerLogo =({props}:any)=>{
-    const navigation=useNavigation();
+// interface UserData {
+//     token: string;
+//     user_details: {
+//       email: string;
+//       first_name: string;
+//       id: number;
+//       last_name: string;
+//     };
+//   }
 
-    return(
-    <View style={{flex:1,marginTop:-4}}>
-    <DrawerContentScrollView {...props}>
-        <View style={styles.drawerContent}>
-        <View style={{flexDirection:'row'}}>
-            <Image
-        style={styles.tinyLogo}
-         source={require('../style/Img/profileImg.png')}
-       />
-       <Text style={styles.text}>John</Text>
-       </View>
-            </View>
-            <View style={{marginTop:20}}>
-                <DrawerItem
-                    icon={() => (
+const DrawerLogo = ({ props }: any) => {
+    const { user, setUser } = useContext(AuthContext);
+    // const [person, setPerson] = useState<UserData>()
+    const navigation: any = useNavigation();
+    const LogOut = async () => {
+        console.log("LogOut Begin")
+        try {
+            // console.log('tokenwa', user);
+            const data = await getStorageData();
+            // setPerson(data)
+            const api: any = await postMethod(`logout`, data.token);
+            // console.log('api', api);
+            if (api.status === 200) {
+                console.log("LogOut Successful")
+                navigation.navigate("Login")
+            } else {
+
+                Snackbar.show({
+                    text: api.data.message,
+                    duration: Snackbar.LENGTH_SHORT,
+                    textColor: '#AE1717',
+                    backgroundColor: '#F2A6A6',
+                });
+            }
+        }
+        catch (e) {
+            Snackbar.show({
+                text: "Some Error Occured-" + e,
+                duration: Snackbar.LENGTH_SHORT,
+                textColor: '#AE1717',
+                backgroundColor: '#F2A6A6',
+            });
+        }
+
+    }
+
+    return (
+        <View style={{ flex: 1, marginTop: -4 }}>
+            <DrawerContentScrollView {...props}>
+                <View style={styles.drawerContent}>
+                    <View style={{ flexDirection: 'row' }}>
                         <Image
-                        source={require('../style/Img/attendence.png')}
-                        style={styles.icon}
+                            style={styles.tinyLogo}
+                            source={require('../style/Img/profileImg.png')}
                         />
-                    )}
-                    label={() => (<Text style={styles.RouteName}>Attendance</Text>)}
-                    onPress={() =>navigation.navigate('AttendanceScreen')}
-                />
-                <DrawerItem
-                    icon={() => (
-                 <Image source={require('../style/Img/changePsw.png')}
-                        style={styles.icon}
-                        />                    )}
-                    label={() => (<Text style={styles.RouteName}>Change Password</Text>)}
-                    onPress={() => {props.navigation.navigate('ChangePassword')}}
-                />
-                <DrawerItem
-                    icon={() => (
-                        <Image source={require('../style/Img/logout.png')}
-                        style={styles.icon}
-                        />   
-                    )}
-                    label={({ focused, color }) => (<Text style={styles.RouteName}>Logout</Text>)}
-                    onPress={() => {props.navigation.navigate('ChangePassword')}}
-                />
-            </View>
+                        <Text style={styles.text}>hii</Text>
+                    </View>
+                </View>
+                <View style={{ marginTop: 20 }}>
+                    <DrawerItem
+                        icon={() => (
+                            <Image
+                                source={require('../style/Img/attendence.png')}
+                                style={styles.icon}
+                            />
+                        )}
+                        label={() => (<Text style={styles.RouteName}>Attendance</Text>)}
+                        onPress={() => navigation.navigate('AttendanceScreen')}
+                    />
+                    <DrawerItem
+                        icon={() => (
+                            <Image source={require('../style/Img/changePsw.png')}
+                                style={styles.icon}
+                            />)}
+                        label={() => (<Text style={styles.RouteName}>Change Password</Text>)}
+                        onPress={() => navigation.navigate('AttendanceScreen')} />
+                    <DrawerItem
+                        icon={() => (
+                            <Image source={require('../style/Img/logout.png')}
+                                style={styles.icon}
+                            />
+                        )}
+                        label={({ focused, color }) => (<Text style={styles.RouteName}>Logout</Text>)}
+                        onPress={() => LogOut()} />
+                </View>
 
 
 
             </DrawerContentScrollView>
-</View>
+        </View>
     )
 }
 export default DrawerLogo;
 const styles = StyleSheet.create({
-    drawerContent:{
-        height:170,
-        backgroundColor:Colors.brand_primary,
+    drawerContent: {
+        height: 170,
+        backgroundColor: Colors.brand_primary,
     },
-   
-    text:{
-       color:Colors.white,
-       marginTop:120,
-       fontSize:18,
-       fontFamily:'Roboto-Bold',
+
+    text: {
+        color: Colors.white,
+        marginTop: 120,
+        fontSize: 18,
+        fontFamily: 'Roboto-Bold',
     },
-    RouteName:{
-        fontFamily:'Roboto-Medium',
-        fontSize:18,
-        color:Colors.text_primary,
+    RouteName: {
+        fontFamily: 'Roboto-Medium',
+        fontSize: 18,
+        color: Colors.text_primary,
     },
-    cover:{
-        paddingLeft:30,
-        marginTop:50
+    cover: {
+        paddingLeft: 30,
+        marginTop: 50
     },
-    icon:{
-        height:20,
-        width:20
+    icon: {
+        height: 20,
+        width: 20
     },
-    tinyLogo:{
-        marginLeft:20,
-        marginTop:55,
-        height:100,
-        width:100
+    tinyLogo: {
+        marginLeft: 20,
+        marginTop: 55,
+        height: 100,
+        width: 100
     }
 })

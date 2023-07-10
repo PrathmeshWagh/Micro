@@ -1,1 +1,3 @@
-export let context = 'The Default Value';
+import React,{ createContext } from "react";
+
+export const AuthContext = createContext();

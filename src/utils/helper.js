@@ -1,11 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {baseURL} from './config';
+import { baseURL } from './config';
 import NetInfo from '@react-native-community/netinfo';
 
 export const storeData = async data => {
     try {
         await AsyncStorage.setItem('user_data', JSON.stringify(data));
+        console.log ("dataaaaa",data)
     } catch (error) {
         console.log('storeData err', error);
     }
@@ -21,20 +22,21 @@ export const getStorageData = async () => {
 };
 
 export const postMethod = async (url, body) => {
+    // console.log()
     try {
         let internet = await NetInfo.fetch();
         let StoredData = await getStorageData();
         const setHeader = () => {
-            if (StoredData !== null) {
-                return {Authorization: `Bearer ${StoredData.JWToken}`};
+            if (body !== null) {
+                return `Bearer ${body}`; //Token
             }
         };
 
         if (internet.isInternetReachable) {
-            console.log("Hello",baseURL + url, body)
-            return await axios.post(baseURL + url, {
+            return await axios.post(baseURL + url, body, {
                 headers: {
                     Authorization: setHeader(),
+                    'Accept': 'application/json',
                 },
             });
         } else {
@@ -47,20 +49,22 @@ export const postMethod = async (url, body) => {
     }
 };
 
-export const getMethod = async url => {
+
+export const getMethod = async (url,body) => {
+    console.log("...",url +body)
     try {
         let internet = await NetInfo.fetch();
         let StoredData = await getStorageData();
         const setHeader = () => {
-            if (StoredData !== null) {
-                return {Authorization: `Bearer ${StoredData.JWToken}`};
+            if ( StoredData.token !== null) {
+                return `Bearer ${StoredData.token}`;
             }
         };
-
         if (internet.isInternetReachable) {
             return await axios.get(baseURL + url, {
                 headers: {
                     Authorization: setHeader(),
+                    'Accept': 'application/json',
                 },
             });
         } else {
@@ -72,3 +76,42 @@ export const getMethod = async url => {
         return e;
     }
 };
+export const FormPostMethod = async (url, body) => {
+  console.log("FormPostMethod",body)
+    try {
+        let internet = await NetInfo.fetch();
+        let StoredData = await getStorageData();
+        const setHeader = () => {
+            if (StoredData.token !== null) {
+                return `Bearer ${StoredData.token}`; //Token
+            }
+        };
+
+        if (internet.isInternetReachable) {
+            return await axios.post(baseURL + url, body, {
+                maxBodyLength: 'infinity',
+                headers: {
+                    Authorization: setHeader(),
+                    'Accept': 'application/json',
+                    "Content-Type": "multipart/form-data; charset=utf-8;"
+                },
+            });
+        } else {
+            console.log('postMethod error reason is internet =>', internet);
+            return internet.isInternetReachable;
+        }
+    } catch (e) {
+        console.log('postMethod error reason is =>', e);
+        return e;
+    }
+};
+
+export const validateIsEmail = (email) => {
+    const re =
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
+export const validatePhone = (phone) => {
+    return phone.match(/^\d{10}$/);
+}

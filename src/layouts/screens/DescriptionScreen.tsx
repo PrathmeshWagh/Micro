@@ -1,10 +1,30 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text,StyleSheet, Pressable, ScrollView } from 'react-native';
 import {Card } from 'react-native-paper';
 import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
+import { getMethod } from '../../utils/helper';
+import { AuthContext } from '../../utils/appContext';
 
-const DescriptionScreen = ({navigation}:any) => {
+const DescriptionScreen = ({navigation,route}:any,props:any) => {
+  const { id } = route.params;
+  const { user, setUser } = useContext(AuthContext);
+  const [details, setDetails] = useState('')
+  //console.log("id",id)
+
+
+  useEffect(() => {
+    getdata();
+  }, []);
+
+  const getdata = async () => {
+    const api:any = await getMethod(`project_details/${id}`,user.token);
+    if (api.status === 200) {
+      setDetails(api.data)
+      //console.log("apiData",projects)
+    }
+  }
+
   return (
     <>
      <Appbar title={'Job Sheet'}/>
@@ -12,42 +32,43 @@ const DescriptionScreen = ({navigation}:any) => {
         <Card style={styles.card}>
         <View style={styles.align}>
         <Text style={styles.title}>Job Sheet Tiitle  -</Text>
-        <Text style={styles.details}>Job Sheet 5126-09-22</Text>
+        <Text style={styles.details}>{details?.project_title}</Text>
         </View>
         <View style={styles.align}>
         <Text style={styles.title}>Client Name  -</Text>
-        <Text style={styles.details}>Mr Jason Goh</Text>
+        <Text style={styles.details}>{details?.project_client_name}</Text>
         </View>
         <View style={styles.align}>
         <Text style={styles.title}>Address     -</Text>
-        <Text style={styles.details}>1 Yishun Industrial Street 1,{'\n'}
-Singapore 768160</Text>
+        <Text style={styles.details}>{details?.project_address}</Text>
         </View>
         <View style={styles.align}>
         <Text style={styles.title}>Mobile Number    -</Text>
-        <Text style={styles.details}>     +65 8818 5113</Text>
+        <Text style={styles.details}>  {details?.project_tel}</Text>
         </View>
         <View style={styles.align}>
         <Text style={styles.title}>Sales Person        -</Text>
-        <Text style={styles.details}> Mr Bryan</Text>
+        <Text style={styles.details}>{details?.project_sales_person}</Text>
         </View>
         <View style={styles.align}>
         <Text style={styles.title}>Sale Contact    -</Text>
-        <Text style={styles.details}>    9866 6611</Text>
+        <Text style={styles.details}>{details?.project_sales_contact}</Text>
         </View>
         <View style={styles.align}>
         <View>
         <Text style={styles.title2}>Start Date</Text>
-       <View style={styles.date}><Text style={styles.dateText}>01/06/2022</Text></View>
+       <View style={styles.date}><Text style={styles.dateText}>{details?.project_date_start}</Text></View>
        </View>
        <View>
         <Text style={styles.title2}>End Date</Text>
-       <View style={styles.date}><Text style={styles.dateText}>01/06/2022</Text></View>
+       <View style={styles.date}><Text style={styles.dateText}>{details?.project_date_due}</Text></View>
        </View>
        </View>
      </Card> 
      <View style={styles.align}>
-      <Pressable style={styles.button} onPress={()=>navigation.navigate("TaskScreen")}>
+      <Pressable style={styles.button} onPress={()=>navigation.navigate("TaskScreen",{
+         id: details?.project_id,
+    })}>
         <Text style={styles.startProject}>Start Project</Text>
     </Pressable >
     <Pressable style={styles.button} onPress={()=>navigation.navigate("TaskScreen")}>

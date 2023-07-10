@@ -5,6 +5,7 @@ class Colors {
     static black ="#000000";
     static button ="#5B5BFF";
     static card_bg ='#EFEFFF';
+    static lightGray = "#BCBCBC";
     static brand_primary ='#5252FF';
     static screen_bg = ' #F5F5F5';
     static screen_bgDark = '#EBE8E2';

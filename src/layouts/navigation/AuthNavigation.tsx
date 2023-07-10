@@ -22,31 +22,18 @@ import AttendanceScreen from '../screens/AttendanceScreen';
 import { AuthContext } from '../../utils/appContext';
 import { getStorageData } from '../../utils/helper';
 import { Text } from 'react-native';
-import ViewImageScreen from '../screens/ViewImageScreen';
-import DailyReportScreen from '../screens/DailyReportScreen';
-import ViewDailyReportScreen from '../screens/ViewDailyReportScreen';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
-const AppNavigation = () => {
-   const { user,setUser } = useContext(AuthContext);
-   console.log("user",user)
-  // const [auth, setAuth] = useState<string | null>(null);
-  const [refresh, setRefresh] = useState(false);
-  useEffect(() => {
-    getUserData()
-  }, [])
 
-  const getUserData = async () => {
-    const getData = await getStorageData();
-     console.log("person", getData.token)
-     setUser(getData.token)
-    setRefresh(!refresh);
-  } 
-
- return <Stack.Navigator  initialRouteName={user ? "DrawerNavigation" : "Login"} screenOptions={{ headerShown: false }} >
-   
-      <Stack.Screen name="DrawerNavigtaion" component={DrawerNavigtaion} />
+const AuthNavigation = () => {
+    return(
+        <Stack.Navigator initialRouteName={"Login"}
+      screenOptions={{ 
+        headerShown: false 
+      }}>
+      <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="TabNavigation" component={TabNavigation} />
+      <Stack.Screen name="DrawerNavigtaion" component={DrawerNavigtaion} />
       <Stack.Screen name="HomeScreen" component={HomeScreen} />
       <Stack.Screen name="JobSheetScreen" component={JobSheetScreen} />
       <Stack.Screen name="DescriptionScreen" component={DescriptionScreen} />
@@ -55,7 +42,6 @@ const AppNavigation = () => {
       <Stack.Screen name="ImageUploadScreen" component={ImageUploadScreen} />
       <Stack.Screen name="AddOderScreen" component={AddOderScreen} />
       <Stack.Screen name="AddReportScreen" component={AddReportScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
       <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} />
@@ -63,14 +49,10 @@ const AppNavigation = () => {
       <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen} />
       <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
       <Stack.Screen name="AttendanceScreen" component={AttendanceScreen} />
-      <Stack.Screen name="ViewImageScreen" component={ViewImageScreen} />
-      <Stack.Screen name="DailyReportScreen" component={DailyReportScreen} />
-      <Stack.Screen name="ViewDailyReportScreen" component={ViewDailyReportScreen} />
-
     </Stack.Navigator>
-  
-
-  function DrawerNavigtaion() {
+    )
+}
+function DrawerNavigtaion() {
     return (
       <Drawer.Navigator initialRouteName="TabNavigation"
         screenOptions={{
@@ -79,9 +61,8 @@ const AppNavigation = () => {
         <Drawer.Screen name="DrawerHome" component={TabNavigation} />
         <Drawer.Screen name="ChangePassword" component={ChangePasswordScreen} />
         <Drawer.Screen name="AttendanceScreen" component={AttendanceScreen} />
+
       </Drawer.Navigator>
     );
   }
-}
-
-  export default AppNavigation;
+export default AuthNavigation;
