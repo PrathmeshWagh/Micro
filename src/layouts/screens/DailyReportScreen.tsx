@@ -70,7 +70,7 @@ const DailyReportScreen = ({ route, navigation }: any) => {
         try {
             const api: any = await FormPostMethod(`add_man_power`, formData);
             if (api.status === 200) {
-                console.log("photo", api.data);
+                // console.log("photo", api.data);
                 navigation.navigate('ViewDailyReportScreen', {
                     project_id: project_id
                 })

@@ -7,7 +7,7 @@ import Appbar from '../../components/Appbar';
 
 const ViewDailyReportScreen = ({ route }: any) => {
   const { project_id } = route.params;
-  console.log("..........", route.params)
+  // console.log("..........", route.params)
   const [viewReport, setViewReport] = useState([]);
   useEffect(() => {
     getdata();

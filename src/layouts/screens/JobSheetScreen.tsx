@@ -12,7 +12,7 @@ import axios from 'axios';
 
 const JobSheetScreen = ({ navigation }: any) => {
   const { user, setUser } = useContext(AuthContext);
-  console.log("userToken", user.token)
+  // console.log("userToken", user.token)
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {

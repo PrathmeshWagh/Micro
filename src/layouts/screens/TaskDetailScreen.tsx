@@ -8,7 +8,7 @@ import { getMethod } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
 const TaskDetailScreen = ({ navigation, route }: any) => {
   const { user, setUser } = useContext(AuthContext);
-  console.log(user.user_details, "aaaaaaaa")
+  // console.log(user.user_details, "aaaaaaaa")
   // const fullname=user.user_details.full_name
   const [taskDetails, setTaskDetails] = useState();
   const { taskId } = route.params;
@@ -23,7 +23,7 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
     if (api.status === 200) {
       // console.log(">>>>>>>>>>>", api.data)
       setTaskDetails(api.data)
-      console.log("taskDetails", taskDetails)
+      // console.log("taskDetails", taskDetails)
     }
   }
 
