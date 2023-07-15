@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
-import { View, Text, ScrollView, Image, Alert } from 'react-native';
+import { View, Text, ScrollView, Image, Alert, ActivityIndicator } from 'react-native';
 import Appbar from '../../components/Appbar';
 import { StyleSheet, Pressable } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
@@ -8,8 +8,7 @@ import { getMethod } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
 const TaskDetailScreen = ({ navigation, route }: any) => {
   const { user, setUser } = useContext(AuthContext);
-  // console.log(user.user_details, "aaaaaaaa")
-  // const fullname=user.user_details.full_name
+  const [loading, setLoading] = useState(true);
   const [taskDetails, setTaskDetails] = useState();
   const { taskId } = route.params;
   // console.log("aaaa", taskId)
@@ -19,74 +18,82 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
   }, []);
 
   const getdata = async () => {
+    setLoading(true);
     const api: any = await getMethod(`task_details/${taskId}`, user.token);
     if (api.status === 200) {
-      // console.log(">>>>>>>>>>>", api.data)
+      setLoading(false);
       setTaskDetails(api.data)
-      // console.log("taskDetails", taskDetails)
+      // console.log("taskDetails", taskDetails.user_data)
     }
   }
 
   return (
     <View>
       <Appbar title={'Task'} />
-      <ScrollView style={styles.container}>
-        <Pressable>
-          <Card style={styles.card}>
-            <View>
-              <Text style={styles.jobSheet}>{taskDetails?.task_description}</Text>
-              <Text style={styles.address}>1 Yishun Industrial Street 1, {'\n'}07-36 A'Posh Bizhub,{'\n'} Singapore 768160</Text>
-              <Text style={styles.team}>T-eam members</Text>
-              <View style={styles.align}>
-                <Avatar.Image size={24} source={require('../../style/Img/profile.png')} />
-                <Avatar.Image size={24} source={require('../../style/Img/woman.png')} />
-                <Avatar.Image size={24} source={require('../../style/Img/profile.png')} />
-                <Avatar.Image size={24} source={require('../../style/Img/woman.png')} />
+      {loading ? (
+        <ActivityIndicator size="large" color="#000" />
+      ) : (
+        <ScrollView style={styles.container}>
+          <Pressable>
+            <Card style={styles.card}>
+              <View>
+                <Text style={styles.jobSheet}>{taskDetails?.task_title}</Text>
+                <Text style={styles.address}>{taskDetails?.task_description}</Text>
+                <Text style={styles.team}>T-eam members</Text>
+                <View style={styles.align}>
+                {
+                taskDetails?.user_data.map((data, index) => (
+                  <View key={index}>
+                  <Avatar.Image size={24} source={{ uri: data.profile }} />
+                  </View>
+                ))}
+                  
+                </View>
+                <Text style={styles.startDate}>Deadline: <Text style={{ color: Colors.red }}>{taskDetails?.task_date_due}</Text></Text>
               </View>
-              <Text style={styles.startDate}>Deadline: <Text style={{ color: Colors.red }}>29-04-2023</Text></Text>
+              <View>
+              </View>
+            </Card>
+          </Pressable>
+          <View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+              <Pressable style={styles.AddPic} onPress={() => navigation.navigate('ImageUploadScreen', {
+                taskId: taskDetails?.task_id
+              })}>
+                <Text style={styles.text}>Add Photo</Text>
+                <Image size={24} source={require('../../style/Img/Add.png')} />
+              </Pressable>
+              <Pressable style={styles.AddPic} onPress={() => navigation.navigate('ViewImageScreen', {
+                taskId: taskDetails?.task_id,
+              })}>
+                <Text style={styles.text}>View Images</Text>
+                <Image size={24} source={require('../../style/Img/2.png')} />
+              </Pressable>
             </View>
-            <View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+              <Pressable style={styles.AddPic} onPress={() => navigation.navigate('DailyReportScreen', {
+                taskId: taskDetails?.task_id,
+                project_id: taskDetails?.project_id
+              })} >
+                <Text style={styles.text}>Add Daily Report</Text>
+                <Image size={24} source={require('../../style/Img/3.png')} />
+              </Pressable>
+              <Pressable style={styles.AddPic} onPress={() => navigation.navigate('ViewDailyReportScreen', {
+                project_id: taskDetails?.project_id
+              })}
+              >
+                <Text style={styles.text}> Daily Report</Text>
+                <Image size={24} source={require('../../style/Img/4.png')} />
+              </Pressable>
             </View>
-          </Card>
-        </Pressable>
-        <View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-            <Pressable style={styles.AddPic} onPress={() => navigation.navigate('ImageUploadScreen', {
-              taskId: taskDetails?.task_id
-            })}>
-              <Text style={styles.text}>Add Photo</Text>
-              <Image size={24} source={require('../../style/Img/Add.png')} />
-            </Pressable>
-            <Pressable style={styles.AddPic} onPress={() => navigation.navigate('ViewImageScreen', {
-              taskId: taskDetails?.task_id,
-            })}>
-              <Text style={styles.text}>View Images</Text>
-              <Image size={24} source={require('../../style/Img/2.png')} />
-            </Pressable>
-          </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-            <Pressable style={styles.AddPic} onPress={() => navigation.navigate('DailyReportScreen', {
-              taskId: taskDetails?.task_id,
-              project_id: taskDetails?.project_id
-            })} >
-              <Text style={styles.text}>Add Daily Report</Text>
-              <Image size={24} source={require('../../style/Img/3.png')} />
-            </Pressable>
-            <Pressable style={styles.AddPic} onPress={() => navigation.navigate('ViewDailyReportScreen', {
-              project_id: taskDetails?.project_id
-            })}
-            >
-              <Text style={styles.text}> Daily Report</Text>
-              <Image size={24} source={require('../../style/Img/4.png')} />
-            </Pressable>
-          </View>
-          <View style={styles.remark}>
-            <Text>Remarks....</Text>
-          </View>
+            <View style={styles.remark}>
+              <Text>Remarks....</Text>
+            </View>
 
-        </View>
-        {/* <ImageUpload/> */}
-      </ScrollView>
+          </View>
+          {/* <ImageUpload/> */}
+        </ScrollView>
+      )}
     </View>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, SafeAreaView, Pressable, ScrollView, Image, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, SafeAreaView, Pressable, ScrollView, Image, FlatList, ActivityIndicator } from 'react-native';
 import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
 import { Card } from 'react-native-paper';
@@ -10,22 +10,23 @@ const ViewImageScreen = ({ route }: any) => {
     const { user, setUser } = useContext(AuthContext);
     const { taskId } = route.params;
     const [viewImage, setViewImage] = useState([]);
-    console.log(user.user_details.full_name,"aaaaaaaa")
-    const fullname=user.user_details.full_name
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
         getdata();
     }, []);
 
     const getdata = async () => {
+        setLoading(true);
         const api: any = await getMethod(`get_attachment/${taskId}`);
         if (api.status === 200) {
-            //   console.log("data", api)
+            console.log("apiData", api.data)
+            setLoading(false);
             setViewImage(api?.data)
             //  console.log("apiData", viewImage)
         }
     }
     const renderItem = (props: any) => {
-        //  console.log("props", props.item.upload_by)
+         console.log("props", props.item.file)
         return (
             <Card style={styles.card}>
                 <View style={{ flexDirection: 'row',}}>
@@ -36,8 +37,9 @@ const ViewImageScreen = ({ route }: any) => {
                         }}
                     />
                     <View style={styles.text}>
-                        <Text style={styles.remark}>{props.item.remark_for_photo}</Text>
-                        <Text style={styles.date}>09-07-2023</Text>
+                    <Text style={styles.remark}>Name:{props.item.name=='undefined'?'....':props.item.name}</Text>
+                        <Text style={styles.remark}>Remark:{props.item.remark_for_photo=='undefined'?'....': props.item.remark_for_photo}</Text>
+                        <Text style={styles.date}>Date:{props.item.date}</Text>
                         <Text style={styles.name}>Uploaded By:{props.item.upload_by}</Text>
                     </View>
                 </View>
@@ -48,6 +50,9 @@ const ViewImageScreen = ({ route }: any) => {
     return (
         <>
             <Appbar title={'View Photo'} />
+            {loading ? (
+        <ActivityIndicator size="small" color="#000" />
+      ) : (
             <View style={styles.container}>
                 <FlatList
                     data={viewImage}
@@ -55,6 +60,7 @@ const ViewImageScreen = ({ route }: any) => {
                     keyExtractor={item => item.id}
                 />
             </View>
+      )}
         </>
     )
 }
@@ -77,15 +83,18 @@ const styles = StyleSheet.create({
        
     },
     tinyImage: {
-        height: 50,
-        width: 50
+        height: 100,
+        width: 80
     },
     remark: {
-        color: Colors.text_primary
+        color: Colors.text_primary,
+        marginVertical:5
     },
     date: {
         color: Colors.text_primary,
-        marginTop: 5
+        marginTop: 5,
+        marginVertical:5
+
     },
 
     text:{

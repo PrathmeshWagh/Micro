@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Controller, useForm } from "react-hook-form";
-import { View, Text, StyleSheet, Image, Touchable, TouchableOpacity, ScrollView, Pressable, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, Image, Touchable, TouchableOpacity, ScrollView, Pressable, Keyboard, ActivityIndicator } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import Colors from '../../style/Colors/colors';
 import { postMethod, storeData, validateIsEmail } from '../../utils/helper';
@@ -12,7 +12,7 @@ const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(true);
-  const [loader, setLoader] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { user, setUser } = useContext(AuthContext);
 
   const onSubmit = async (data: any) => {
@@ -30,16 +30,17 @@ const LoginScreen = ({ navigation }: any) => {
       password: props.password,
     }
     try {
+      setLoading(true);
       const api: any = await postMethod(`login`, raw);
       if (api.status === 200) {
-       // console.log("api", api.data)
+        setLoading(false);
         await storeData(api.data)
         setUser(api.data)
         // console.log('data', api.data)
         // setLoader(false);
         navigation.navigate("DrawerNavigtaion")
       } else {
-        setLoader(false);
+        setLoading(false);
         Snackbar.show({
           text: api.data.message,
           duration: Snackbar.LENGTH_SHORT,
@@ -225,6 +226,7 @@ const LoginScreen = ({ navigation }: any) => {
       </View>
 
       <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
+      {loading && <ActivityIndicator size="large" color="#fff" />}
         <Text style={styles.loginText}>Login</Text>
       </Pressable >
     </ScrollView>

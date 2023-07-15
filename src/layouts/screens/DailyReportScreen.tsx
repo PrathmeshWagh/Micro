@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, SafeAreaView, Pressable, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, SafeAreaView, Pressable, ScrollView, Image, ActivityIndicator } from 'react-native';
 import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
-import { TextInput } from 'react-native-paper';
+import { HelperText, TextInput } from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
@@ -22,9 +22,11 @@ const DailyReportScreen = ({ route, navigation }: any) => {
     const [startOpen, setStartOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState('');
     // const [drop, setDrop] = useState(moment().toDate());
-    const [value, setValue] = useState(null);
+    const [value, setValue] = useState('');
     const [isFocus, setIsFocus] = useState(false);
-
+    const [showTextBox, setShowTextBox] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [workerName, setWorkerName] = useState('')
     const [vehicle, setvehicle] = useState('');
     const [noWorker, setNoWorker] = useState('');
     const [workReport, setWorkReport] = useState('');
@@ -39,43 +41,83 @@ const DailyReportScreen = ({ route, navigation }: any) => {
     const minutess = starttime.getMinutes();
 
 
-
     const endtimeString = `${hours}:${minutes}`;
     const starttimeString = `${hourss}:${minutess}`;
     // console.log("endtimeString", endtimeString)
     const timestamp = date;
-    const formattedDate = moment(timestamp).format('YYYY-MM-DD');
+    const formattedDate = moment(timestamp).format('DD-MM-YYYY');
 
     const data = [
-        { label: 'mac' },
-        { label: 'sub_con' },
-        { label: 'other' },
+        { value: 'mac', label: 'MAC' },
+        { value: 'sub_con', label: 'Sub Con' },
+        { value: 'other', label: 'Other' },
     ];
 
 
 
     const DailyUpload = async () => {
-        const formData = new FormData();
-        formData.append('user_id', user.user_details.id);
-        formData.append('project_id', project_id);
-        formData.append('date', formattedDate);
-        formData.append('description', workReport);
-        formData.append('vehicle', vehicle);
-        formData.append('types_of_worker', value);
-        formData.append('types_of_worker_name', fullname);
-        formData.append('start', starttimeString);
-        formData.append('end', endtimeString);
-        formData.append('no_of_worker', noWorker);
-
+        // const formData = new FormData();
+        // formData.append('user_id', user.user_details.id);
+        // formData.append('project_id', project_id);
+        // formData.append('date', formattedDate);
+        // formData.append('description', workReport);
+        // formData.append('vehicle', vehicle);
+        // formData.append('types_of_worker', value);
+        // formData.append('types_of_worker_name', workerName);
+        // formData.append('start', starttimeString);
+        // formData.append('end', endtimeString);
+        // formData.append('no_of_worker', noWorker);
+        const raw = {
+            user_id: user.user_details.id,
+            project_id: project_id,
+            date: formattedDate,
+            description: workReport,
+            vehicle: vehicle,
+            types_of_worker: value,
+            types_of_worker_name: workerName,
+            start: starttimeString,
+            end: endtimeString,
+            no_of_worker: noWorker
+        }
         try {
-            const api: any = await FormPostMethod(`add_man_power`, formData);
-            if (api.status === 200) {
-                // console.log("photo", api.data);
+            if (workReport.trim() === '' || vehicle.trim() === '' || value.trim() === ''|| noWorker.trim() === '') {
+                Snackbar.show({
+                    text: "Please Enter all field",
+                    duration: Snackbar.LENGTH_SHORT,
+                    textColor: '#AE1717',
+                    backgroundColor: '#F2A6A6',
+                });
+              return false;
+            } 
+            if(value=='sub_con'||value=='other')
+            {
+                if(workerName.trim()===''){
+                    Snackbar.show({
+                        text: "Please Enter all field",
+                        duration: Snackbar.LENGTH_SHORT,
+                        textColor: '#AE1717',
+                        backgroundColor: '#F2A6A6',
+                    });
+                  return false;
+                }
+            }
+            setLoading(true);
+            const api: any = await FormPostMethod(`add_man_power`, raw);
+            // console.log("photo", api.data);
+            if (api.status === 200 && api.data.status == 'success') {
+                setLoading(false);
+                Snackbar.show({
+                    text: api.data.message,
+                    duration: Snackbar.LENGTH_SHORT,
+                    textColor: 'white',
+                    backgroundColor: 'green',
+                });
                 navigation.navigate('ViewDailyReportScreen', {
                     project_id: project_id
                 })
 
             } else {
+                setLoading(false);
                 Snackbar.show({
                     text: api.data.message,
                     duration: Snackbar.LENGTH_SHORT,
@@ -94,26 +136,41 @@ const DailyReportScreen = ({ route, navigation }: any) => {
         }
 
     }
+    const handleSubmit = () => {
+        console.log("kkkkkkk")
+        if (workReport.trim() === '' || vehicle.trim() === '' || value.trim() === ''|| noWorker.trim() === '') {
+            Snackbar.show({
+                text: "Please Enter all field",
+                duration: Snackbar.LENGTH_SHORT,
+                textColor: '#AE1717',
+                backgroundColor: '#F2A6A6',
+            });
+          return false;
+        } 
+      };
 
 
-    // const renderItem = (item:any) => {
-    //     return (
-    //         <View >
-    //             <Text style={styles.textItem}>{item.label}</Text>
-    //         </View>
-    //     );
+
+    // const renderLabel = () => {
+    //     if (value || isFocus) {
+    //         return (
+    //             <Text style={[styles.label, isFocus && { color: 'black' }]}>
+    //                 {label}
+    //             </Text>
+    //         );
+    //     }
+    //     return null;
     // };
-    const renderLabel = () => {
-        if (value || isFocus) {
-            return (
-                <Text style={[styles.label, isFocus && { color: 'black' }]}>
-                    Dropdown label
-                </Text>
-            );
-        }
-        return null;
-    };
 
+    const handleDropdownChange = (value: any) => {
+        // console.log("value",value)
+        setValue(value.value);
+        if (value.value === 'mac') {
+            setShowTextBox(false);
+        } else {
+            setShowTextBox(true);
+        }
+    };
 
 
     return (
@@ -176,7 +233,7 @@ const DailyReportScreen = ({ route, navigation }: any) => {
                 />
                 <Text style={styles.inputText}>Types of worker</Text>
                 <View style={styles.card}>
-                    {renderLabel()}
+                    {/* {renderLabel()} */}
                     <Dropdown
                         style={styles.dropdown}
                         placeholderStyle={styles.placeholderStyle}
@@ -187,11 +244,20 @@ const DailyReportScreen = ({ route, navigation }: any) => {
                         valueField="value"
                         placeholder="Select item"
                         value={value}
-                        onChange={item => {
-                            setValue(item.value);
-                        }}
+                        onChange={handleDropdownChange}
                     />
+
                 </View>
+                {showTextBox && (
+                    <>
+                        <Text style={styles.inputText}>Worker Name</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={workerName}
+                            onChangeText={setWorkerName}
+                        />
+                    </>
+                )}
                 <Text style={styles.inputText}>No of worker</Text>
                 <TextInput
                     style={styles.input}
@@ -265,6 +331,7 @@ const DailyReportScreen = ({ route, navigation }: any) => {
                 </View>
                 <View style={styles.align}>
                     <Pressable style={styles.uploadButton} onPress={() => DailyUpload()}>
+                        {loading && <ActivityIndicator size="small" color="#fff" />}
                         <Text style={styles.text}>Save</Text>
                     </Pressable>
                 </View>
@@ -325,22 +392,22 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto-Medium',
     },
     uploadButton: {
-        borderWidth: 1,
-        borderColor: Colors.button,
-        backgroundColor: Colors.button,
-        padding: 6,
-        width: 120,
-        alignItems: 'center',
-        borderRadius: 8,
+        backgroundColor: Colors.brand_primary,
+        paddingHorizontal:30,
         alignSelf: 'center',
         marginTop: 30,
-        marginBottom: 40
+        marginBottom:50,
+        borderRadius: 8,
+        alignItems:'center',
+        flexDirection:'row'
+    
     },
     text: {
         padding: 5,
         fontFamily: 'Roboto-Bold',
         color: Colors.white,
-        fontSize: 14
+        fontSize: 14,
+        alignSelf:'center'
     },
     date: {
         fontSize: 16,
@@ -391,11 +458,11 @@ const styles = StyleSheet.create({
     },
     dropdown: {
         paddingHorizontal: 8,
-      },
-      icon: {
+    },
+    icon: {
         marginRight: 5,
-      },
-      label: {
+    },
+    label: {
         position: 'absolute',
         backgroundColor: 'white',
         left: 22,
@@ -403,18 +470,18 @@ const styles = StyleSheet.create({
         zIndex: 999,
         paddingHorizontal: 8,
         fontSize: 14,
-      },
-      placeholderStyle: {
+    },
+    placeholderStyle: {
         fontSize: 16,
-        color:'black'
-      },
-      selectedTextStyle: {
+        color: 'black'
+    },
+    selectedTextStyle: {
         fontSize: 16,
-        color:'black'
-      },
-      iconStyle: {
+        color: 'black'
+    },
+    iconStyle: {
         width: 20,
         height: 20,
-        color:'#000',
-      },
-    });
+        color: '#000',
+    },
+});

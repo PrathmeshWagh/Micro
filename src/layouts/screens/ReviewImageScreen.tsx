@@ -5,7 +5,8 @@ import Colors from '../../style/Colors/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ReviewImageScreen = ({ route, navigation }: any) => {
-    const { data } = route.params;
+    const { data,task_id} = route.params;
+    console.log("task_id",task_id)
     const [name, setName] = React.useState(data.name);
     const [remark, setRemark] = React.useState(data.remark);
     //  console.log("Review", data.name);
@@ -30,7 +31,8 @@ const ReviewImageScreen = ({ route, navigation }: any) => {
             // console.log("getStoredImages", remove_data)
             // console.log("getStoredImages222", get_data)
             navigation.reset({
-                routes: [{ name: 'ImageUploadScreen' }], // Replace 'Home' with your desired screen name
+                routes: [{ name: 'ImageUploadScreen',  params: { taskId:task_id}
+                 }] // Replace 'Home' with your desired screen name
               });
         } catch (error) {
             console.log('Error retrieving images:', error);
@@ -42,7 +44,7 @@ const ReviewImageScreen = ({ route, navigation }: any) => {
 
     return (
         <View style={{ padding: 30 }}>
-            <Image source={{ uri: 'file://' + selectedImage.url }} style={{ width: 100, height: 100, alignSelf: 'center' }} />
+            <Image source={{ uri: 'file://' + selectedImage.uri }} style={{ width: 100, height: 100, alignSelf: 'center' }} />
             <TextInput
                 style={styles.input}
                 onChangeText={setName}

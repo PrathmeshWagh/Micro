@@ -26,6 +26,10 @@ import ViewImageScreen from '../screens/ViewImageScreen';
 import DailyReportScreen from '../screens/DailyReportScreen';
 import ViewDailyReportScreen from '../screens/ViewDailyReportScreen';
 import ReviewImageScreen from '../screens/ReviewImageScreen';
+import CompleteScreen from '../screens/CompleteScreen';
+import JobDescriptionScreen from '../../ScreenComponent/Tabs/JobDescriptionScreen';
+import IncidentReportScreen from '../../ScreenComponent/Tabs/IncidentReportscreen';
+import VarientationOderScreen from '../../ScreenComponent/Tabs/VarientationOderScreen';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const AppNavigation = () => {
@@ -48,6 +52,7 @@ const AppNavigation = () => {
 
     <Stack.Screen name="DrawerNavigtaion" component={DrawerNavigtaion} />
     <Stack.Screen name="TabNavigation" component={TabNavigation} />
+    <Stack.Screen name="TopTabNavigation" component={TabNavigation} />
     <Stack.Screen name="HomeScreen" component={HomeScreen} />
     <Stack.Screen name="JobSheetScreen" component={JobSheetScreen} />
     <Stack.Screen name="DescriptionScreen" component={DescriptionScreen} />
@@ -68,7 +73,10 @@ const AppNavigation = () => {
     <Stack.Screen name="ViewImageScreen" component={ViewImageScreen} />
     <Stack.Screen name="DailyReportScreen" component={DailyReportScreen} />
     <Stack.Screen name="ViewDailyReportScreen" component={ViewDailyReportScreen} />
-
+    <Stack.Screen name="CompleteScreen" component={CompleteScreen} />
+    {/* <Stack.Screen name="JobDescription" component={JobDescriptionScreen} />
+    <Stack.Screen name="IncidentReport" component={IncidentReportScreen} />
+    <Stack.Screen name="VarientationOder" component={VarientationOderScreen} /> */}
   </Stack.Navigator>
 
 

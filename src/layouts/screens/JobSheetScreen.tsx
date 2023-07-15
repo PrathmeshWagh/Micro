@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, FlatList } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, FlatList, ActivityIndicator } from 'react-native';
 import Appbar from '../../components/Appbar';
 import { Card, Avatar } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
@@ -12,23 +12,21 @@ import axios from 'axios';
 
 const JobSheetScreen = ({ navigation }: any) => {
   const { user, setUser } = useContext(AuthContext);
-  // console.log("userToken", user.token)
   const [projects, setProjects] = useState([]);
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     getdata();
   }, []);
 
   const getdata = async () => {
+    setLoading(true);
     const api: any = await getMethod(`projects`, user.token);
     if (api.status === 200) {
-      // console.log("apiData", api.data[0].project_id)
+      setLoading(false);
       setProjects(api.data)
-      // setUser(api.data[0].project_id)
     }
   }
   const renderItem = (props: any) => {
-    //console.log('props',props.item.project_id)
     return (
       <View style={styles.container}>
         <Pressable onPress={() => navigation.navigate('DescriptionScreen', {
@@ -83,7 +81,9 @@ const JobSheetScreen = ({ navigation }: any) => {
     <View>
       <View style={styles.containerAppbar}>
         <View style={styles.align2}>
+        <Pressable onPress={() => navigation.openDrawer()}>
           <IonIcon style={styles.icon} name="ios-menu-outline" size={28} color={'white'} />
+          </Pressable>
           <Image
             style={styles.tinyLogo}
             source={require('../../style/Img/bell2.png')}
@@ -91,11 +91,16 @@ const JobSheetScreen = ({ navigation }: any) => {
         </View>
         <Text style={styles.pageName}>Job Sheet</Text>
       </View>
+      {loading ? (
+                <ActivityIndicator size="large" color="#000" />
+            ) : (
+
       <FlatList
         data={projects}
         renderItem={renderItem}
         keyExtractor={item => item.id}
       />
+            )}
     </View>
   );
 };

@@ -21,17 +21,15 @@ import Snackbar from "react-native-snackbar";
 const DrawerLogo = ({ props }: any) => {
     const { user, setUser } = useContext(AuthContext);
     // const [person, setPerson] = useState<UserData>()
+    //   console.log('token', user);
     const navigation: any = useNavigation();
     const LogOut = async () => {
-        console.log("LogOut Begin")
         try {
-            // console.log('tokenwa', user);
+          
             const data = await getStorageData();
             // setPerson(data)
             const api: any = await postMethod(`logout`, data.token);
-            // console.log('api', api);
             if (api.status === 200) {
-                console.log("LogOut Successful")
                 navigation.navigate("Login")
             } else {
 
@@ -61,13 +59,13 @@ const DrawerLogo = ({ props }: any) => {
                     <View style={{ flexDirection: 'row' }}>
                         <Image
                             style={styles.tinyLogo}
-                            source={require('../style/Img/profileImg.png')}
+                            source={{uri:user.avatar}}
                         />
-                        <Text style={styles.text}>hii</Text>
+                        <Text style={styles.text}>{user.user_details.full_name}</Text>
                     </View>
                 </View>
                 <View style={{ marginTop: 20 }}>
-                    <DrawerItem
+                    {/* <DrawerItem
                         icon={() => (
                             <Image
                                 source={require('../style/Img/attendence.png')}
@@ -76,7 +74,7 @@ const DrawerLogo = ({ props }: any) => {
                         )}
                         label={() => (<Text style={styles.RouteName}>Attendance</Text>)}
                         onPress={() => navigation.navigate('AttendanceScreen')}
-                    />
+                    /> */}
                     <DrawerItem
                         icon={() => (
                             <Image source={require('../style/Img/changePsw.png')}
@@ -128,8 +126,10 @@ const styles = StyleSheet.create({
     },
     tinyLogo: {
         marginLeft: 20,
-        marginTop: 55,
-        height: 100,
-        width: 100
+        marginTop: 80,
+        marginRight:10,
+        height: 80,
+        width: 80,
+        borderRadius:60
     }
 })

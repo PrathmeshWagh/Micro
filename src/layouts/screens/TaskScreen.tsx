@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, SafeAreaView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, SafeAreaView, Pressable, ActivityIndicator } from 'react-native';
 import Appbar from '../../components/Appbar';
 import { ScrollView } from 'react-native-gesture-handler';
 import { MaterialTabBar, Tabs } from 'react-native-collapsible-tab-view'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Colors from '../../style/Colors/colors';
-import JobDescription from '../../ScreenComponent/Tabs/JobDescription';
-import VarientationOder from '../../ScreenComponent/Tabs/VarientationOder';
-import IncidentReport from '../../ScreenComponent/Tabs/IncidentReport';
+import JobDescriptionScreen from '../../ScreenComponent/Tabs/JobDescriptionScreen';
+import VarientationOderScreen from '../../ScreenComponent/Tabs/VarientationOderScreen';
+import IncidentReportScreen from '../../ScreenComponent/Tabs/IncidentReportscreen';
 import { getMethod } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
 
@@ -24,22 +24,13 @@ const TaskScreen = ({ navigation, route }: any) => {
   const { user, setUser } = useContext(AuthContext);
   const { id } = route.params;
   const [task, setTask] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   //console.log("ID", id)
 
-  useEffect(() => {
-    getdata();
-  }, []);
-
-  const getdata = async () => {
-    const api: any = await getMethod(`task_list/${id}`, user.token);
-    if (api.status === 200) {
-      //console.log(JSON.stringify(api))
-      setTask(api.data[0])
-      //console.log("apiData", task.task_title)
-    }
-  }
 
 
+ 
 
   const tabBar = (props: any) => {
     return (
@@ -54,29 +45,32 @@ const TaskScreen = ({ navigation, route }: any) => {
   }
   return (
     <>
-      <Appbar title={'Job Sheet'} />
+      {/* <Appbar title={'Job Sheet'} /> */}
       <View style={styles.container}>
         <Tabs.Container
-          pagerProps={{ scrollEnabled: false }}
+          pagerProps={{ scrollEnabled: true }}
           renderTabBar={tabBar}>
           <Tabs.Tab name="      Job 
 Description  ">
-            <Pressable onPress={() => navigation.navigate('TaskDetailScreen', {
-              taskId: task?.task_id
-            })}>
-              <JobDescription props={task} />
-            </Pressable>
+            <Tabs.ScrollView>
+              <JobDescriptionScreen props={task} />
+            </Tabs.ScrollView>
           </Tabs.Tab>
           <Tabs.Tab name="Variation 
     Order">
-            <VarientationOder />
+       <Tabs.ScrollView>
+            <VarientationOderScreen />
+            </Tabs.ScrollView>
           </Tabs.Tab>
           <Tabs.Tab name="Incident 
 Report">
-            <IncidentReport />
+         <Tabs.ScrollView>
+            <IncidentReportScreen />
+            </Tabs.ScrollView>
           </Tabs.Tab>
         </Tabs.Container>
       </View>
+
     </>
   );
 };
