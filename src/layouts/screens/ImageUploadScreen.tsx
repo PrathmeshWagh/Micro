@@ -30,15 +30,7 @@ const ImageUploadScreen = ({ route, navigation }: any) => {
   const [loading, setLoading] = useState(false);
 
 
-  const getCurrentDate = () => {
-    const dateObj = new Date();
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const date = String(dateObj.getDate()).padStart(2, '0');
 
-    return `${year}-${month}-${date}`;
-  };
-  const currentDate = getCurrentDate();
 
   useEffect(() => {
     getStoredImages();

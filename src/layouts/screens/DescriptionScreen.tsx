@@ -73,7 +73,7 @@ const DescriptionScreen = ({ navigation, route }: any, props: any) => {
             </View>
           </Card>
           <View style={styles.align}>
-            <Pressable style={styles.button} onPress={() => navigation.navigate("TaskScreen", {
+            <Pressable style={styles.button} onPress={() => navigation.navigate("TopTabNavigation", {
               id: details?.project_id,
             })}>
               <Text style={styles.startProject}>Start Project</Text>

@@ -21,7 +21,8 @@ import DrawerLogo from '../../components/DrawerLogo';
 import AttendanceScreen from '../screens/AttendanceScreen';
 import { AuthContext } from '../../utils/appContext';
 import { getStorageData } from '../../utils/helper';
-import { Text } from 'react-native';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { Dimensions } from 'react-native';
 import ViewImageScreen from '../screens/ViewImageScreen';
 import DailyReportScreen from '../screens/DailyReportScreen';
 import ViewDailyReportScreen from '../screens/ViewDailyReportScreen';
@@ -30,9 +31,14 @@ import CompleteScreen from '../screens/CompleteScreen';
 import JobDescriptionScreen from '../../ScreenComponent/Tabs/JobDescriptionScreen';
 import IncidentReportScreen from '../../ScreenComponent/Tabs/IncidentReportscreen';
 import VarientationOderScreen from '../../ScreenComponent/Tabs/VarientationOderScreen';
+import { Appbar } from 'react-native-paper';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
+const TabTop = createMaterialTopTabNavigator();
+
 const AppNavigation = () => {
+  const windowWidth = Dimensions.get('window').width;
   const { user, setUser } = useContext(AuthContext);
   console.log("user", user)
   // const [auth, setAuth] = useState<string | null>(null);
@@ -52,7 +58,7 @@ const AppNavigation = () => {
 
     <Stack.Screen name="DrawerNavigtaion" component={DrawerNavigtaion} />
     <Stack.Screen name="TabNavigation" component={TabNavigation} />
-    <Stack.Screen name="TopTabNavigation" component={TabNavigation} />
+    <Stack.Screen name="TopTabNavigation" component={TopTabNavigation} />
     <Stack.Screen name="HomeScreen" component={HomeScreen} />
     <Stack.Screen name="JobSheetScreen" component={JobSheetScreen} />
     <Stack.Screen name="DescriptionScreen" component={DescriptionScreen} />
@@ -74,9 +80,9 @@ const AppNavigation = () => {
     <Stack.Screen name="DailyReportScreen" component={DailyReportScreen} />
     <Stack.Screen name="ViewDailyReportScreen" component={ViewDailyReportScreen} />
     <Stack.Screen name="CompleteScreen" component={CompleteScreen} />
-    {/* <Stack.Screen name="JobDescription" component={JobDescriptionScreen} />
+    <Stack.Screen name="JobDescription" component={JobDescriptionScreen} />
     <Stack.Screen name="IncidentReport" component={IncidentReportScreen} />
-    <Stack.Screen name="VarientationOder" component={VarientationOderScreen} /> */}
+    <Stack.Screen name="VarientationOder" component={VarientationOderScreen} />
   </Stack.Navigator>
 
 
@@ -93,5 +99,24 @@ const AppNavigation = () => {
     );
   }
 }
+
+
+
+function TopTabNavigation() {
+  return (
+    <TabTop.Navigator
+      screenOptions={{
+        tabBarActiveTintColor: '#e91e63',
+        tabBarLabelStyle: { fontSize: 12 },
+        tabBarStyle: { backgroundColor: Colors.brand_primary},
+      }}>
+      <TabTop.Screen name="JobDescription" component={JobDescriptionScreen} />
+      <TabTop.Screen name="IncidentReport" component={IncidentReportScreen} />
+      <TabTop.Screen name="VarientationOder" component={VarientationOderScreen} />
+    </TabTop.Navigator>
+  )
+}
+
+
 
 export default AppNavigation;

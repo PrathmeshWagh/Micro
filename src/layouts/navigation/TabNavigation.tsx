@@ -1,7 +1,6 @@
 import React from 'react';
 import HomeScreen from '../screens/HomeSceen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import ProfileScreen from '../screens/ProfileScreen';
 import JobSheetScreen from '../screens/JobSheetScreen';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -14,7 +13,6 @@ import IncidentReportScreen from '../../ScreenComponent/Tabs/IncidentReportscree
 import VarientationOderScreen from '../../ScreenComponent/Tabs/VarientationOderScreen';
 
 const Tab = createBottomTabNavigator();
-const TabTop = createMaterialTopTabNavigator();
 const TabNavigation = () => {
   return (
     <Tab.Navigator
@@ -52,14 +50,6 @@ const TabNavigation = () => {
 };
 
 
-const TopTabNavigation = () => {
-  return (
-    <TabTop.Navigator>
-      <TabTop.Screen name="JobDescription" component={JobDescriptionScreen} />
-      <TabTop.Screen name="IncidentReport" component={IncidentReportScreen} />
-      <TabTop.Screen name="VarientationOder" component={VarientationOderScreen} />
-    </TabTop.Navigator>
-  )
-}
+
 
 export default TabNavigation;

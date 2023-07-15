@@ -20,67 +20,79 @@ const JobDescriptionScreen = ({ props }: any) => {
   }, []);
 
   const getdata = async () => {
-    // setLoading(true);
+     setLoading(true);
     const api: any = await getMethod(`task_list/80`, user.token);
     if (api.status === 200) {
-      console.log("apiData", api.data)
-      // setLoading(false);
+      // console.log("apiData", api.data)
+       setLoading(false);
       setTaskList(api.data)
       setRefreshing(false);
-      console.log("", taskList)
+      // console.log("", taskList)
     }
   }
   const onRefresh = () => {
     setRefreshing(true);
     getdata();
+    setRefreshing(false);
   };
 
   return (
-  <Pressable onPress={() => navigation.navigate('TaskDetailScreen', {
-    taskId: taskList?.task_id
-  })}>
-    <ScrollView style={styles.cover} scrollEnabled={true} contentContainerStyle={{flex:1}}>
+    <>
+    {loading ? (
+      <ActivityIndicator size="large" color="#000" />
+    ) : (
+    <ScrollView style={styles.cover}
+    refreshControl={
+      <RefreshControl
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+      />
+    }>
       {
         taskList.map((data, index) => (
           <View key={index}>
-            <Card style={styles.card}>
-              <View>
-                <Text style={styles.jobSheet}>{data?.task_title}</Text>
-                <Text style={styles.address}>{data.task_description}</Text>
-                <Text style={styles.team}>Team members</Text>
-                <View style={styles.align}>
-                  {
-                    data.user_data.map((data, index) => (
-                      <View key={index}>
-                        <Avatar.Image size={24} source={{ uri: data.profile }} />
-                      </View>
-                    ))}
+            <Pressable onPress={() => navigation.navigate('TaskDetailScreen', {
+              taskId: taskList?.task_id
+            })}>
+              <Card style={styles.card}>
+                <View>
+                  <Text style={styles.jobSheet}>{data?.task_title}</Text>
+                  <Text style={styles.address}>{data?.task_description}</Text>
+                  <Text style={styles.team}>Team members</Text>
+                  <View style={styles.align}>
+                    {
+                      data.user_data.map((data, index) => (
+                        <View key={index}>
+                          <Avatar.Image size={24} source={{ uri: data.profile }} />
+                        </View>
+                      ))}
 
-                </View>
-                <Text style={styles.startDate}>Start Date</Text>
-                <View style={styles.align}>
-                  <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
-                  <Text style={styles.date}>{data?.task_date_start}</Text>
-                </View>
-              </View>
-              <View>
-                <View style={styles.indecator}>
-
-                  <View style={styles.taskIconAlign}>
-                    <Text style={{ bottom: 15, right: -70 }}>End Date</Text>
+                  </View>
+                  <Text style={styles.startDate}>Start Date</Text>
+                  <View style={styles.align}>
                     <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
-                    <Text style={styles.date}>{data?.task_date_due}</Text>
+                    <Text style={styles.date}>{data?.task_date_start}</Text>
                   </View>
                 </View>
+                <View>
+                  <View style={styles.indecator}>
 
-              </View>
+                    <View style={styles.taskIconAlign}>
+                      <Text style={{ bottom: 15, right: -70 }}>End Date</Text>
+                      <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
+                      <Text style={styles.date}>{data?.task_date_due}</Text>
+                    </View>
+                  </View>
 
-            </Card>
+                </View>
 
+              </Card>
+            </Pressable >
           </View>
         ))}
     </ScrollView>
-    </Pressable >
+    )}
+    </>
   );
 };
 
