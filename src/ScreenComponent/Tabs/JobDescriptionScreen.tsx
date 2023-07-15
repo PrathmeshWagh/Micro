@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet,ScrollView, SafeAreaView, Pressable, RefreshControl, Image, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, Pressable, RefreshControl, Image, FlatList, ActivityIndicator } from 'react-native';
 
 import { Card, Avatar } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
@@ -34,8 +34,11 @@ const JobDescriptionScreen = ({ props }: any) => {
     setRefreshing(true);
     getdata();
   };
- 
+
   return (
+  <Pressable onPress={() => navigation.navigate('TaskDetailScreen', {
+    taskId: taskList?.task_id
+  })}>
     <ScrollView style={styles.cover} scrollEnabled={true} contentContainerStyle={{flex:1}}>
       {
         taskList.map((data, index) => (
@@ -77,6 +80,7 @@ const JobDescriptionScreen = ({ props }: any) => {
           </View>
         ))}
     </ScrollView>
+    </Pressable >
   );
 };
 
