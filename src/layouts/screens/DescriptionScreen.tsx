@@ -11,7 +11,7 @@ const DescriptionScreen = ({ navigation, route }: any, props: any) => {
   const { user, setUser } = useContext(AuthContext);
   const [details, setDetails] = useState('')
   const [loading, setLoading] = useState(true);
-  //console.log("id",id)
+  console.log("id",id)
 
 
   useEffect(() => {

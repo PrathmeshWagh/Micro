@@ -1,14 +1,29 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Touchable, TouchableOpacity } from 'react-native';
 import { View, Text, Button } from 'react-native';
 import Colors from '../../style/Colors/colors';
 import { Card, Surface } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../utils/appContext';
+import { getStorageData } from '../../utils/helper';
+import { UserData } from '../../components/DrawerLogo';
 const HomeScreen = ({ navigation }: any) => {
   // const navigation=useNavigation();
-  const { user, setUser } = useContext(AuthContext);
-
+  const [userDetails, setUserDetails]= useState<UserData>()
+  useEffect(() => {
+    getStoredData();
+  }, []);
+  
+    const getStoredData = async () => {
+        try {
+          const storedData = await getStorageData();
+            console.log('home retrieved successfully.',storedData);
+            setUserDetails(storedData)
+          }
+         catch (error) {
+          console.log('Error retrieving images:', error);
+        }
+      };
   return (
     <ScrollView style={styles.container}>
       <View style={styles.tabBar}>
@@ -30,7 +45,7 @@ const HomeScreen = ({ navigation }: any) => {
         source={require('../../style/Img/logo.png')}
       />
 
-      <Text style={styles.name}>Hi, {user.user_details.full_name}</Text>
+      <Text style={styles.name}>Hi, {userDetails?.user_details?.full_name}</Text>
       <View style={styles.align}>
         <Pressable onPress={()=>navigation.navigate('CompleteScreen')}>
           <Surface style={styles.surface} elevation={4}>
@@ -41,6 +56,7 @@ const HomeScreen = ({ navigation }: any) => {
             <Text style={styles.boxText}>Completed</Text>
           </Surface>
         </Pressable>
+        <Pressable onPress={()=>navigation.navigate('InprogressScreen')}>
         <Surface style={styles.surface2} elevation={4}>
           <Image
             style={styles.boxIcon}
@@ -48,8 +64,11 @@ const HomeScreen = ({ navigation }: any) => {
           />
           <Text style={styles.boxText}>Inprogress</Text>
         </Surface>
+        </Pressable>
       </View>
       <View style={styles.align2}>
+      <Pressable onPress={()=>navigation.navigate('PendingScreen')}>
+
         <Surface style={styles.surface2} elevation={4}>
           <Image
             style={styles.boxIcon}
@@ -57,6 +76,8 @@ const HomeScreen = ({ navigation }: any) => {
           />
           <Text style={styles.boxText}>Pending</Text>
         </Surface>
+        </Pressable>
+
         <Surface style={styles.surface} elevation={4}>
           <Image
             style={styles.boxIcon}
@@ -65,11 +86,11 @@ const HomeScreen = ({ navigation }: any) => {
           <Text style={styles.boxText}>History</Text>
         </Surface>
       </View>
-      <Card style={styles.card}>
+      {/* <Card style={styles.card}>
         <Text style={styles.cardTitle}>Card Title</Text>
         <Text style={styles.cardText}>1 Yishun Industrial Street 1, #07-36 A'Posh Bizhub, Singapore 768160</Text>
         <Text style={styles.AddTask}>Add  Task</Text>
-      </Card>
+      </Card> */}
 
     </ScrollView>
   );

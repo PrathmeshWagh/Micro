@@ -8,12 +8,14 @@ import { useNavigation } from '@react-navigation/native';
 import { getMethod } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
 
-const JobDescriptionScreen = ({ props }: any) => {
+const JobDescriptionScreen = ({ props,route }: any) => {
   const navigation = useNavigation();
   const { user, setUser } = useContext(AuthContext);
   const [taskList, setTaskList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const { project_id } = route.params;
+
 
   useEffect(() => {
     getdata();
@@ -21,13 +23,13 @@ const JobDescriptionScreen = ({ props }: any) => {
 
   const getdata = async () => {
      setLoading(true);
-    const api: any = await getMethod(`task_list/80`, user.token);
+    const api: any = await getMethod(`task_list/${project_id}`, user.token);
     if (api.status === 200) {
       // console.log("apiData", api.data)
        setLoading(false);
       setTaskList(api.data)
       setRefreshing(false);
-      // console.log("", taskList)
+      //  console.log("", taskList.task_id)
     }
   }
   const onRefresh = () => {
@@ -52,7 +54,7 @@ const JobDescriptionScreen = ({ props }: any) => {
         taskList.map((data, index) => (
           <View key={index}>
             <Pressable onPress={() => navigation.navigate('TaskDetailScreen', {
-              taskId: taskList?.task_id
+              taskId: data?.task_id
             })}>
               <Card style={styles.card}>
                 <View>

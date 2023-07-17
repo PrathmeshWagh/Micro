@@ -27,11 +27,10 @@ export const postMethod = async (url, body) => {
         let internet = await NetInfo.fetch();
         let StoredData = await getStorageData();
         const setHeader = () => {
-            if (body !== null) {
-                return `Bearer ${body}`; //Token
+            if ( StoredData !== null) {
+                return `Bearer ${StoredData.token}`;
             }
         };
-
         if (internet.isInternetReachable) {
             return await axios.post(baseURL + url, body, {
                 headers: {

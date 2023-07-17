@@ -1,38 +1,57 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 import Colors from "../style/Colors/colors";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../utils/appContext";
-import { getStorageData, postMethod } from "../utils/helper";
+import { getStorageData, postMethod, storeData } from "../utils/helper";
 import Snackbar from "react-native-snackbar";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-// interface UserData {
-//     token: string;
-//     user_details: {
-//       email: string;
-//       first_name: string;
-//       id: number;
-//       last_name: string;
-//     };
-//   }
+export interface UserData {
+    avatar: string;
+    token: string;
+    user_details: {
+      email: string;
+      first_name: string;
+      full_name: string;
+      id: number;
+      last_name: string;
+    };
+  }
+  
 
 const DrawerLogo = ({ props }: any) => {
-    const { user, setUser } = useContext(AuthContext);
+    // const { user, setUser } = useContext(AuthContext);
     // const [person, setPerson] = useState<UserData>()
-    //   console.log('token', user);
+    // console.log('token', user);
+    const [userDetails, setUserDetails]= useState<UserData>()
     const navigation: any = useNavigation();
+   
+  useEffect(() => {
+    getStoredData();
+  }, []);
+  
+    const getStoredData = async () => {
+        try {
+          const storedData = await getStorageData();
+            console.log('Images retrieved successfully.',storedData.user_details.full_name);
+            setUserDetails(storedData)
+          }
+         catch (error) {
+          console.log('Error retrieving images:', error);
+        }
+      };
+    
+
     const LogOut = async () => {
         try {
-          
-            const data = await getStorageData();
-            // setPerson(data)
-            const api: any = await postMethod(`logout`, data.token);
+            const api: any = await postMethod(`logout`);
             if (api.status === 200) {
+                await AsyncStorage.removeItem('user_data');
                 navigation.navigate("Login")
             } else {
-
                 Snackbar.show({
                     text: api.data.message,
                     duration: Snackbar.LENGTH_SHORT,
@@ -59,9 +78,9 @@ const DrawerLogo = ({ props }: any) => {
                     <View style={{ flexDirection: 'row' }}>
                         <Image
                             style={styles.tinyLogo}
-                            source={{uri:user.avatar}}
+                            source={{ uri: userDetails?.avatar }}
                         />
-                        <Text style={styles.text}>{user.user_details.full_name}</Text>
+                        <Text style={styles.text}>{userDetails?.user_details.full_name}</Text>
                     </View>
                 </View>
                 <View style={{ marginTop: 20 }}>
@@ -127,9 +146,9 @@ const styles = StyleSheet.create({
     tinyLogo: {
         marginLeft: 20,
         marginTop: 80,
-        marginRight:10,
+        marginRight: 10,
         height: 80,
         width: 80,
-        borderRadius:60
+        borderRadius: 60
     }
 })

@@ -17,7 +17,7 @@ const LoginScreen = ({ navigation }: any) => {
 
   const onSubmit = async (data: any) => {
     Keyboard.dismiss()
-   // console.log("hide", data);
+    // console.log("hide", data);
     LogIn(data)
 
   }
@@ -34,11 +34,13 @@ const LoginScreen = ({ navigation }: any) => {
       const api: any = await postMethod(`login`, raw);
       if (api.status === 200) {
         setLoading(false);
-        await storeData(api.data)
-        setUser(api.data)
+       await storeData(api.data)
+         setUser(api.data)
         // console.log('data', api.data)
         // setLoader(false);
-        navigation.navigate("DrawerNavigtaion")
+        navigation.reset({
+          routes: [{ name: 'DrawerNavigtaion' }]
+        })
       } else {
         setLoading(false);
         Snackbar.show({
@@ -226,7 +228,7 @@ const LoginScreen = ({ navigation }: any) => {
       </View>
 
       <Pressable style={styles.button} onPress={handleSubmit(onSubmit)}>
-      {loading && <ActivityIndicator size="large" color="#fff" />}
+        {loading && <ActivityIndicator size="large" color="#fff" />}
         <Text style={styles.loginText}>Login</Text>
       </Pressable >
     </ScrollView>

@@ -11,7 +11,7 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
   const [loading, setLoading] = useState(true);
   const [taskDetails, setTaskDetails] = useState();
   const { taskId } = route.params;
-  // console.log("aaaa", taskId)
+  console.log("aaaa", taskId)
 
   useEffect(() => {
     getdata();
