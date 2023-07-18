@@ -7,7 +7,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import PhotoEditor from 'react-native-photo-editor';
 import RNFS from 'react-native-fs';
 import Snackbar from 'react-native-snackbar';
-import { FormPostMethod, postMethod, storeData } from '../../utils/helper';
+import { FormPostMethod, getStorageData, postMethod, storeData } from '../../utils/helper';
 import moment from 'moment';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,15 +16,14 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-const AddReportScreen = ({ route }: any) => {
+import { UserData } from '../../components/DrawerLogo';
+const AddReportScreen = ({ route, navigation }: any) => {
   const { project_id } = route.params;
 
   const [imageUri, setImageUri] = useState<string[]>([]);
 
   //  console.log("prijectid",id);
   const [refreshFlag, setRefreshFlag] = useState(false);
-  const { user, setUser } = useContext(AuthContext);
-  const token = (user.token)
   const [loadedImages, setLoadedImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState('');
@@ -33,6 +32,9 @@ const AddReportScreen = ({ route }: any) => {
   const [position, setPosition] = useState('');
   const [incident, setIncident] = useState('');
   const [remark, setRemark] = useState('');
+
+
+
   const open = () => {
     Alert.alert('Please Choose a option', 'from below', [
       {
@@ -143,9 +145,9 @@ const AddReportScreen = ({ route }: any) => {
           textColor: 'white',
           backgroundColor: 'green',
         });
-        // navigation.navigate('TaskDetailScreen', {
-        //   taskId: taskId
-        // });
+        navigation.navigate('IncidentReport',{
+          project_id:project_id
+        })
       } else {
         setLoading(false);
         Snackbar.show({
@@ -172,13 +174,13 @@ const AddReportScreen = ({ route }: any) => {
     console.log("deleteId", id)
     const updatedArray = imageUri.filter((obj) => obj.id !== id);
     setImageUri(updatedArray)
-    
+
   }
 
 
   return (
     <SafeAreaView style={styles.container}>
-      <Appbar title={'Job Sheet'} />
+      <Appbar title={'Add Incident Report'} />
       <ScrollView style={styles.cover}>
         <Text style={styles.inputText}>Location of Incident</Text>
         <TextInput

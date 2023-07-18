@@ -10,7 +10,6 @@ import { AuthContext } from '../../utils/appContext';
 
 const JobDescriptionScreen = ({ props,route }: any) => {
   const navigation = useNavigation();
-  const { user, setUser } = useContext(AuthContext);
   const [taskList, setTaskList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -23,7 +22,7 @@ const JobDescriptionScreen = ({ props,route }: any) => {
 
   const getdata = async () => {
      setLoading(true);
-    const api: any = await getMethod(`task_list/${project_id}`, user.token);
+    const api: any = await getMethod(`task_list/${project_id}`);
     if (api.status === 200) {
       // console.log("apiData", api.data)
        setLoading(false);

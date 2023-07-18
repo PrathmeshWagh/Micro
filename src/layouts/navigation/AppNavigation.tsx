@@ -36,6 +36,7 @@ import { Colors } from 'react-native/Libraries/NewAppScreen';
 import IncidentReportDescriptionScreen from '../screens/IncidentReportDescriptionScreen';
 import InprogressScreen from '../screens/InprogressScreen';
 import PendingScreen from '../screens/PendingScreen';
+import SplashScreen from 'react-native-splash-screen';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const TabTop = createMaterialTopTabNavigator();
@@ -51,6 +52,7 @@ function AppNavigation() {
 
   useEffect(() => {
     getUserData()
+    SplashScreen.hide();
   }, [])
 
   const getUserData = async () => {
@@ -102,11 +104,10 @@ function AppNavigation() {
      ) 
      : (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.screen_bg }} >
-         <ActivityIndicator size="large" color="#000" />
+         <ActivityIndicator size="large" color={Colors.brand_primary} />
       </View>
   )
   )
-  
 }
 
 function DrawerNavigtaion() {

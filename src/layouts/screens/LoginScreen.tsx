@@ -14,7 +14,7 @@ const LoginScreen = ({ navigation }: any) => {
   const [passwordVisible, setPasswordVisible] = useState(true);
   const [loading, setLoading] = useState(false);
   const { user, setUser } = useContext(AuthContext);
-
+  // console.log('user', user)
   const onSubmit = async (data: any) => {
     Keyboard.dismiss()
     // console.log("hide", data);
@@ -34,8 +34,8 @@ const LoginScreen = ({ navigation }: any) => {
       const api: any = await postMethod(`login`, raw);
       if (api.status === 200) {
         setLoading(false);
-       await storeData(api.data)
-         setUser(api.data)
+        await storeData(api.data)
+        setUser(api.data)
         // console.log('data', api.data)
         // setLoader(false);
         navigation.reset({

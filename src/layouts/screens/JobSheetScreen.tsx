@@ -11,7 +11,6 @@ import { AuthContext } from '../../utils/appContext';
 import axios from 'axios';
 
 const JobSheetScreen = ({ navigation }: any) => {
-  const { user, setUser } = useContext(AuthContext);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -20,7 +19,7 @@ const JobSheetScreen = ({ navigation }: any) => {
 
   const getdata = async () => {
     setLoading(true);
-    const api: any = await getMethod(`projects`, user.token);
+    const api: any = await getMethod(`projects`);
     if (api.status === 200) {
       setLoading(false);
       setProjects(api.data)

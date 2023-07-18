@@ -10,7 +10,6 @@ import { getMethod } from '../../utils/helper';
 
 const IncidentReport = ({ route }: any) => {
   const { project_id } = route.params;
-  const { user, setUser } = useContext(AuthContext);
   const [incidentList, setIncidentList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -22,12 +21,13 @@ const IncidentReport = ({ route }: any) => {
 
   const getdata = async () => {
     setLoading(true);
-    const api: any = await getMethod(`get_incident_report/${project_id}`, user.token);
+    const api: any = await getMethod(`get_incident_report/${project_id}`);
     if (api.status === 200) {
-      console.log("apiData", api.data)
+      // console.log("apiData", api.data)
       setLoading(false);
       setIncidentList(api.data)
       setRefreshing(false);
+
       // console.log("", taskList)
     }
   }
@@ -61,7 +61,7 @@ const IncidentReport = ({ route }: any) => {
           {
             incidentList.map((data, index) => (
               <View key={index}>
-                <Pressable  onPress={()=>navigation.navigate('IncidentReportDescriptionScreen',{
+                <Pressable onPress={() => navigation.navigate('IncidentReportDescriptionScreen', {
                   incident_reports_id: data?.incident_reports_id
                 })}>
                   <Card style={styles.card}>
@@ -92,7 +92,6 @@ const IncidentReport = ({ route }: any) => {
                     <View>
                     </View>
                   </Card>
-
                 </Pressable>
               </View>
             ))}

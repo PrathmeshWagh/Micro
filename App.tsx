@@ -14,9 +14,9 @@ export default function App() {
   const [user, setUser] = useState(null);
 
   
-    useEffect(() => {
-        Launchscreen();
-      }, []);
+    // useEffect(() => {
+    //     Launchscreen();
+    //   }, []);
      
     return (
       <AuthContext.Provider value={{ user, setUser }}>
@@ -28,8 +28,8 @@ export default function App() {
         </AuthContext.Provider>
     );
 }
-const Launchscreen = async () => {
-    SplashScreen.hide();
-  };
+// const Launchscreen = async () => {
+//     SplashScreen.hide();
+//   };
 LogBox.ignoreAllLogs()
 

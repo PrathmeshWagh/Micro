@@ -24,8 +24,6 @@ const ImageUploadScreen = ({ route, navigation }: any) => {
   const { taskId } = route.params
   // console.log("taskId",taskId);
   const [refreshFlag, setRefreshFlag] = useState(false);
-  const { user, setUser } = useContext(AuthContext);
-  const token = (user.token)
   const [loadedImages, setLoadedImages] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -266,7 +264,8 @@ const ImageUploadScreen = ({ route, navigation }: any) => {
       const storedImages = await AsyncStorage.getItem('images');
       if (storedImages !== null) {
         setLoadedImages(JSON.parse(storedImages));
-        // console.log("getStoredImages", loadedImages)
+        setImageUri(JSON.parse(storedImages))
+        console.log("getStoredImages", storedImages)
         // console.log('Images retrieved successfully.');
       }
       else {
@@ -331,20 +330,20 @@ const ImageUploadScreen = ({ route, navigation }: any) => {
                   <TouchableOpacity onPress={() => DeleteObject(data.id)} style={styles.delete}>
                     <Ionicons name="close" size={22} color={'black'} style={styles.icon} />
                   </TouchableOpacity>
-                  <View style={{
+                  {/* <View style={{
                     flexDirection: 'row',
                     justifyContent: 'space-around'
-                  }}>
+                  }}> */}
                     <Pressable key={index} onPress={() => navigation.navigate('ReviewImageScreen', { data: loadedImages[index], task_id: taskId })}>
                       <Image
                         source={{ uri: 'file://' + data.uri }}
-                        style={{ width: 100, height: 100 }} />
+                        style={{ width: 200, height: 150,alignSelf:'center' }} />
                     </Pressable>
-                    <View style={{ marginTop: 30 }}>
+                    <View style={{ marginTop: 10 }}>
                       <Text style={styles.name}>Name:{data.name}</Text>
                       <Text style={styles.remark}>Remark:{data.remark}</Text>
                     </View>
-                  </View>
+                  {/* </View> */}
                 </Card>
 
               </View>
@@ -393,7 +392,7 @@ const ImageUploadScreen = ({ route, navigation }: any) => {
         </View>
       </ScrollView >
       <Pressable style={styles.uploadButton} onPress={() => ImgUpload()}>
-        {loading && <ActivityIndicator size="large" color="#fff" />}
+        {loading && <ActivityIndicator size="small" color="#fff" />}
         <Text style={styles.text}>Upload</Text>
       </Pressable>
     </>
@@ -412,7 +411,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignSelf: 'center',
     marginTop: 30,
-    marginBottom: 10
+    marginBottom: 10,
+    flexDirection:'row',
+    paddingLeft:30
   },
   delete: {
     position: 'absolute',

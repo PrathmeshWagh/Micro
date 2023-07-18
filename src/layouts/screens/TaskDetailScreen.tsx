@@ -19,7 +19,7 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
 
   const getdata = async () => {
     setLoading(true);
-    const api: any = await getMethod(`task_details/${taskId}`, user.token);
+    const api: any = await getMethod(`task_details/${taskId}`);
     if (api.status === 200) {
       setLoading(false);
       setTaskDetails(api.data)
@@ -30,10 +30,10 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
   return (
     <View>
       <Appbar title={'Task'} />
+      <ScrollView style={styles.container}>
       {loading ? (
         <ActivityIndicator size="large" color="#000" />
       ) : (
-        <ScrollView style={styles.container}>
           <Pressable>
             <Card style={styles.card}>
               <View>
@@ -41,13 +41,13 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
                 <Text style={styles.address}>{taskDetails?.task_description}</Text>
                 <Text style={styles.team}>T-eam members</Text>
                 <View style={styles.align}>
-                {
-                taskDetails?.user_data.map((data, index) => (
-                  <View key={index}>
-                  <Avatar.Image size={24} source={{ uri: data.profile }} />
-                  </View>
-                ))}
-                  
+                  {
+                    taskDetails?.user_data.map((data, index) => (
+                      <View key={index}>
+                        <Avatar.Image size={24} source={{ uri: data.profile }} />
+                      </View>
+                    ))}
+
                 </View>
                 <Text style={styles.startDate}>Deadline: <Text style={{ color: Colors.red }}>{taskDetails?.task_date_due}</Text></Text>
               </View>
@@ -55,6 +55,7 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
               </View>
             </Card>
           </Pressable>
+           )}
           <View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
               <Pressable style={styles.AddPic} onPress={() => navigation.navigate('ImageUploadScreen', {
@@ -75,6 +76,7 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
                 taskId: taskDetails?.task_id,
                 project_id: taskDetails?.project_id
               })} >
+                 
                 <Text style={styles.text}>Add Daily Report</Text>
                 <Image size={24} source={require('../../style/Img/3.png')} />
               </Pressable>
@@ -89,19 +91,18 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
             <View style={styles.remark}>
               <Text>Remarks....</Text>
             </View>
-
           </View>
-          {/* <ImageUpload/> */}
         </ScrollView>
-      )}
     </View>
   );
 };
 export default TaskDetailScreen;
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 14,
-    backgroundColor: Colors.white
+    backgroundColor: Colors.white,
+    marginBottom: 200
   },
   text: {
     fontFamily: 'Roboto-Medium',
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 20,
     width: "100%",
-    borderRadius: 6
+    borderRadius: 6,
   },
   cover: {
     marginTop: 14,

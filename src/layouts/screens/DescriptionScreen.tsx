@@ -3,15 +3,16 @@ import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from
 import { Card } from 'react-native-paper';
 import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
-import { getMethod } from '../../utils/helper';
+import { getMethod, postMethod } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
 
 const DescriptionScreen = ({ navigation, route }: any, props: any) => {
   const { id } = route.params;
-  const { user, setUser } = useContext(AuthContext);
   const [details, setDetails] = useState('')
   const [loading, setLoading] = useState(true);
-  console.log("id",id)
+  const [load, setLoad] = useState(true);
+  const [project, setProject] = useState('')
+  // console.log("id",id)
 
 
   useEffect(() => {
@@ -20,7 +21,7 @@ const DescriptionScreen = ({ navigation, route }: any, props: any) => {
 
   const getdata = async () => {
     setLoading(true);
-    const api: any = await getMethod(`project_details/${id}`, user.token);
+    const api: any = await getMethod(`project_details/${id}`);
     if (api.status === 200) {
       setLoading(false);
       setDetails(api.data)
@@ -28,14 +29,30 @@ const DescriptionScreen = ({ navigation, route }: any, props: any) => {
     }
   }
 
+  const postData = async () => {
+    setLoad(true);
+    const api: any = await postMethod(`start_project/${id}`);
+    if (api.status === 200) {
+      console.log(".....???", api.data)
+      setLoad(false);
+      // setProject(api.data)
+      navigation.navigate("TopTabNavigation", {
+        id: details?.project_id,})
+      //console.log("apiData",projects)
+    }
+  }
+
+
+
   return (
     <>
       <Appbar title={'Job Sheet'} />
-      {loading ? (
-        <ActivityIndicator size="large" color="#000" />
-      ) : (
 
-        <ScrollView style={styles.container}>
+
+      <ScrollView style={styles.container}>
+        {loading ? (
+          <ActivityIndicator size="large" color="#000" />
+        ) : (
           <Card style={styles.card}>
             <View style={styles.align}>
               <Text style={styles.title}>Job Sheet Tiitle  -</Text>
@@ -72,21 +89,21 @@ const DescriptionScreen = ({ navigation, route }: any, props: any) => {
               </View>
             </View>
           </Card>
-          <View style={styles.align}>
-            <Pressable style={styles.button} onPress={() => navigation.navigate("TopTabNavigation", {
-              id: details?.project_id,
-            })}>
-              <Text style={styles.startProject}>Start Project</Text>
-            </Pressable >
-            <Pressable style={styles.button} onPress={() => navigation.navigate("TaskScreen")}>
-              <Text style={styles.startProject}>End Project</Text>
-            </Pressable >
-          </View>
-          <Pressable style={styles.ViewJob} onPress={() => navigation.navigate("TaskScreen")}>
-            <Text style={styles.ViewJobText}>View Job</Text>
+        )}
+        <View style={styles.align}>
+          <Pressable style={styles.button} onPress={postData}>
+            {/* {loading && <ActivityIndicator size="large" color="#fff" />} */}
+            <Text style={styles.startProject}>Start Project</Text>
           </Pressable >
-        </ScrollView>
-      )}
+          <Pressable style={styles.button} onPress={() => navigation.navigate("TaskScreen")}>
+            <Text style={styles.startProject}>End Project</Text>
+          </Pressable >
+        </View>
+        {/* <Pressable style={styles.ViewJob} onPress={() => navigation.navigate("TaskScreen")}>
+            <Text style={styles.ViewJobText}>View Job</Text>
+          </Pressable > */}
+      </ScrollView>
+
     </>
   );
 };

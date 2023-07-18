@@ -52,7 +52,8 @@ const ReviewImageScreen = ({ route, navigation }: any) => {
                 placeholder="Name"
             />
             <TextInput
-                style={styles.input}
+                style={styles.input2}
+                multiline={true}
                 onChangeText={setRemark}
                 value={remark}
                 placeholder="Remarks"
@@ -78,6 +79,12 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         padding: 10,
     },
+    input2: {
+        height: 100,
+        margin: 12,
+        borderWidth: 1,
+        padding: 10,
+    },
     uploadButton: {
         borderWidth: 1,
         borderColor: Colors.button,
@@ -87,7 +94,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 8,
         alignSelf: 'center',
-        marginTop: 30
+        marginTop: 10
     },
     text: {
         padding: 5,

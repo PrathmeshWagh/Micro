@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, SafeAreaView, Pressable, ScrollView, Image, ActivityIndicator } from 'react-native';
 import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
@@ -8,15 +8,17 @@ import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import { Dropdown } from 'react-native-element-dropdown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { FormPostMethod } from '../../utils/helper';
+import { FormPostMethod, getStorageData } from '../../utils/helper';
 import Snackbar from 'react-native-snackbar';
 import { AuthContext } from '../../utils/appContext';
+import { UserData } from '../../components/DrawerLogo';
 
 const DailyReportScreen = ({ route, navigation }: any) => {
     const { user, setUser } = useContext(AuthContext);
     //   console.log(user.user_details.full_name,"aaaaaaaa")
-    const fullname = user.user_details.full_name
+
     const { taskId, project_id } = route.params;
+    console.log("taskId", taskId)
     const [open, setOpen] = useState(false);
     const [endOpen, setEndOpen] = useState(false);
     const [startOpen, setStartOpen] = useState(false);
@@ -33,6 +35,8 @@ const DailyReportScreen = ({ route, navigation }: any) => {
     const [date, setDate] = useState(new Date())
     const [Endtime, setEndTime] = useState(new Date());
     const [Starttime, setStartTime] = useState(new Date());
+    const [userDetails, setUserDetails] = useState<UserData>()
+
     const starttime = new Date(Starttime);
     const endtime = new Date(Endtime);
     const hours = endtime.getHours();
@@ -46,14 +50,27 @@ const DailyReportScreen = ({ route, navigation }: any) => {
     // console.log("endtimeString", endtimeString)
     const timestamp = date;
     const formattedDate = moment(timestamp).format('DD-MM-YYYY');
-
+    const fullname = userDetails?.user_details?.full_name
     const data = [
         { value: 'mac', label: 'MAC' },
         { value: 'sub_con', label: 'Sub Con' },
         { value: 'other', label: 'Other' },
     ];
 
+    useEffect(() => {
+        getStoredData();
+    }, []);
 
+    const getStoredData = async () => {
+        try {
+            const storedData = await getStorageData();
+            // console.log('home retrieved successfully.', storedData.user_details.full_name);
+            setUserDetails(storedData)
+        }
+        catch (error) {
+            console.log('Error retrieving images:', error);
+        }
+    };
 
     const DailyUpload = async () => {
         // const formData = new FormData();
@@ -68,7 +85,8 @@ const DailyReportScreen = ({ route, navigation }: any) => {
         // formData.append('end', endtimeString);
         // formData.append('no_of_worker', noWorker);
         const raw = {
-            user_id: user.user_details.id,
+            user_id: userDetails?.user_details?.id,
+            task_id: taskId,
             project_id: project_id,
             date: formattedDate,
             description: workReport,
@@ -80,25 +98,24 @@ const DailyReportScreen = ({ route, navigation }: any) => {
             no_of_worker: noWorker
         }
         try {
-            if (workReport.trim() === '' || vehicle.trim() === '' || value.trim() === ''|| noWorker.trim() === '') {
+            if (workReport.trim() === '' || vehicle.trim() === '' || value.trim() === '' || noWorker.trim() === '') {
                 Snackbar.show({
                     text: "Please Enter all field",
                     duration: Snackbar.LENGTH_SHORT,
                     textColor: '#AE1717',
                     backgroundColor: '#F2A6A6',
                 });
-              return false;
-            } 
-            if(value=='sub_con'||value=='other')
-            {
-                if(workerName.trim()===''){
+                return false;
+            }
+            if (value == 'sub_con' || value == 'other') {
+                if (workerName.trim() === '') {
                     Snackbar.show({
                         text: "Please Enter all field",
                         duration: Snackbar.LENGTH_SHORT,
                         textColor: '#AE1717',
                         backgroundColor: '#F2A6A6',
                     });
-                  return false;
+                    return false;
                 }
             }
             setLoading(true);
@@ -112,8 +129,8 @@ const DailyReportScreen = ({ route, navigation }: any) => {
                     textColor: 'white',
                     backgroundColor: 'green',
                 });
-                navigation.navigate('ViewDailyReportScreen', {
-                    project_id: project_id
+                navigation.navigate('TaskDetailScreen', {
+                    taskId: taskId
                 })
 
             } else {
@@ -138,16 +155,16 @@ const DailyReportScreen = ({ route, navigation }: any) => {
     }
     const handleSubmit = () => {
         console.log("kkkkkkk")
-        if (workReport.trim() === '' || vehicle.trim() === '' || value.trim() === ''|| noWorker.trim() === '') {
+        if (workReport.trim() === '' || vehicle.trim() === '' || value.trim() === '' || noWorker.trim() === '') {
             Snackbar.show({
                 text: "Please Enter all field",
                 duration: Snackbar.LENGTH_SHORT,
                 textColor: '#AE1717',
                 backgroundColor: '#F2A6A6',
             });
-          return false;
-        } 
-      };
+            return false;
+        }
+    };
 
 
 
@@ -184,6 +201,14 @@ const DailyReportScreen = ({ route, navigation }: any) => {
                 //onChangeText={onChangeNumber}
                 //value={number}
                 />
+                {/* <Text style={styles.inputText}> Id</Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setWorkReport}
+                    value={workReport}
+                //onChangeText={onChangeNumber}
+                //value={number}
+                /> */}
                 <Text style={styles.inputText}>Date</Text>
                 <View style={styles.dateCard}>
                     <View style={{ flexDirection: 'row' }}>
@@ -216,6 +241,7 @@ const DailyReportScreen = ({ route, navigation }: any) => {
                 </View>
                 <Text style={styles.inputText}>Manpower Description</Text>
                 <TextInput
+                    multiline={true}
                     style={styles.inputDes}
                     onChangeText={setWorkReport}
                     value={workReport}
@@ -393,21 +419,22 @@ const styles = StyleSheet.create({
     },
     uploadButton: {
         backgroundColor: Colors.brand_primary,
-        paddingHorizontal:30,
+        paddingHorizontal: 40,
+        paddingVertical:5,
         alignSelf: 'center',
         marginTop: 30,
-        marginBottom:50,
+        marginBottom: 50,
         borderRadius: 8,
-        alignItems:'center',
-        flexDirection:'row'
-    
+        alignItems: 'center',
+        flexDirection: 'row'
+
     },
     text: {
         padding: 5,
         fontFamily: 'Roboto-Bold',
         color: Colors.white,
         fontSize: 14,
-        alignSelf:'center'
+        alignSelf: 'center'
     },
     date: {
         fontSize: 16,
