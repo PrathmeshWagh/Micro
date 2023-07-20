@@ -17,7 +17,6 @@ const HomeScreen = ({ navigation }: any) => {
     const getStoredData = async () => {
         try {
           const storedData = await getStorageData();
-            console.log('home retrieved successfully.',storedData);
             setUserDetails(storedData)
           }
          catch (error) {
@@ -45,7 +44,7 @@ const HomeScreen = ({ navigation }: any) => {
         source={require('../../style/Img/logo.png')}
       />
 
-      <Text style={styles.name}>Hi, {userDetails?.user_details?.full_name}</Text>
+      <Text style={styles.name}>Hi, {userDetails?.user_details?.first_name}{" "}{userDetails?.user_details?.last_name}</Text>
       <View style={styles.align}>
         <Pressable onPress={()=>navigation.navigate('CompleteScreen')}>
           <Surface style={styles.surface} elevation={4}>

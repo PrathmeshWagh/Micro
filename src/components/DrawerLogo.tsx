@@ -36,7 +36,6 @@ const DrawerLogo = ({ props }: any) => {
     const getStoredData = async () => {
         try {
           const storedData = await getStorageData();
-            console.log('Images retrieved successfully.',storedData.user_details.full_name);
             setUserDetails(storedData)
           }
          catch (error) {
@@ -80,7 +79,7 @@ const DrawerLogo = ({ props }: any) => {
                             style={styles.tinyLogo}
                             source={{ uri: userDetails?.avatar }}
                         />
-                        <Text style={styles.text}>{userDetails?.user_details.full_name}</Text>
+                        <Text style={styles.text}>{userDetails?.user_details?.first_name}{" "}{userDetails?.user_details?.last_name}</Text>
                     </View>
                 </View>
                 <View style={{ marginTop: 20 }}>
@@ -110,9 +109,6 @@ const DrawerLogo = ({ props }: any) => {
                         label={({ focused, color }) => (<Text style={styles.RouteName}>Logout</Text>)}
                         onPress={() => LogOut()} />
                 </View>
-
-
-
             </DrawerContentScrollView>
         </View>
     )

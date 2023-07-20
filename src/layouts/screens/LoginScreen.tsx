@@ -9,8 +9,6 @@ import { AuthContext } from '../../utils/appContext';
 import Feather from 'react-native-vector-icons/Feather';
 
 const LoginScreen = ({ navigation }: any) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(true);
   const [loading, setLoading] = useState(false);
   const { user, setUser } = useContext(AuthContext);
@@ -32,12 +30,11 @@ const LoginScreen = ({ navigation }: any) => {
     try {
       setLoading(true);
       const api: any = await postMethod(`login`, raw);
-      if (api.status === 200) {
+      if (api.data.status === 'success') {
+        console.log('data', api.data)
         setLoading(false);
         await storeData(api.data)
         setUser(api.data)
-        // console.log('data', api.data)
-        // setLoader(false);
         navigation.reset({
           routes: [{ name: 'DrawerNavigtaion' }]
         })
@@ -64,7 +61,7 @@ const LoginScreen = ({ navigation }: any) => {
 
 
   // const LogIn = async () => {
-  //   //console.log('hii',props.email)
+  //  
   //   const raw = {
   //     email:email,
   //     password: password,
@@ -73,11 +70,10 @@ const LoginScreen = ({ navigation }: any) => {
   //       const api: any = await postMethod(`login`,raw);
   //       if (api.status === 200) {
   //          console.log("api", api)
-  //         // await storeData(api.data)
-  //         // setUser(api.data)
-  //         // console.log('data', api.data)
-  //         // setLoader(false);
-  //         //navigation.navigate("DrawerNavigtaion")
+  //     
+  //   
+  //     
+  //  
   //       } else {
   //         setLoader(false);
   //         Snackbar.show({

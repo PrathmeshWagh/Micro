@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getMethod } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
 
-const JobDescriptionScreen = ({ props,route }: any) => {
+const JobDescriptionScreen = ({ props, route }: any) => {
   const navigation = useNavigation();
   const [taskList, setTaskList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,11 +21,11 @@ const JobDescriptionScreen = ({ props,route }: any) => {
   }, []);
 
   const getdata = async () => {
-     setLoading(true);
+    setLoading(true);
     const api: any = await getMethod(`task_list/${project_id}`);
     if (api.status === 200) {
       // console.log("apiData", api.data)
-       setLoading(false);
+      setLoading(false);
       setTaskList(api.data)
       setRefreshing(false);
       //  console.log("", taskList.task_id)
@@ -39,60 +39,57 @@ const JobDescriptionScreen = ({ props,route }: any) => {
 
   return (
     <>
-    {loading ? (
-      <ActivityIndicator size="large" color="#000" />
-    ) : (
-    <ScrollView style={styles.cover}
-    refreshControl={
-      <RefreshControl
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-      />
-    }>
-      {
-        taskList.map((data, index) => (
-          <View key={index}>
-            <Pressable onPress={() => navigation.navigate('TaskDetailScreen', {
-              taskId: data?.task_id
-            })}>
-              <Card style={styles.card}>
-                <View>
-                  <Text style={styles.jobSheet}>{data?.task_title}</Text>
-                  <Text style={styles.address}>{data?.task_description}</Text>
-                  <Text style={styles.team}>Team members</Text>
-                  <View style={styles.align}>
-                    {
-                      data.user_data.map((data, index) => (
-                        <View key={index}>
-                          <Avatar.Image size={24} source={{ uri: data.profile }} />
-                        </View>
-                      ))}
+      {loading ? (
+        <ActivityIndicator size="large" color="#000" />
+      ) : (
+        <ScrollView style={styles.cover}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          }>
+          {
+            taskList.map((data, index) => (
+              <View key={index}>
+                <Pressable onPress={() => navigation.navigate('TaskDetailScreen', {
+                  taskId: data?.task_id
+                })}>
+                  <Card style={styles.card}>
+                    <View>
+                      <Text style={styles.jobSheet}>{data?.task_title}</Text>
+                      <Text style={styles.address}>{data?.task_description}</Text>
+                      <Text style={styles.team}>Team members</Text>
+                      <View style={styles.align}>
+                        {
+                          data.user_data.map((data, index) => (
+                            <View key={index}>
+                              <Avatar.Image size={24} source={{ uri: data.profile }} />
+                            </View>
+                          ))}
 
-                  </View>
-                  <Text style={styles.startDate}>Start Date</Text>
-                  <View style={styles.align}>
-                    <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
-                    <Text style={styles.date}>{data?.task_date_start}</Text>
-                  </View>
-                </View>
-                <View>
-                  <View style={styles.indecator}>
-
-                    <View style={styles.taskIconAlign}>
-                      <Text style={{ bottom: 15, right: -70 }}>End Date</Text>
-                      <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
-                      <Text style={styles.date}>{data?.task_date_due}</Text>
+                      </View>
+                      <Text style={styles.startDate}>Start Date</Text>
+                      <View style={styles.align}>
+                        <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
+                        <Text style={styles.date}>{data?.task_date_start}</Text>
+                      </View>
                     </View>
-                  </View>
-
-                </View>
-
-              </Card>
-            </Pressable >
-          </View>
-        ))}
-    </ScrollView>
-    )}
+                    <View>
+                      <View style={styles.indecator}>
+                        <View style={styles.taskIconAlign}>
+                          <Text style={{ bottom: 15, right: -70 }}>End Date</Text>
+                          <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
+                          <Text style={styles.date}>{data?.task_date_due}</Text>
+                        </View>
+                      </View>
+                    </View>
+                  </Card>
+                </Pressable>
+              </View>
+            ))}
+        </ScrollView>
+      )}
     </>
   );
 };

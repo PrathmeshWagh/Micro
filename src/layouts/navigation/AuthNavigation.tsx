@@ -19,9 +19,6 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import HomeScreen from '../screens/HomeSceen';
 import DrawerLogo from '../../components/DrawerLogo';
 import AttendanceScreen from '../screens/AttendanceScreen';
-import { AuthContext } from '../../utils/appContext';
-import { getStorageData } from '../../utils/helper';
-import { Text } from 'react-native';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
@@ -61,7 +58,6 @@ function DrawerNavigtaion() {
         <Drawer.Screen name="DrawerHome" component={TabNavigation} />
         <Drawer.Screen name="ChangePassword" component={ChangePasswordScreen} />
         <Drawer.Screen name="AttendanceScreen" component={AttendanceScreen} />
-
       </Drawer.Navigator>
     );
   }
