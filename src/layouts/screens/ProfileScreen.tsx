@@ -23,7 +23,7 @@ const ProfileScreen = ({ navigation }: any) => {
   }
   const goToNextScreen = () => {
     navigation.navigate('EditProfileScreen', {
-      firstname: profile.first_name,
+      firstname: profile?.first_name,
       lastname: profile.last_name,
       Email: profile.email,
       number: profile.mobile_number,
