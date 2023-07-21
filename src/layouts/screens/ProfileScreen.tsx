@@ -52,22 +52,22 @@ const ProfileScreen = ({ navigation }: any) => {
       <ScrollView style={{ flex: 1, padding: 14, }}>
         <Text style={styles.inputText}>First Name</Text>
         <View style={styles.input}>
-          <Text style={{color:'black'}}>{profile.first_name}</Text>
+          <Text style={{ color: 'black' }}>{profile.first_name}</Text>
         </View>
 
         <Text style={styles.inputText}>Last Name</Text>
         <View style={styles.input}>
-          <Text style={{color:'black'}}>{profile.last_name}</Text>
+          <Text style={{ color: 'black' }}>{profile.last_name}</Text>
         </View>
-        
+
         <Text style={styles.inputText}>Email Adress</Text>
         <View style={styles.input}>
-          <Text style={{color:'black'}}>{profile.email}</Text>
+          <Text style={{ color: 'black' }}>{profile.email}</Text>
         </View>
 
         <Text style={styles.inputText}>Phone</Text>
         <View style={styles.input}>
-          <Text style={{color:'black'}}>{profile.mobile_number}</Text>
+          <Text style={{ color: 'black' }}>{profile.mobile_number}</Text>
         </View>
         <Pressable onPress={() => navigation.navigate('ChangePassword')}>
           <Text style={styles.ChngPsw}>Change Password</Text>
