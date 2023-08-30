@@ -5,6 +5,7 @@ import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
 import { getMethod, postMethod } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
+import { CommonActions } from '@react-navigation/native';
 
 const DescriptionScreen = ({ navigation, route }: any, props: any) => {
   const { id } = route.params;
@@ -13,7 +14,7 @@ const DescriptionScreen = ({ navigation, route }: any, props: any) => {
   const [load, setLoad] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [project, setProject] = useState('')
-   console.log("id",id)
+  console.log("id", id)
 
 
   useEffect(() => {
@@ -37,11 +38,13 @@ const DescriptionScreen = ({ navigation, route }: any, props: any) => {
     if (api.status === 200) {
       console.log(".....???", api.data)
       setLoad(false);
-      navigation.reset({
-        routes: [{
-          name: 'TopTabNavigation', params: { id: details?.project_id, }
-        }]
-      });
+      navigation.dispatch(
+        CommonActions.navigate({
+          name: 'TopTabNavigation',
+          params: { id: details?.project_id, }
+        })
+      )
+
       //console.log("apiData",projects)
     }
   }
@@ -54,9 +57,8 @@ const DescriptionScreen = ({ navigation, route }: any, props: any) => {
       navigation.reset({
         routes: [{
           name: 'JobSheetScreen',
-      }]
-    })
-      //console.log("apiData",projects)
+        }]
+      })
     }
   }
 
@@ -113,41 +115,41 @@ const DescriptionScreen = ({ navigation, route }: any, props: any) => {
 
             </Card>
             <View style={styles.align2}>
-      {details?.project_start_user_id === null ? (
-        <Pressable style={styles.button} onPress={StartProject}>
-          {isLoading ? (
-            <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
-          ) : (
-            <Text style={styles.startProject}>Start Project</Text>
-          )}
-        </Pressable>
-      ) : details?.project_end_user_id === null ? (
-        <View style={styles.align}>
-        <Pressable style={styles.button} onPress={EndProject}>
-          {isLoading ? (
-            <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
-          ) : (
-            <Text style={styles.startProject}>End Project</Text>
-          )}
-        </Pressable>
-         <Pressable style={styles.button} onPress={StartProject}>
-         {isLoading ? (
-           <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
-         ) : (
-           <Text style={styles.startProject}>View Project</Text>
-         )}
-       </Pressable>
-       </View>
-      ) : (
-        <Pressable style={styles.button} onPress={StartProject}>
-          {isLoading ? (
-            <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
-          ) : (
-            <Text style={styles.startProject}>View Project</Text>
-          )}
-        </Pressable>
-      )}
-    </View>
+              {details?.project_start_user_id === null ? (
+                <Pressable style={styles.button} onPress={StartProject}>
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
+                  ) : (
+                    <Text style={styles.startProject}>Start Project</Text>
+                  )}
+                </Pressable>
+              ) : details?.project_end_user_id === null ? (
+                <View style={styles.align}>
+                  <Pressable style={styles.button} onPress={EndProject}>
+                    {isLoading ? (
+                      <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
+                    ) : (
+                      <Text style={styles.startProject}>End Project</Text>
+                    )}
+                  </Pressable>
+                  <Pressable style={styles.button} onPress={StartProject}>
+                    {isLoading ? (
+                      <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
+                    ) : (
+                      <Text style={styles.startProject}>View Project</Text>
+                    )}
+                  </Pressable>
+                </View>
+              ) : (
+                <Pressable style={styles.button} onPress={StartProject}>
+                  {isLoading ? (
+                    <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
+                  ) : (
+                    <Text style={styles.startProject}>View Project</Text>
+                  )}
+                </Pressable>
+              )}
+            </View>
           </>
         )
         }
@@ -242,7 +244,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
     borderRadius: 8,
     marginBottom: 5,
-    marginHorizontal:10
+    marginHorizontal: 10
   },
   ViewJob: {
     backgroundColor: '#E2E2E2',

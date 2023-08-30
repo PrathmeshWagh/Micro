@@ -4,9 +4,9 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import Colors from '../style/Colors/colors';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 
-const CustomTopTabBar = ({ state, descriptors,project_id}: any) => {
-    // console.log("project_idproject_id")
-    const navigation = useNavigation();
+const CustomTopTabBar = ({ state, descriptors,project_id,navigation}: any) => {
+    console.log("project_idproject_id",project_id)
+    // const navigation = useNavigation();
     return (
         <View>
             <View style={styles.cover}>
@@ -26,6 +26,7 @@ const CustomTopTabBar = ({ state, descriptors,project_id}: any) => {
                     const isFocused = state.index === index;
 
                     const onPress = () => {
+                        console.log("route.key",route.key)
                         const event = navigation.emit({
                             type: 'tabPress',
                             target: route.key,
