@@ -72,10 +72,10 @@ function AppNavigation() {
       <Stack.Navigator initialRouteName={auth !== '' ? "DrawerNavigtaion" : "Login"} screenOptions={{ headerShown: false }} >
         <Stack.Screen name="DrawerNavigtaion" component={DrawerNavigtaion} />
         <Stack.Screen name="TabNavigation" component={TabNavigation} />
-        <Stack.Screen name="TopTabNavigation" component={TopTabNavigation} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="JobSheetScreen" component={JobSheetScreen} />
         <Stack.Screen name="DescriptionScreen" component={DescriptionScreen} />
+        <Stack.Screen name="TopTabNavigation" component={TopTabNavigation} />
         <Stack.Screen name="TaskScreen" component={TaskScreen} />
         <Stack.Screen name="TaskDetailScreen" component={TaskDetailScreen} />
         <Stack.Screen name="ImageUploadScreen" component={ImageUploadScreen} />
@@ -126,23 +126,13 @@ function DrawerNavigtaion() {
   );
 }
 
-const CustomTabLabel = ({ label }) => (
-  <Text style={{ textAlign: 'center' }}>
-    {label.split(' ').map((word, index) => (
-      <Text key={index} style={{ fontSize: 16 }}>
-        {word}
-        {'\n'}
-      </Text>
-    ))}
-  </Text>
-);
 
 function TopTabNavigation({ route }: any) {
   const { id } = route.params;
   return (
     <>
       <TabTop.Navigator
-        tabBar={(props) => <CustomTopTabBar {...props} />}
+        tabBar={(props) => <CustomTopTabBar {...props} project_id={id}  />}
       >
         <TabTop.Screen name="JobDescription" component={JobDescriptionScreen}
           initialParams={{ project_id: id }}

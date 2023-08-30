@@ -9,10 +9,11 @@ import { AuthContext } from '../../utils/appContext';
 const DescriptionScreen = ({ navigation, route }: any, props: any) => {
   const { id } = route.params;
   const [details, setDetails] = useState('')
-  const [loading, setLoading] = useState(true);
-  const [load, setLoad] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [load, setLoad] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [project, setProject] = useState('')
-  // console.log("id",id)
+   console.log("id",id)
 
 
   useEffect(() => {
@@ -24,20 +25,37 @@ const DescriptionScreen = ({ navigation, route }: any, props: any) => {
     const api: any = await getMethod(`project_details/${id}`);
     if (api.status === 200) {
       setLoading(false);
+      console.log("apiData", api.data)
       setDetails(api.data)
-      //console.log("apiData",projects)
+
     }
   }
 
-  const postData = async () => {
+  const StartProject = async () => {
     setLoad(true);
     const api: any = await postMethod(`start_project/${id}`);
     if (api.status === 200) {
       console.log(".....???", api.data)
       setLoad(false);
-      // setProject(api.data)
-      navigation.navigate("TopTabNavigation", {
-        id: details?.project_id,})
+      navigation.reset({
+        routes: [{
+          name: 'TopTabNavigation', params: { id: details?.project_id, }
+        }]
+      });
+      //console.log("apiData",projects)
+    }
+  }
+  const EndProject = async () => {
+    setIsLoading(true);
+    const api: any = await postMethod(`end_project/${id}`);
+    if (api.status === 200) {
+      console.log(".....???", api.data)
+      setIsLoading(false);
+      navigation.reset({
+        routes: [{
+          name: 'JobSheetScreen',
+      }]
+    })
       //console.log("apiData",projects)
     }
   }
@@ -53,56 +71,91 @@ const DescriptionScreen = ({ navigation, route }: any, props: any) => {
         {loading ? (
           <ActivityIndicator size="large" color="#000" />
         ) : (
-          <Card style={styles.card}>
-            <View style={styles.align}>
-              <Text style={styles.title}>Job Sheet Tiitle  -</Text>
-              <Text style={styles.details}>{details?.project_title}</Text>
-            </View>
-            <View style={styles.align}>
-              <Text style={styles.title}>Client Name  -</Text>
-              <Text style={styles.details}>{details?.project_client_name}</Text>
-            </View>
-            <View style={styles.align}>
-              <Text style={styles.title}>Address     -</Text>
-              <Text style={styles.details}>{details?.project_address}</Text>
-            </View>
-            <View style={styles.align}>
-              <Text style={styles.title}>Mobile Number    -</Text>
-              <Text style={styles.details}>  {details?.project_tel}</Text>
-            </View>
-            <View style={styles.align}>
-              <Text style={styles.title}>Sales Person        -</Text>
-              <Text style={styles.details}>{details?.project_sales_person}</Text>
-            </View>
-            <View style={styles.align}>
-              <Text style={styles.title}>Sale Contact    -</Text>
-              <Text style={styles.details}>{details?.project_sales_contact}</Text>
-            </View>
-            <View style={styles.align}>
-              <View>
-                <Text style={styles.title2}>Start Date</Text>
-                <View style={styles.date}><Text style={styles.dateText}>{details?.project_date_start}</Text></View>
+          <>
+            <Card style={styles.card}>
+              <View style={styles.align}>
+                <Text style={styles.title}>Job Sheet Tiitle  -</Text>
+                <Text style={styles.details}>{details?.project_title}</Text>
               </View>
-              <View>
-                <Text style={styles.title2}>End Date</Text>
-                <View style={styles.date}><Text style={styles.dateText}>{details?.project_date_due}</Text></View>
+              <View style={styles.align}>
+                <Text style={styles.title}>Client Name  -</Text>
+                <Text style={styles.details}>{details?.project_client_name}</Text>
               </View>
-            </View>
-          </Card>
-        )}
-        <View style={styles.align}>
-          <Pressable style={styles.button} onPress={postData}>
-            {/* {loading && <ActivityIndicator size="large" color="#fff" />} */}
+              <View style={styles.align}>
+                <Text style={styles.title}>Address     -</Text>
+                <Text style={styles.details}>{details?.project_address}</Text>
+              </View>
+              <View style={styles.align}>
+                <Text style={styles.title}>Mobile Number    -</Text>
+                <Text style={styles.details}>  {details?.project_tel}</Text>
+              </View>
+              <View style={styles.align}>
+                <Text style={styles.title}>Sales Person        -</Text>
+                <Text style={styles.details}>{details?.project_sales_person}</Text>
+              </View>
+              <View style={styles.align}>
+                <Text style={styles.title}>Sale Contact    -</Text>
+                <Text style={styles.details}>{details?.project_sales_contact}</Text>
+              </View>
+              <View style={styles.align}>
+
+                <View>
+                  <Text style={styles.title2}>Start Date</Text>
+                  <View style={styles.date}><Text style={styles.dateText}>{details?.project_date_start}</Text></View>
+                </View>
+
+                <View>
+                  <Text style={styles.title2}>End Date</Text>
+                  <View style={styles.date}><Text style={styles.dateText}>{details?.project_date_due}</Text></View>
+                </View>
+
+              </View>
+
+            </Card>
+            <View style={styles.align2}>
+      {details?.project_start_user_id === null ? (
+        <Pressable style={styles.button} onPress={StartProject}>
+          {isLoading ? (
+            <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
+          ) : (
             <Text style={styles.startProject}>Start Project</Text>
-          </Pressable >
-          <Pressable style={styles.button} onPress={() => navigation.navigate("TaskScreen")}>
+          )}
+        </Pressable>
+      ) : details?.project_end_user_id === null ? (
+        <View style={styles.align}>
+        <Pressable style={styles.button} onPress={EndProject}>
+          {isLoading ? (
+            <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
+          ) : (
             <Text style={styles.startProject}>End Project</Text>
-          </Pressable >
-        </View>
+          )}
+        </Pressable>
+         <Pressable style={styles.button} onPress={StartProject}>
+         {isLoading ? (
+           <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
+         ) : (
+           <Text style={styles.startProject}>View Project</Text>
+         )}
+       </Pressable>
+       </View>
+      ) : (
+        <Pressable style={styles.button} onPress={StartProject}>
+          {isLoading ? (
+            <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
+          ) : (
+            <Text style={styles.startProject}>View Project</Text>
+          )}
+        </Pressable>
+      )}
+    </View>
+          </>
+        )
+        }
+
         {/* <Pressable style={styles.ViewJob} onPress={() => navigation.navigate("TaskScreen")}>
             <Text style={styles.ViewJobText}>View Job</Text>
           </Pressable > */}
-      </ScrollView>
+      </ScrollView >
 
     </>
   );
@@ -112,6 +165,9 @@ export default DescriptionScreen;
 const styles = StyleSheet.create({
   container: {
     padding: 14,
+  },
+  loader: {
+    marginTop: 8
   },
   startProject: {
     textAlign: 'center',
@@ -158,7 +214,7 @@ const styles = StyleSheet.create({
   card: {
     paddingBottom: 30,
     backgroundColor: Colors.card_bg,
-    paddingHorizontal:10
+    paddingHorizontal: 10
   },
   details: {
     color: Colors.text_secondary,
@@ -175,6 +231,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
+  align2: {
+    alignSelf: 'center'
+  },
   button: {
     backgroundColor: Colors.brand_primary,
     height: 45,
@@ -183,6 +242,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
     borderRadius: 8,
     marginBottom: 5,
+    marginHorizontal:10
   },
   ViewJob: {
     backgroundColor: '#E2E2E2',

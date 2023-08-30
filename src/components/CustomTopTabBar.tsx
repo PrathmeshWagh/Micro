@@ -2,12 +2,15 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Pressable, Image } from 'react-native';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import Colors from '../style/Colors/colors';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 
-const CustomTopTabBar = ({ state, descriptors, navigation, }: any) => {
+const CustomTopTabBar = ({ state, descriptors,project_id}: any) => {
+    // console.log("project_idproject_id")
+    const navigation = useNavigation();
     return (
         <View>
             <View style={styles.cover}>
-                <Pressable onPress={() => navigation.goBack()}>
+                <Pressable onPress={() =>navigation.dispatch(CommonActions.goBack())}>
                     <IonIcon style={styles.icon} name="arrow-back" size={28} color={'white'} />
                 </Pressable>
                 <Text style={styles.pageName}>Task</Text>
@@ -20,7 +23,6 @@ const CustomTopTabBar = ({ state, descriptors, navigation, }: any) => {
                 {state.routes.map((route: { key: string | number; name: any; }, index: React.Key | null | undefined) => {
                     const { options } = descriptors[route.key];
                     const label = options.tabBarLabel || options.title || route.name;
-
                     const isFocused = state.index === index;
 
                     const onPress = () => {
@@ -57,7 +59,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         backgroundColor: '#f2f2f2',
         paddingVertical: 10,
-        paddingHorizontal:5
+        paddingHorizontal: 5
     },
     pageName: {
         fontSize: 28,
