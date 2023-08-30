@@ -3,7 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { View, Text, StyleSheet, Image, Touchable, TouchableOpacity, ScrollView, Pressable, Keyboard, ActivityIndicator } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import Colors from '../../style/Colors/colors';
-import { postMethod, storeData, validateIsEmail } from '../../utils/helper';
+import { postMethod, storeData } from '../../utils/helper';
 import Snackbar from 'react-native-snackbar';
 import { AuthContext } from '../../utils/appContext';
 import Feather from 'react-native-vector-icons/Feather';
@@ -160,7 +160,7 @@ const LoginScreen = ({ navigation }: any) => {
           control={control}
           rules={{
             required: true,
-            minLength: 6
+            minLength: 1
           }}
           render={({ field: { onChange, value } }) => (
             <TextInput

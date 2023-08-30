@@ -157,7 +157,8 @@ const styles = StyleSheet.create({
   },
   card: {
     paddingBottom: 30,
-    backgroundColor: Colors.card_bg
+    backgroundColor: Colors.card_bg,
+    paddingHorizontal:10
   },
   details: {
     color: Colors.text_secondary,

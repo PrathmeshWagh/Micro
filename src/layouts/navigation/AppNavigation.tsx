@@ -1,4 +1,4 @@
-import React, {useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/LoginScreen';
 import TabNavigation from '../navigation/TabNavigation';
@@ -30,12 +30,16 @@ import CompleteScreen from '../screens/CompleteScreen';
 import JobDescriptionScreen from '../../ScreenComponent/Tabs/JobDescriptionScreen';
 import IncidentReportScreen from '../../ScreenComponent/Tabs/IncidentReportscreen';
 import VarientationOderScreen from '../../ScreenComponent/Tabs/VarientationOderScreen';
+import DailyActivityScreen from '../../ScreenComponent/Tabs/DailyActivityScreen';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import IncidentReportDescriptionScreen from '../screens/IncidentReportDescriptionScreen';
 import InprogressScreen from '../screens/InprogressScreen';
 import PendingScreen from '../screens/PendingScreen';
 import SplashScreen from 'react-native-splash-screen';
 import CustomTopTabBar from '../../components/CustomTopTabBar';
+import IncidentFormScreen from '../screens/IncidentFormScreen';
+import DailyActivityDescriptionScreen from '../screens/DailyActivityDescriptionScreen';
+import ManpowerReportScreen from '../screens/ManpowerReportScreen';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const TabTop = createMaterialTopTabNavigator();
@@ -43,7 +47,6 @@ const TabTop = createMaterialTopTabNavigator();
 function AppNavigation() {
   const windowWidth = Dimensions.get('window').width;
   const [auth, setAuth] = useState('')
-  const [refresh, setRefresh] = useState(false);
   const [load, setLoad] = useState(true);
 
   useEffect(() => {
@@ -55,7 +58,8 @@ function AppNavigation() {
     try {
       const getData = await getStorageData();
       console.log("getData", getData.token)
-      if (getData) setAuth(getData.token)
+      if (getData)
+        setAuth(getData.token)
       setLoad(false);
     } catch (error) {
       console.log('Initiate data error');
@@ -92,8 +96,11 @@ function AppNavigation() {
         <Stack.Screen name="CompleteScreen" component={CompleteScreen} />
         <Stack.Screen name="JobDescription" component={JobDescriptionScreen} />
         <Stack.Screen name="IncidentReport" component={IncidentReportScreen} />
+        <Stack.Screen name="IncidentFormScreen" component={IncidentFormScreen} />
         <Stack.Screen name="VarientationOder" component={VarientationOderScreen} />
         <Stack.Screen name="IncidentReportDescriptionScreen" component={IncidentReportDescriptionScreen} />
+        <Stack.Screen name="DailyActivityDescriptionScreen" component={DailyActivityDescriptionScreen} />
+        <Stack.Screen name="ManpowerReportScreen" component={ManpowerReportScreen} />
         <Stack.Screen name="InprogressScreen" component={InprogressScreen} />
         <Stack.Screen name="PendingScreen" component={PendingScreen} />
       </Stack.Navigator>
@@ -119,24 +126,37 @@ function DrawerNavigtaion() {
   );
 }
 
+const CustomTabLabel = ({ label }) => (
+  <Text style={{ textAlign: 'center' }}>
+    {label.split(' ').map((word, index) => (
+      <Text key={index} style={{ fontSize: 16 }}>
+        {word}
+        {'\n'}
+      </Text>
+    ))}
+  </Text>
+);
 
 function TopTabNavigation({ route }: any) {
   const { id } = route.params;
   return (
     <>
-    <TabTop.Navigator
-    tabBar={(props) => <CustomTopTabBar {...props} />}
-  >
-      <TabTop.Screen name="JobDescription" component={JobDescriptionScreen}
-        initialParams={{ project_id: id }} 
-        options={{ tabBarLabel: 'Job Description' }}/>
-      <TabTop.Screen name="IncidentReport" component={IncidentReportScreen}
-        initialParams={{ project_id: id }}
-        options={{ tabBarLabel: 'Incident Report' }}/>
-      <TabTop.Screen name="VarientationOder" component={VarientationOderScreen}
-       options={{ tabBarLabel: 'Variation Oder' }} />
-      {/* <Appbar/> */}
-    </TabTop.Navigator>
+      <TabTop.Navigator
+        tabBar={(props) => <CustomTopTabBar {...props} />}
+      >
+        <TabTop.Screen name="JobDescription" component={JobDescriptionScreen}
+          initialParams={{ project_id: id }}
+          options={{ tabBarLabel: 'Job Description' }} />
+        <TabTop.Screen name="DailyActivity" component={DailyActivityScreen}
+          initialParams={{ project_id: id }}
+          options={{ tabBarLabel: 'Daily Activity' }} />
+        <TabTop.Screen name="VarientationOder" component={VarientationOderScreen}
+          options={{ tabBarLabel: 'Variation Oder' }} />
+        <TabTop.Screen name="IncidentReport" component={IncidentReportScreen}
+          initialParams={{ project_id: id }}
+          options={{ tabBarLabel: 'Incident Report' }} />
+        {/* <Appbar/> */}
+      </TabTop.Navigator>
     </>
   )
 }

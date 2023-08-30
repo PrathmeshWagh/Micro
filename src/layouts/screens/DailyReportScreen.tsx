@@ -73,17 +73,6 @@ const DailyReportScreen = ({ route, navigation }: any) => {
     };
 
     const DailyUpload = async () => {
-        // const formData = new FormData();
-        // formData.append('user_id', user.user_details.id);
-        // formData.append('project_id', project_id);
-        // formData.append('date', formattedDate);
-        // formData.append('description', workReport);
-        // formData.append('vehicle', vehicle);
-        // formData.append('types_of_worker', value);
-        // formData.append('types_of_worker_name', workerName);
-        // formData.append('start', starttimeString);
-        // formData.append('end', endtimeString);
-        // formData.append('no_of_worker', noWorker);
         const raw = {
             user_id: userDetails?.user_details?.id,
             task_id: taskId,
@@ -154,7 +143,7 @@ const DailyReportScreen = ({ route, navigation }: any) => {
 
     }
     const handleSubmit = () => {
-        console.log("kkkkkkk")
+      
         if (workReport.trim() === '' || vehicle.trim() === '' || value.trim() === '' || noWorker.trim() === '') {
             Snackbar.show({
                 text: "Please Enter all field",

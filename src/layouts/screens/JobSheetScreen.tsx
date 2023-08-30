@@ -95,105 +95,105 @@ const JobSheetScreen = ({ navigation }: any) => {
         <ActivityIndicator size="large" color="#000" />
       ) : (
 
-        <View style={{  paddingBottom: 250, height: '100%' }}>
+        <View style={{ paddingBottom: 250, height: '100%' }}>
           <FlatList
             data={projects}
             renderItem={renderItem}
             keyExtractor={item => item.id}
           />
-         </View>
-            )}
         </View>
-      );
+      )}
+    </View>
+  );
 };
 
-      export default JobSheetScreen;
-      const styles = StyleSheet.create({
-        containerAppbar: {
-        backgroundColor: Colors.brand_primary,
-      // height: 150,
-      // width: "100%",
-      padding: 14,
-   
-  },
-      tinyLogo: {
-        width: 22,
-      marginTop: 5
-  },
-      taskIconAlign: {
-        flexDirection: 'row',
-      marginTop: 15,
-      marginLeft: 30
-  },
-      taskicon: {
-        position: 'absolute',
-      top: 50
-  },
-      align2: {
-        flexDirection: 'row',
-      justifyContent: 'space-between'
-  },
-      pageName: {
-        alignSelf: 'center',
-      fontSize: 28,
-      color: Colors.white,
-      fontFamily: 'Roboto-Bold',
-      marginTop: 25
-  },
-      card: {
-        // marginTop: 20,
-        padding: 20,
-      backgroundColor: Colors.card_bg
-  },
-      task: {
-        color: Colors.text_secondary,
-      marginLeft: 5,
-      marginTop: 5
-  },
-      indecator: {
-        position: 'absolute',
-      right: 0,
-      bottom: 10
-  },
-      icon: {
-
-      },
-      date: {
-        marginVertical: 5,
-      marginHorizontal: 5,
-      fontSize: 14,
-      color: Colors.text_secondary,
+export default JobSheetScreen;
+const styles = StyleSheet.create({
+  containerAppbar: {
+    backgroundColor: Colors.brand_primary,
+    // height: 150,
+    // width: "100%",
+    padding: 14,
 
   },
-      align: {
-        flexDirection: 'row',
-      marginBottom: 5,
-      flexWrap: 'wrap'
+  tinyLogo: {
+    width: 22,
+    marginTop: 5
   },
-      container: {
-        padding: 14
+  taskIconAlign: {
+    flexDirection: 'row',
+    marginTop: 15,
+    marginLeft: 30
   },
-      calender: {
-        marginVertical: 5,
+  taskicon: {
+    position: 'absolute',
+    top: 50
   },
-      jobSheet: {
-        color: Colors.text_primary,
-      fontSize: 20,
-      marginBottom: 5,
-      fontFamily: 'Roboto-Bold'
+  align2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
-      address: {
-        color: Colors.text_secondary,
-      fontSize: 14,
-      marginBottom: 5,
-      fontFamily: 'Roboto-Regular'
+  pageName: {
+    alignSelf: 'center',
+    fontSize: 28,
+    color: Colors.white,
+    fontFamily: 'Roboto-Bold',
+    marginTop: 25
   },
-      team: {
-        fontSize: 18,
-      color: Colors.text_primary,
-      marginTop: 10,
-      marginBottom: 10,
-      fontFamily: 'Roboto-Bold'
+  card: {
+    // marginTop: 20,
+    padding: 20,
+    backgroundColor: Colors.card_bg
+  },
+  task: {
+    color: Colors.text_secondary,
+    marginLeft: 5,
+    marginTop: 5
+  },
+  indecator: {
+    position: 'absolute',
+    right: 0,
+    bottom: 10
+  },
+  icon: {
+
+  },
+  date: {
+    marginVertical: 5,
+    marginHorizontal: 5,
+    fontSize: 14,
+    color: Colors.text_secondary,
+
+  },
+  align: {
+    flexDirection: 'row',
+    marginBottom: 5,
+    flexWrap: 'wrap'
+  },
+  container: {
+    padding: 14
+  },
+  calender: {
+    marginVertical: 5,
+  },
+  jobSheet: {
+    color: Colors.text_primary,
+    fontSize: 20,
+    marginBottom: 5,
+    fontFamily: 'Roboto-Bold'
+  },
+  address: {
+    color: Colors.text_secondary,
+    fontSize: 14,
+    marginBottom: 5,
+    fontFamily: 'Roboto-Regular'
+  },
+  team: {
+    fontSize: 18,
+    color: Colors.text_primary,
+    marginTop: 10,
+    marginBottom: 10,
+    fontFamily: 'Roboto-Bold'
 
   }
 })

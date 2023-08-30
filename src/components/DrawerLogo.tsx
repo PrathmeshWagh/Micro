@@ -13,36 +13,36 @@ export interface UserData {
     avatar: string;
     token: string;
     user_details: {
-      email: string;
-      first_name: string;
-      full_name: string;
-      id: number;
-      last_name: string;
+        email: string;
+        first_name: string;
+        full_name: string;
+        id: number;
+        last_name: string;
     };
-  }
-  
+}
+
 
 const DrawerLogo = ({ props }: any) => {
     // const { user, setUser } = useContext(AuthContext);
     // const [person, setPerson] = useState<UserData>()
     // console.log('token', user);
-    const [userDetails, setUserDetails]= useState<UserData>()
+    const [userDetails, setUserDetails] = useState<UserData>()
     const navigation: any = useNavigation();
-   
-  useEffect(() => {
-    getStoredData();
-  }, []);
-  
+
+    useEffect(() => {
+        getStoredData();
+    }, []);
+
     const getStoredData = async () => {
         try {
-          const storedData = await getStorageData();
+            const storedData = await getStorageData();
             setUserDetails(storedData)
-          }
-         catch (error) {
-          console.log('Error retrieving images:', error);
         }
-      };
-    
+        catch (error) {
+            console.log('Error retrieving images:', error);
+        }
+    };
+
 
     const LogOut = async () => {
         try {

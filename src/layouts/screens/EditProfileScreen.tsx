@@ -14,7 +14,6 @@ const ProfileScreen = ({ navigation, route }: any) => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [imageUrl, setImageUrl] = useState(null)
-
   const { firstname, lastname, Email, number, profile } = route.params;
   useEffect(() => {
     // getUser();
