@@ -200,7 +200,7 @@ const ImageUploadScreen = ({ route, navigation }: any) => {
         name: `photo.${fileType}`,
         type: `image/${fileType}`,
       });
-     
+
       formData.append('name[]', array_lenth[i].name)
       formData.append('remark[]', array_lenth[i].remark)
     }
@@ -334,15 +334,15 @@ const ImageUploadScreen = ({ route, navigation }: any) => {
                     flexDirection: 'row',
                     justifyContent: 'space-around'
                   }}> */}
-                    <Pressable key={index} onPress={() => navigation.navigate('ReviewImageScreen', { data: loadedImages[index], task_id: taskId })}>
-                      <Image
-                        source={{ uri: 'file://' + data.uri }}
-                        style={{ width: 200, height: 150,alignSelf:'center' }} />
-                    </Pressable>
-                    <View style={{ marginTop: 10 }}>
-                      <Text style={styles.name}>Name:{data.name}</Text>
-                      <Text style={styles.remark}>Remark:{data.remark}</Text>
-                    </View>
+                  <Pressable key={index} onPress={() => navigation.navigate('ReviewImageScreen', { data: loadedImages[index], task_id: taskId })}>
+                    <Image
+                      source={{ uri: 'file://' + data.uri }}
+                      style={{ width: 200, height: 150, alignSelf: 'center' }} />
+                  </Pressable>
+                  <View style={{ marginTop: 10 }}>
+                    <Text style={styles.name}>Name:{data.name}</Text>
+                    <Text style={styles.remark}>Remark:{data.remark}</Text>
+                  </View>
                   {/* </View> */}
                 </Card>
 
@@ -392,8 +392,14 @@ const ImageUploadScreen = ({ route, navigation }: any) => {
         </View>
       </ScrollView >
       <Pressable style={styles.uploadButton} onPress={() => ImgUpload()}>
-        {loading && <ActivityIndicator size="small" color="#fff" />}
-        <Text style={styles.text}>Upload</Text>
+        {loading ?
+          (
+            <ActivityIndicator size="small" color="#fff" />
+          )
+          :
+          (
+            <Text style={styles.text}>Upload</Text>
+          )}
       </Pressable>
     </>
   );
@@ -405,15 +411,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.button,
     backgroundColor: Colors.button,
-    padding: 6,
-    width: 120,
+    padding: 8,
+    width: 140,
     alignItems: 'center',
     borderRadius: 8,
     alignSelf: 'center',
     marginTop: 30,
     marginBottom: 10,
-    flexDirection:'row',
-    paddingLeft:30
   },
   delete: {
     position: 'absolute',
@@ -424,7 +428,8 @@ const styles = StyleSheet.create({
   text: {
     padding: 5,
     fontFamily: 'Roboto-Medium',
-    color: Colors.white
+    color: Colors.white,
+    fontSize:16
   },
   container: {
     flex: 1,

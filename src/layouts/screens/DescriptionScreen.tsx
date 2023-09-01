@@ -54,11 +54,13 @@ const DescriptionScreen = ({ navigation, route }: any, props: any) => {
     if (api.status === 200) {
       console.log(".....???", api.data)
       setIsLoading(false);
-      navigation.reset({
-        routes: [{
-          name: 'JobSheetScreen',
-        }]
-      })
+      navigation.dispatch(
+        CommonActions.reset({
+          routes: [
+            { name: 'JobSheetScreen' },
+          ],
+        })
+      );
     }
   }
 

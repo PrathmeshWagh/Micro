@@ -44,7 +44,7 @@ const VarientationOder = () => {
 export default VarientationOder;
 const styles = StyleSheet.create({
     cover:{
-marginTop:74,
+marginTop:14,
 marginHorizontal:14
     },
     add:{

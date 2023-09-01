@@ -71,7 +71,7 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
                 <Image size={24} source={require('../../style/Img/2.png')} />
               </Pressable>
             </View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+            {/* <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
               <Pressable style={styles.AddPic} onPress={() => navigation.navigate('DailyReportScreen', {
                 taskId: taskDetails?.task_id,
                 project_id: taskDetails?.project_id
@@ -83,11 +83,11 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
               <Pressable style={styles.AddPic} onPress={() => navigation.navigate('ViewDailyReportScreen', {
                 project_id: taskDetails?.project_id
               })}
-              >
-                <Text style={styles.text}> Daily Report</Text>
+              > */}
+                {/* <Text style={styles.text}> Daily Report</Text>
                 <Image size={24} source={require('../../style/Img/4.png')} />
               </Pressable>
-            </View>
+            </View> */}
             <View style={styles.remark}>
               <Text>Remarks....</Text>
             </View>
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   card: {
     marginTop: 10,
     padding: 20,
-    backgroundColor: Colors.card_bg
+    backgroundColor: Colors.white
   },
   task: {
     color: Colors.text_secondary,
