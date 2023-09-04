@@ -40,6 +40,8 @@ import CustomTopTabBar from '../../components/CustomTopTabBar';
 import IncidentFormScreen from '../screens/IncidentFormScreen';
 import DailyActivityDescriptionScreen from '../screens/DailyActivityDescriptionScreen';
 import ManpowerReportScreen from '../screens/ManpowerReportScreen';
+import EditImageScreen from '../screens/EditImageScreen';
+import RemarkScreen from '../screens/RemarkScreen';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const TabTop = createMaterialTopTabNavigator();
@@ -91,6 +93,7 @@ function AppNavigation() {
         <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
         <Stack.Screen name="AttendanceScreen" component={AttendanceScreen} />
         <Stack.Screen name="ViewImageScreen" component={ViewImageScreen} />
+        <Stack.Screen name="EditImageScreen" component={EditImageScreen} />
         <Stack.Screen name="DailyReportScreen" component={DailyReportScreen} />
         <Stack.Screen name="ViewDailyReportScreen" component={ViewDailyReportScreen} />
         <Stack.Screen name="CompleteScreen" component={CompleteScreen} />
@@ -103,6 +106,7 @@ function AppNavigation() {
         <Stack.Screen name="ManpowerReportScreen" component={ManpowerReportScreen} />
         <Stack.Screen name="InprogressScreen" component={InprogressScreen} />
         <Stack.Screen name="PendingScreen" component={PendingScreen} />
+        <Stack.Screen name="RemarkScreen" component={RemarkScreen} />
       </Stack.Navigator>
     )
       : (
@@ -132,7 +136,7 @@ function TopTabNavigation({ route }: any) {
   return (
     <>
       <TabTop.Navigator
-        tabBar={(props) => <CustomTopTabBar {...props} project_id={id}  />}
+        tabBar={(props) => <CustomTopTabBar {...props} project_id={id} />}
       >
         <TabTop.Screen name="JobDescription" component={JobDescriptionScreen}
           initialParams={{ project_id: id }}

@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, Pressable, Button, Alert, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { View, Text, Image, StyleSheet, TextInput, Pressable, Button, Alert, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import PhotoEditor from 'react-native-photo-editor';
 import RNFS from 'react-native-fs';
@@ -18,22 +18,41 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
 
-const ImageUploadScreen = ({ route, navigation }: any) => {
+const ImageUploadScreen = ({ route }: any) => {
+  const navigation = useNavigation();
   const [imageUri, setImageUri] = useState<string[]>([]);
   const { taskId } = route.params
   // console.log("taskId",taskId);
   const [refreshFlag, setRefreshFlag] = useState(false);
   const [loadedImages, setLoadedImages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
 
 
 
-  useEffect(() => {
-    getStoredImages();
-    // setRefreshFlag(!refreshFlag)
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      // This code will run when the screen focuses
+      getStoredImages(); // Refresh your data when the screen is in focus
+    }, [])
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await getStoredImages();
+    } catch (error) {
+      console.log('Error refreshing:', error);
+    }
+    setRefreshing(false);
+  };
+
+
+
+
 
   const open = () => {
     Alert.alert('Please Choose a option', 'from below', [
@@ -221,9 +240,7 @@ const ImageUploadScreen = ({ route, navigation }: any) => {
           backgroundColor: 'green',
         });
         Clear()
-        navigation.navigate('TaskDetailScreen', {
-          taskId: taskId
-        });
+        navigation.dispatch(CommonActions.goBack())
       } else {
         setLoading(false);
         Snackbar.show({
@@ -307,7 +324,11 @@ const ImageUploadScreen = ({ route, navigation }: any) => {
   return (
     <>
       <Appbar title={'Photo'} />
-      <ScrollView style={styles.container}>
+
+      <ScrollView style={styles.container}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
         <View style={{ alignItems: 'center' }}>
           <Pressable style={styles.uploadPicture} onPress={() => open()}>
             <Feather name="upload" size={22} color={'white'} />
@@ -334,10 +355,18 @@ const ImageUploadScreen = ({ route, navigation }: any) => {
                     flexDirection: 'row',
                     justifyContent: 'space-around'
                   }}> */}
-                  <Pressable key={index} onPress={() => navigation.navigate('ReviewImageScreen', { data: loadedImages[index], task_id: taskId })}>
+                  <Pressable key={index}
+                    onPress={() => navigation.dispatch(
+                      CommonActions.navigate({
+                        name: 'ReviewImageScreen',
+                        params: {
+                          data: loadedImages[index], task_id: taskId
+                        },
+                      })
+                    )}>
                     <Image
                       source={{ uri: 'file://' + data.uri }}
-                      style={{ width: 200, height: 150, alignSelf: 'center' }} />
+                      style={{ width: 250, height: 150, alignSelf: 'center' }} />
                   </Pressable>
                   <View style={{ marginTop: 10 }}>
                     <Text style={styles.name}>Name:{data.name}</Text>
@@ -370,37 +399,20 @@ const ImageUploadScreen = ({ route, navigation }: any) => {
               source={require('../../style/Img/image.png')}
             />
           } */}
-
-            {/* {imageUri.map((imageUrl: any, index:any) => (
-        <FastImage
-          key={index}
-          style={{ width: 100, height: 100 }} 
-            uri: imageUrl,
-            priority: FastImage.priority.normal,
-          }}
-          resizeMode={FastImage.resizeMode.cover} 
-      ))} */}
-
           </View>
-          {/* <TextInput
-          style={styles.input}
-          onChangeText={onRemark}
-          value={remark}
-          placeholder="Remarks"
-        // keyboardType="numeric"
-        /> */}
         </View>
+        {/* <View style={{ paddingVertical: 20 }}></View> */}
+        <Pressable style={styles.uploadButton} onPress={() => ImgUpload()}>
+          {loading ?
+            (
+              <ActivityIndicator size="small" color="#fff" />
+            )
+            :
+            (
+              <Text style={styles.text}>Upload</Text>
+            )}
+        </Pressable>
       </ScrollView >
-      <Pressable style={styles.uploadButton} onPress={() => ImgUpload()}>
-        {loading ?
-          (
-            <ActivityIndicator size="small" color="#fff" />
-          )
-          :
-          (
-            <Text style={styles.text}>Upload</Text>
-          )}
-      </Pressable>
     </>
   );
 };
@@ -416,8 +428,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
     alignSelf: 'center',
-    marginTop: 30,
-    marginBottom: 10,
+    marginVertical: 40,
   },
   delete: {
     position: 'absolute',
@@ -429,11 +440,12 @@ const styles = StyleSheet.create({
     padding: 5,
     fontFamily: 'Roboto-Medium',
     color: Colors.white,
-    fontSize:16
+    fontSize: 16
   },
   container: {
     flex: 1,
     padding: 18,
+    backgroundColor: Colors.screen_bg
 
   },
   tinyLogo: {
@@ -443,11 +455,8 @@ const styles = StyleSheet.create({
     paddingTop: 50
   },
   structure: {
-    borderWidth: 1,
-    borderColor: Colors.card_bg,
-    backgroundColor: Colors.card_bg,
     padding: 6,
-    // alignItems: 'center',
+    alignItems: 'center',
     borderRadius: 8
   },
   input: {
@@ -460,9 +469,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   card: {
-    padding: 10,
+    padding: 15,
     marginVertical: 10,
-    width: 280
+    width: 280,
+    // backgroundColor:Colors.screen_bg
   },
   remark: {
     color: Colors.text_primary

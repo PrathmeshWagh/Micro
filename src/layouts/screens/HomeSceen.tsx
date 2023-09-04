@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 14,
+    backgroundColor:Colors.screen_bg
   },
   bg: {
     flex: 1,

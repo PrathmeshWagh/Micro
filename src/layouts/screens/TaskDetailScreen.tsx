@@ -4,11 +4,14 @@ import Appbar from '../../components/Appbar';
 import { StyleSheet, Pressable } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
 import Colors from '../../style/Colors/colors';
-import { getMethod } from '../../utils/helper';
+import { getMethod, postMethod } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
-const TaskDetailScreen = ({ navigation, route }: any) => {
-  const { user, setUser } = useContext(AuthContext);
-  const [loading, setLoading] = useState(true);
+import { CommonActions, useNavigation } from '@react-navigation/native';
+import Snackbar from 'react-native-snackbar';
+const TaskDetailScreen = ({ route }: any) => {
+  const navigation = useNavigation();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [load, setLoad] = useState<boolean>(false);
   const [taskDetails, setTaskDetails] = useState();
   const { taskId } = route.params;
   console.log("aaaa", taskId)
@@ -27,13 +30,43 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
     }
   }
 
+  const endTask = async () => {
+    const raw = {
+      task_id: taskId
+    }
+    try {
+      setLoad(true);
+      const api: any = await postMethod(`end_task`, raw);
+      if (api.status === 200) {
+        setLoad(false);
+        Snackbar.show({
+          text: api.data,
+          duration: Snackbar.LENGTH_SHORT,
+          textColor: Colors.white,
+          backgroundColor: 'green',
+        });
+
+        navigation.dispatch(CommonActions.goBack())
+      }
+    }
+    catch (e) {
+      Snackbar.show({
+        text: "Some Error Occured" + e,
+        duration: Snackbar.LENGTH_SHORT,
+        textColor: '#AE1717',
+        backgroundColor: '#F2A6A6',
+      });
+    }
+  }
+
+
   return (
     <View>
       <Appbar title={'Task'} />
       <ScrollView style={styles.container}>
-      {loading ? (
-        <ActivityIndicator size="large" color="#000" />
-      ) : (
+        {loading ? (
+          <ActivityIndicator size="large" color="#000" />
+        ) : (
           <Pressable>
             <Card style={styles.card}>
               <View>
@@ -55,23 +88,61 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
               </View>
             </Card>
           </Pressable>
-           )}
-          <View>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-              <Pressable style={styles.AddPic} onPress={() => navigation.navigate('ImageUploadScreen', {
-                taskId: taskDetails?.task_id
-              })}>
-                <Text style={styles.text}>Add Photo</Text>
-                <Image size={24} source={require('../../style/Img/Add.png')} />
-              </Pressable>
-              <Pressable style={styles.AddPic} onPress={() => navigation.navigate('ViewImageScreen', {
-                taskId: taskDetails?.task_id,
-              })}>
-                <Text style={styles.text}>View Images</Text>
-                <Image size={24} source={require('../../style/Img/2.png')} />
-              </Pressable>
-            </View>
-            {/* <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+        )}
+        <View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+            <Pressable
+              style={styles.AddPic}
+              onPress={() =>
+                navigation.dispatch(
+                  CommonActions.navigate({
+                    name: 'ImageUploadScreen',
+                    params: {
+                      taskId: taskDetails?.task_id,
+                    },
+                  })
+                )
+              }
+            >
+              <Text style={styles.text}>Add Photo</Text>
+              <Image size={24} source={require('../../style/Img/Add.png')} />
+            </Pressable>
+            <Pressable
+              style={styles.AddPic}
+              onPress={() =>
+                navigation.dispatch(
+                  CommonActions.navigate({
+                    name: 'ViewImageScreen',
+                    params: {
+                      taskId: taskDetails?.task_id,
+                    },
+                  })
+                )
+              }
+            >
+              <Text style={styles.text}>View Images</Text>
+              <Image size={24} source={require('../../style/Img/2.png')} />
+            </Pressable>
+          </View>
+          <View style={{ marginLeft: 30 }}>
+            <Pressable
+              style={styles.AddPic}
+              onPress={() =>
+                navigation.dispatch(
+                  CommonActions.navigate({
+                    name: 'RemarkScreen',
+                    params: {
+                      taskId: taskDetails?.task_id,
+                    },
+                  })
+                )
+              }
+            >
+              <Text style={styles.text}>Add Remark</Text>
+              <Image style={{width:20,height:20}} source={require('../../style/Img/4.png')} />
+            </Pressable>
+          </View>
+          {/* <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
               <Pressable style={styles.AddPic} onPress={() => navigation.navigate('DailyReportScreen', {
                 taskId: taskDetails?.task_id,
                 project_id: taskDetails?.project_id
@@ -84,16 +155,31 @@ const TaskDetailScreen = ({ navigation, route }: any) => {
                 project_id: taskDetails?.project_id
               })}
               > */}
-                {/* <Text style={styles.text}> Daily Report</Text>
+          {/* <Text style={styles.text}> Daily Report</Text>
                 <Image size={24} source={require('../../style/Img/4.png')} />
               </Pressable>
             </View> */}
-            <View style={styles.remark}>
-              <Text>Remarks....</Text>
-            </View>
-          </View>
-        </ScrollView>
-    </View>
+          <Pressable
+            onPress={endTask}
+            style={styles.endButton}>
+            {
+              load ? (
+                <ActivityIndicator size="small" color={Colors.white} />)
+                :
+                (
+                  <Text style={styles.textEnd}>End Task</Text>
+
+                )
+            }
+          </Pressable>
+          {/* <Pressable
+            // onPress={}
+            style={styles.endButton}>
+            <Text style={styles.textEnd}>Remark</Text>
+          </Pressable> */}
+        </View>
+      </ScrollView >
+    </View >
   );
 };
 export default TaskDetailScreen;
@@ -107,6 +193,22 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'Roboto-Medium',
     fontSize: 13
+  },
+  textEnd: {
+    fontFamily: 'Roboto-Medium',
+    color: Colors.white,
+    fontSize: 16
+  },
+  endButton: {
+    borderWidth: 1,
+    borderColor: Colors.button,
+    backgroundColor: Colors.button,
+    padding: 10,
+    width: 120,
+    alignItems: 'center',
+    borderRadius: 8,
+    alignSelf: 'center',
+    marginTop: 50
   },
   remark: {
     marginTop: 20,

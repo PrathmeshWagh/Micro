@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, FlatList, ActivityIndicator, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, FlatList, ActivityIndicator, Dimensions, RefreshControl } from 'react-native';
 import Appbar from '../../components/Appbar';
 import { Card, Avatar } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
@@ -9,10 +9,13 @@ import CircularProgress from 'react-native-circular-progress-indicator';
 import { getMethod, getStorageData } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
 import axios from 'axios';
+import { CommonActions } from '@react-navigation/native';
 
 const JobSheetScreen = ({ navigation }: any) => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
   useEffect(() => {
     getdata();
   }, []);
@@ -26,12 +29,31 @@ const JobSheetScreen = ({ navigation }: any) => {
       setProjects(api.data)
     }
   }
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await getdata();
+    } catch (error) {
+      console.log('Error refreshing:', error);
+    }
+    setRefreshing(false);
+  };
+
   const renderItem = (props: any) => {
     return (
       <View style={styles.container}>
-        <Pressable onPress={() => navigation.navigate('DescriptionScreen', {
-          id: props.item.project_id,
-        })}>
+        <Pressable
+          onPress={() =>
+            navigation.dispatch(
+              CommonActions.navigate({
+                name: 'DescriptionScreen',
+                params: {
+                  id: props.item.project_id,
+                },
+              })
+            )
+          }
+        >
           <Card style={styles.card}>
             <View>
               <Text style={styles.jobSheet}>{props.item.project_title}</Text>
@@ -95,11 +117,17 @@ const JobSheetScreen = ({ navigation }: any) => {
         <ActivityIndicator size="large" color="#000" />
       ) : (
 
-        <View style={{ paddingBottom: 250, height: '100%' }}>
+        <View style={{ paddingBottom: 250, height: '100%', backgroundColor: Colors.screen_bg }}>
           <FlatList
             data={projects}
             renderItem={renderItem}
             keyExtractor={item => item.id}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />
+            }
           />
         </View>
       )}

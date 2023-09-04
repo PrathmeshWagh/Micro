@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, ScrollView, SafeAreaView, Pressable, RefreshCon
 import { Card, Avatar } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import Colors from '../../style/Colors/colors';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { getMethod } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
 
@@ -52,9 +52,18 @@ const JobDescriptionScreen = ({ props, route }: any) => {
           {
             taskList.map((data, index) => (
               <View key={index}>
-                <Pressable onPress={() => navigation.navigate('TaskDetailScreen', {
-                  taskId: data?.task_id
-                })}>
+                <Pressable
+                  onPress={() =>
+                    navigation.dispatch(
+                      CommonActions.navigate({
+                        name: 'TaskDetailScreen',
+                        params: {
+                          taskId: data?.task_id,
+                        },
+                      })
+                    )
+                  }
+                >
                   <Card style={styles.card}>
                     <View>
                       <Text style={styles.jobSheet}>{data?.task_title}</Text>
@@ -88,6 +97,7 @@ const JobDescriptionScreen = ({ props, route }: any) => {
                 </Pressable>
               </View>
             ))}
+          <View style={{ marginBottom: 50 }}></View>
         </ScrollView>
       )}
     </>
@@ -97,9 +107,10 @@ const JobDescriptionScreen = ({ props, route }: any) => {
 export default JobDescriptionScreen;
 const styles = StyleSheet.create({
   cover: {
-    marginHorizontal: 14,
-    marginBottom: 24,
-    flex: 1
+    paddingHorizontal: 14,
+    // marginBottom: 24,
+    flex: 1,
+    backgroundColor: Colors.card_bg
   },
   startDate: {
     color: Colors.text_primary,
@@ -139,7 +150,7 @@ const styles = StyleSheet.create({
   card: {
     marginTop: 30,
     padding: 20,
-    backgroundColor: Colors.card_bg
+    backgroundColor: Colors.white
   },
   task: {
     color: Colors.text_secondary,

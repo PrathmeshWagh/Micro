@@ -6,10 +6,11 @@ import { CommonActions, useNavigation } from "@react-navigation/native";
 
 const Appbar = ({ title }: any) => {
   const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       <View style={styles.align}>
-        <Pressable onPress={() => navigation.dispatch(CommonActions.goBack())}>
+      <Pressable onPress={() =>navigation.dispatch(CommonActions.goBack())}>
           <IonIcon style={styles.icon} name="arrow-back" size={28} color={'white'} />
         </Pressable>
         <Image

@@ -5,9 +5,9 @@ import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
 import { getMethod, postMethod } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 
-const DescriptionScreen = ({ navigation, route }: any, props: any) => {
+const DescriptionScreen = ({route }: any, props: any) => {
   const { id } = route.params;
   const [details, setDetails] = useState('')
   const [loading, setLoading] = useState(false);
@@ -15,8 +15,7 @@ const DescriptionScreen = ({ navigation, route }: any, props: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const [project, setProject] = useState('')
   console.log("id", id)
-
-
+ const navigation = useNavigation();
   useEffect(() => {
     getdata();
   }, []);
@@ -169,6 +168,7 @@ export default DescriptionScreen;
 const styles = StyleSheet.create({
   container: {
     padding: 14,
+    backgroundColor:Colors.screen_bg
   },
   loader: {
     marginTop: 8
