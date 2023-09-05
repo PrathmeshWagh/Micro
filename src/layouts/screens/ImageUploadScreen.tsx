@@ -225,7 +225,7 @@ const ImageUploadScreen = ({ route }: any) => {
     }
     formData.append('task_id', taskId);
 
-    console.log("1", JSON.parse(AsynStorageImage).length)
+    // console.log("1",'file://' + array_lenth[i].uri)
     // formData.append('remark_for_photo', remark);
     try {
       setLoading(true);

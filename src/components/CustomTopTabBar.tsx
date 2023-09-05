@@ -4,13 +4,13 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import Colors from '../style/Colors/colors';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 
-const CustomTopTabBar = ({ state, descriptors,project_id,navigation}: any) => {
-    console.log("project_idproject_id",project_id)
+const CustomTopTabBar = ({ state, descriptors, project_id, navigation }: any) => {
+    console.log("project_idproject_id", project_id)
     // const navigation = useNavigation();
     return (
         <View>
             <View style={styles.cover}>
-                <Pressable onPress={() =>navigation.dispatch(CommonActions.goBack())}>
+                <Pressable onPress={() => navigation.dispatch(CommonActions.goBack())}>
                     <IonIcon style={styles.icon} name="arrow-back" size={28} color={'white'} />
                 </Pressable>
                 <Text style={styles.pageName}>Task</Text>
@@ -26,7 +26,7 @@ const CustomTopTabBar = ({ state, descriptors,project_id,navigation}: any) => {
                     const isFocused = state.index === index;
 
                     const onPress = () => {
-                        console.log("route.key",route.key)
+                        console.log("route.key", route.key)
                         const event = navigation.emit({
                             type: 'tabPress',
                             target: route.key,
@@ -92,16 +92,19 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         borderBottomColor: Colors.red,
         backgroundColor: Colors.red,
-        borderRadius: 8
+        borderRadius: 8,
+        alignSelf:'center',
+        alignItems:'center'
     },
     tabText: {
         fontSize: 14,
         color: '#333',
         fontFamily: 'Roboto-Medium',
-
+        alignSelf: 'center'
     },
     tabTextActive: {
         color: 'white',
+        alignSelf: 'center'
     },
 });
 

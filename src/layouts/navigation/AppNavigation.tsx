@@ -130,6 +130,11 @@ function DrawerNavigtaion() {
   );
 }
 
+const DailyActivityTabLabel = ({ label }) => (
+  <View style={{ alignItems: 'center' }}>
+    <Text style={{ textAlign: 'center' }}>{label}</Text>
+  </View>
+);
 
 function TopTabNavigation({ route }: any) {
   const { id } = route.params;
@@ -140,15 +145,16 @@ function TopTabNavigation({ route }: any) {
       >
         <TabTop.Screen name="JobDescription" component={JobDescriptionScreen}
           initialParams={{ project_id: id }}
-          options={{ tabBarLabel: 'Job Description' }} />
+          options={{ tabBarLabel: '      Job\nDescription' }} />
         <TabTop.Screen name="DailyActivity" component={DailyActivityScreen}
           initialParams={{ project_id: id }}
-          options={{ tabBarLabel: 'Daily Activity' }} />
+          options={{ tabBarLabel: '  Daily\nActivity' }} />
         <TabTop.Screen name="VarientationOder" component={VarientationOderScreen}
-          options={{ tabBarLabel: 'Variation Oder' }} />
+          initialParams={{ project_id: id }}
+          options={{ tabBarLabel: 'Variation\n   Oder' }} />
         <TabTop.Screen name="IncidentReport" component={IncidentReportScreen}
           initialParams={{ project_id: id }}
-          options={{ tabBarLabel: 'Incident Report' }} />
+          options={{ tabBarLabel: 'Incident\n Report' }} />
         {/* <Appbar/> */}
       </TabTop.Navigator>
     </>
