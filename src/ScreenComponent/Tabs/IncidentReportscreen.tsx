@@ -127,9 +127,10 @@ const IncidentReport = ({ route }: any) => {
             <TouchableOpacity onPress={() => navigation.dispatch(
               CommonActions.navigate({
                 name: 'ViewIncidentReportScreen',
-                // params: {
-                //   id: item.variation_order_id,
-                // },
+                params: {
+                  projectId:project_id,
+                  incidentReportsId:item.incident_reports_id
+                },
               }))}>
               <Text style={styles.viewDetails}>View Details</Text>
             </TouchableOpacity>
