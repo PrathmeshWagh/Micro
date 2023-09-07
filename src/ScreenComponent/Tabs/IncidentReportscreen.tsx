@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl, Alert } from 'react-native';
 
 import { Card, Avatar } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import Colors from '../../style/Colors/colors';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../utils/appContext';
-import { getMethod } from '../../utils/helper';
+import { getMethod, postMethod } from '../../utils/helper';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Snackbar from 'react-native-snackbar';
 
 const IncidentReport = ({ route }: any) => {
   const { project_id } = route.params;
@@ -16,29 +18,79 @@ const IncidentReport = ({ route }: any) => {
   const navigation = useNavigation();
   const [showDetails, setShowDetails] = useState(false);
 
-  // useEffect(() => {
-  //   getdata();
-  // }, []);
+  useEffect(() => {
+    getdata();
+  }, []);
 
-  // const getdata = async () => {
-  //   setLoading(true);
-  //   const api: any = await getMethod(`get_incident_report/${project_id}`);
-  //   if (api.status === 200) {
-  //     // console.log("apiData", api.data)
-  //     setLoading(false);
-  //     setIncidentList(api.data)
-  //     setRefreshing(false);0
-  //     // console.log("", taskList)
-  //   }
-  // }
+  const getdata = async () => {
+    setLoading(true);
+    const api: any = await getMethod(`get_all_incident_report/${project_id}`);
+    if (api.status === 200) {
+      console.log("apiData", api.data)
+      setLoading(false);
+      setIncidentList(api.data)
+      setRefreshing(false);
+      // console.log("", taskList)
+    }
+  }
   const onRefresh = () => {
     setRefreshing(true);
     // getdata();
     setRefreshing(false);
   };
-  const toggleDetails = () => {
-    setShowDetails(!showDetails);
+
+  const createTwoButtonAlert = (incidentId: number) => {
+    Alert.alert('Alert', 'Are you sure you want to delete?', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      {
+        text: 'OK',
+        onPress: () => deleteList(incidentId), // Pass remark_id to deleteData
+      },
+    ]);
   };
+
+  const deleteList = async (incidentId: number) => {
+    const raw = {
+      incident_reports_id: incidentId,
+      project_id:project_id
+    }
+    try {
+      const api: any = await postMethod(`delete_incident_report`, raw);
+      if (api.status === 200) {
+        console.log('data', api.data)
+        Snackbar.show({
+          text: api.data,
+          duration: Snackbar.LENGTH_SHORT,
+          textColor: 'white',
+          backgroundColor: 'green',
+        })
+        getdata()
+      }
+      else {
+        Snackbar.show({
+          text: api.data.message,
+          duration: Snackbar.LENGTH_SHORT,
+          textColor: '#AE1717',
+          backgroundColor: '#F2A6A6',
+        });
+      }
+    }
+    catch (e) {
+      Snackbar.show({
+        text: "Some Error Occured" + e,
+        duration: Snackbar.LENGTH_SHORT,
+        textColor: '#AE1717',
+        backgroundColor: '#F2A6A6',
+      });
+    }
+
+  }
+
+
   return (
     <View style={styles.cover}>
       <Pressable style={styles.add} onPress={() => navigation.navigate('IncidentFormScreen', {
@@ -52,121 +104,39 @@ const IncidentReport = ({ route }: any) => {
             refreshing={refreshing}
             onRefresh={onRefresh} />
         }>
-        <View style={styles.part}>
-          <Text style={styles.partText}>PART A</Text>
-        </View>
-        <View style={styles.card}>
-          <View style={styles.align}>
-            <Text style={styles.text}>Report Serial Number:</Text>
-            <Text style={styles.text2}>#1234569</Text>
-          </View>
-          <View style={styles.align}>
-            <Text style={styles.text}>Revision:</Text>
-            <Text style={styles.text2}>N/A</Text>
-          </View>
-          <View style={styles.align}>
-            <Text style={styles.text}>Company / Department Reporting:</Text>
-            <Text style={styles.text2}>N/A</Text>
-          </View>
-          {showDetails ? (
-            <>
-              <View style={styles.align}>
-                <Text style={styles.text}>Name of Person Reporting:</Text>
-                <Text style={styles.text2}>Jhon Doe</Text>
-              </View>
-              <View style={styles.align}>
-                <Text style={styles.text}>Designation of Person Reporting:</Text>
-                <Text style={styles.text2}>Manager</Text>
-              </View>
-              <View style={styles.align}>
-                <Text style={styles.text}>NRIC of Person Reporting:</Text>
-                <Text>5698564</Text>
-              </View>
-              <View style={styles.align}>
-                <Text style={styles.text}>Date of Report Submission:</Text>
-                <Text style={styles.text2}>27/07/2023</Text>
-              </View>
-              <View style={styles.align}>
-                <Text style={styles.text}>Time of Report Submission:</Text>
-                <Text style={styles.text2}>17:05:19PM</Text>
-              </View>
 
-              <View style={styles.part}>
-                <Text style={styles.partText}>PART B</Text>
-              </View>
-              <View style={styles.card}>
-                <View>
-                  <Text style={styles.text}>Category of Event:</Text>
-                  <Text style={styles.text2}>Accident / Incident / Dangerous Occurrence / Others</Text>
-                </View>
-                <View style={styles.align}>
-                  <Text style={styles.text}>Injury to Person(s):</Text>
-                  <Text style={styles.text2}>Yes / No</Text>
-                </View>
-                <View style={styles.align}>
-                  <Text style={styles.text}>Damage Property:</Text>
-                  <Text style={styles.text2}>Yes / No</Text>
-                </View>
-                <Text style={styles.provide}>Please Provide Info As Follows</Text>
-                <View style={styles.align}>
-                  <Text style={styles.text}>Full Name Of Injured Person:</Text>
-                  <Text style={styles.text2}>Jhon Doe</Text>
-                </View>
-                <View style={styles.align}>
-                  <Text style={styles.text}>NRIC Of Injured Person:</Text>
-                  <Text style={styles.text2}>5698746</Text>
-                </View>
-                <View style={styles.align}>
-                  <Text style={styles.text}>Designation Of Injured Person:</Text>
-                  <Text style={styles.text2}>Manager</Text>
-                </View>
-                <Text style={styles.text}>Nature Of Injury:</Text>
-                <View style={styles.align}>
-                  <Text style={styles.text}>Injured Person(s) Sent to:</Text>
-                  <Text style={styles.text2}>Hospital / Clinic / Nil / Others</Text>
-                </View>
-                <Text style={styles.text}>Description Of Property Damage (If Any):</Text>
-              </View>
-              <View style={styles.part}>
-                <Text style={styles.partText}>PART C</Text>
-              </View>
-              <View style={styles.card}>
-                <View>
-                  <Text style={styles.text}>Project:</Text>
-                </View>
-                <View style={styles.align}>
-                  <Text style={styles.text}>JOB Number:</Text>
-                  <Text style={styles.text2}>#456321</Text>
-                </View>
-                <View style={styles.align}>
-                  <Text style={styles.text}>Name Of Coordinator:</Text>
-                  <Text style={styles.text2}>Robin Willam</Text>
-                </View>
-                <View style={styles.align}>
-                  <Text style={styles.text}>Full Workplace Address:</Text>
-                  <Text style={styles.text2}>Jhon Doe</Text>
-                </View>
-                <View style={styles.align}>
-                  <Text style={styles.text}>Location (Floor / Zone / Unit):</Text>
-                  <Text style={styles.text2}>2nd Floor</Text>
-                </View>
-                <View style={styles.align}>
-                  <Text style={styles.text}>Date Of Acc /INC/DO:</Text>
-                  <Text style={styles.text2}>27/07/2023</Text>
-                </View>
-                <View style={styles.align}>
-                  <Text style={styles.text}>Time Of Acc /INC/DO:</Text>
-                  <Text style={styles.text2}>27/07/2023</Text>
-                </View>
-              </View>
-            </>
-          ) : (
-            <TouchableOpacity onPress={toggleDetails}>
+        {incidentList?.map((item, index) => (
+          <View style={styles.card}>
+            {item.check_edit_delete === 1 && ( 
+             <Pressable onPress={() => createTwoButtonAlert(item.incident_reports_id)}>
+              <Ionicons name="trash-bin" color={Colors.red} size={22} style={styles.delete} />
+            </Pressable>
+             )} 
+            <View style={styles.align}>
+              <Text style={styles.text}>Report Serial Number:</Text>
+              <Text style={styles.text2}>{item?.report_serial_number}</Text>
+            </View>
+            <View style={styles.align}>
+              <Text style={styles.text}>Revision:</Text>
+              <Text style={styles.text2}>{item?.revision}</Text>
+            </View>
+            <View style={styles.align}>
+              <Text style={styles.text}>Company / Department Reporting:</Text>
+              <Text style={styles.text2}>{item?.company_department_reporting}</Text>
+            </View>
+            <TouchableOpacity onPress={() => navigation.dispatch(
+              CommonActions.navigate({
+                name: 'ViewIncidentReportScreen',
+                // params: {
+                //   id: item.variation_order_id,
+                // },
+              }))}>
               <Text style={styles.viewDetails}>View Details</Text>
             </TouchableOpacity>
-          )}
-          <View style={{ marginBottom: 30 }}></View>
-        </View>
+
+            <View style={{ marginBottom: 30 }}></View>
+          </View>
+        ))}
       </ScrollView>
     </View>
   )
@@ -180,6 +150,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 14,
     flex: 1
   },
+  delete: {
+    position: 'absolute',
+    right: 0,
+    top: -20
+  },
   provide: {
     color: 'gray',
     marginVertical: 5,
@@ -187,17 +162,27 @@ const styles = StyleSheet.create({
   },
   gap: {
     flex: 1,
-    paddingBottom: 50
+    // paddingBottom: 50
 
   },
   card: {
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.lightGray,
-    padding: 5,
+    borderWidth: 1,
+    borderColor: Colors.white,
+    backgroundColor: Colors.white,
+    borderRadius: 8,
+    paddingTop: 25,
+    padding: 20,
+    margin: 10,
+    elevation: 8,
+    marginTop: 20,
+   paddingBottom:-20
   },
   text: {
-    color: Colors.black,
-    fontFamily: 'Roboto-Regular',
+    color: Colors.text_primary,
+    fontSize: 16,
+    marginBottom: 5,
+    fontFamily: 'Roboto-Bold',
+    lineHeight: 30
   },
   text2: {
     color: Colors.black,

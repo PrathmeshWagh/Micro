@@ -42,6 +42,7 @@ const DescriptionScreen = ({route }: any, props: any) => {
           name: 'TopTabNavigation',
           params: { id: details?.project_id, }
         })
+        
       )
 
       //console.log("apiData",projects)

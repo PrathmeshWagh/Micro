@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Alert, StyleSheet, ScrollView, TextInput, Pressable, SafeAreaView, Image, FlatList } from 'react-native';
+import { View, Text, Alert, StyleSheet, ScrollView, TextInput, Pressable, SafeAreaView, Image, FlatList, ActivityIndicator } from 'react-native';
 import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -70,7 +70,7 @@ const AddOderScreen = ({ navigation, route }: any) => {
       path: img,
       onDone: async (result) => {
         const updatedImages: string[] = [...imageUri, 'file://' + result];
-        console.log("imageUri", result);
+        console.log("imageUri", updatedImages);
         setImageUri(updatedImages);
       },
       onCancel: () => {
@@ -132,8 +132,6 @@ const AddOderScreen = ({ navigation, route }: any) => {
   }
 
 
-
-
   return (
     <SafeAreaView style={styles.container}>
       <Appbar title={'Variation Oder'} />
@@ -169,6 +167,7 @@ const AddOderScreen = ({ navigation, route }: any) => {
           style={styles.inputR}
           onChangeText={setRemarks}
           value={remarks}
+          multiline={true}
           placeholder="Remarks"
         />
         <Pressable onPress={() => open()}>
@@ -178,22 +177,29 @@ const AddOderScreen = ({ navigation, route }: any) => {
           {imageUri.length === 0 ? (
             <Text style={styles.chooseFile}>Choose file</Text>
           ) : (
-            <FlatList
-              data={imageUri}
-              keyExtractor={(item, index) => index.toString()} // Use index as the key
-              horizontal
-              // numColumns={imageUri.length > 2 ? 2 : 1}
-              renderItem={({ item }) => (
-                <Image
-                  source={{ uri: item }}
-                  style={{ width: 150, height: 150, paddingLeft: 18, marginRight: 10 }}
-                />
-              )}
-            />
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', }}>
+              {imageUri.map((uri, index) => (
+                <View key={index} style={{ padding: 5 }}>
+                  <Image
+                    source={{ uri:uri }}
+                    style={{ width: 120, height: 150, borderRadius: 8 }} // Adjust the width and height as needed
+                  />
+                </View>
+              ))}
+            </View>
+
           )}
         </View>
-        <Pressable style={styles.uploadButton} onPress={ImgUpload}>
-          <Text style={styles.text}>Save Details</Text>
+        <Pressable
+          style={styles.uploadButton}
+          onPress={isLoading ? null : ImgUpload} // Disable onPress when isLoading is true
+          disabled={isLoading} // Optionally disable the button visually
+        >
+          {isLoading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={styles.text}>Save Details</Text>
+          )}
         </Pressable>
       </ScrollView>
     </SafeAreaView>
@@ -208,6 +214,9 @@ const styles = StyleSheet.create({
   tinyLogo: {
     height: 200,
     width: 200
+  },
+  chooseFile:{
+fontFamily:'Roboto-Regular'
   },
   uploadedImage: {
     width: 250,
@@ -241,15 +250,17 @@ const styles = StyleSheet.create({
     elevation: 5
   },
   inputR: {
-    height: 80,
+    height: 120,
     marginVertical: 22,
     marginHorizontal: 12,
     borderWidth: 1,
     padding: 10,
+    // paddingBottom:50,
     borderColor: 'white',
     backgroundColor: Colors.white,
     borderRadius: 2,
-    elevation: 8
+    elevation: 8,
+    textAlignVertical:'top'
   },
   inputText: {
     marginHorizontal: 12,

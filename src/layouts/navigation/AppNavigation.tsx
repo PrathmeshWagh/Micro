@@ -42,6 +42,8 @@ import DailyActivityDescriptionScreen from '../screens/DailyActivityDescriptionS
 import ManpowerReportScreen from '../screens/ManpowerReportScreen';
 import EditImageScreen from '../screens/EditImageScreen';
 import RemarkScreen from '../screens/RemarkScreen';
+import ViewVariationOderScreen from '../screens/ViewVariationOderScreen';
+import ViewIncidentReportScreen from '../screens/IncedentReport/ViewIncidentReportScreen';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const TabTop = createMaterialTopTabNavigator();
@@ -107,6 +109,9 @@ function AppNavigation() {
         <Stack.Screen name="InprogressScreen" component={InprogressScreen} />
         <Stack.Screen name="PendingScreen" component={PendingScreen} />
         <Stack.Screen name="RemarkScreen" component={RemarkScreen} />
+        <Stack.Screen name="ViewVariationOderScreen" component={ViewVariationOderScreen} />
+        <Stack.Screen name="ViewIncidentReportScreen" component={ViewIncidentReportScreen} />
+
       </Stack.Navigator>
     )
       : (
@@ -130,11 +135,7 @@ function DrawerNavigtaion() {
   );
 }
 
-const DailyActivityTabLabel = ({ label }) => (
-  <View style={{ alignItems: 'center' }}>
-    <Text style={{ textAlign: 'center' }}>{label}</Text>
-  </View>
-);
+
 
 function TopTabNavigation({ route }: any) {
   const { id } = route.params;
