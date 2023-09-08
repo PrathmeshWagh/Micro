@@ -1,49 +1,125 @@
 import React, { useState } from 'react';
 import { FC } from 'react';
-import { StyleSheet, Text, View, TextInput, ScrollView, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, TextInput, ScrollView, RefreshControl, Pressable, ActivityIndicator } from 'react-native';
 import Colors from '../../style/Colors/colors';
 import Appbar from '../../components/Appbar';
 import { Dropdown } from 'react-native-element-dropdown';
+import { postMethod } from '../../utils/helper';
+import { stat } from 'react-native-fs';
+import Snackbar from 'react-native-snackbar';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 
 interface Props { }
-const ManpowerReportScreen: FC<Props> = (): JSX.Element => {
+const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
     const [value, setValue] = useState('');
     const [showTextBox, setShowTextBox] = useState(false);
     const [refreshing, setRefreshing] = useState<boolean>(false);
-
+    const [selectedValue, setSelectedValue] = useState(null);
+    const [numWorkers, setNumWorkers] = useState([]); // Default to 1 worker
+    const [workerSections, setWorkerSections] = useState([]);
+    const navigation = useNavigation();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [startTime, setStartTime] = useState<number[]>([]);
+    const [endTime, setEndTime] = useState<number[]>([]);
+    const [name, setName] = useState('');
+    const [personName, setPersonName] = useState<string[]>([]);
+    const { activity, project_id } = route.params;
+    console.log("activity", activity)
     const data = [
         { value: 'mac', label: 'MAC' },
         { value: 'sub_con', label: 'Sub Con' },
         { value: 'other', label: 'Other' },
     ];
 
-    const handleDropdownChange = (value: any) => {
-        // console.log("value",value)
-        setValue(value.value);
-        if (value.value === 'mac') {
-            setShowTextBox(false);
-        } else {
+    const handleDropdownChange = (selectedValue: string) => {
+        setValue(selectedValue.value);
+        if (selectedValue.value === 'other') {
             setShowTextBox(true);
+        } else {
+            setShowTextBox(false);
         }
     };
-
+    const handleNumWorkersChange = (text: string) => {
+        console.log("test",text)
+        const num = parseInt(text, 10);
+        if (!isNaN(num)) {
+            const newSections = Array.from({ length: num }, (_, id) => ({ id: id + 1 }));
+            setWorkerSections(newSections);
+            setNumWorkers(text)
+        } else {
+            // If the input is not a valid number, reset the sections.
+            setWorkerSections([]);
+        }
+    };
     const onRefresh = () => {
         setRefreshing(true);
         // getdata();
         setRefreshing(false);
-      };
+    };
 
+    const AddReport = async (props: any) => {
+        const StartimeValue = Object.values(startTime);
+        const EndtimeValue = Object.values(endTime);
+        const taskworkerSections = Object.values(workerSections);
+        const taskStatusValues = Object.values(personName);
+
+        const raw = {
+            project_id: project_id,
+            task_id: activity,
+            name_of_person: taskStatusValues,
+            start_time: StartimeValue,
+            end_time: EndtimeValue,
+            type_of_worker: value,
+            types_of_worker_name: name,
+            no_of_worker: numWorkers
+
+        }
+        console.log("raw", raw)
+        try {
+            setLoading(true);
+            const api: any = await postMethod(`add_manpower_report`, raw);
+            if (api.status === 200) {
+                console.log('data', api.data)
+                setLoading(false);
+                navigation.dispatch(
+                    CommonActions.navigate({
+                      name: 'TopTabNavigation',
+                      params: {
+                        id: project_id
+                      },
+                    })
+                  )
+            } else {
+                setLoading(false);
+                Snackbar.show({
+                    text: api.data.message,
+                    duration: Snackbar.LENGTH_SHORT,
+                    textColor: '#AE1717',
+                    backgroundColor: '#F2A6A6',
+                });
+            }
+        }
+        catch (e) {
+            Snackbar.show({
+                text: "Some Error Occured" + e,
+                duration: Snackbar.LENGTH_SHORT,
+                textColor: '#AE1717',
+                backgroundColor: '#F2A6A6',
+            });
+        }
+
+    }
 
     return (
         <>
             <Appbar title={'Daily Activity'} />
             <ScrollView style={styles.container}
-             refreshControl={
-                <RefreshControl
-                  refreshing={refreshing}
-                  onRefresh={onRefresh}
-                />
-              }>
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }>
                 <Text style={styles.Manpower}>Manpower Reports</Text>
 
                 <Text style={styles.date}>Worker Type +</Text>
@@ -62,51 +138,108 @@ const ManpowerReportScreen: FC<Props> = (): JSX.Element => {
                         onChange={handleDropdownChange}
                     />
                 </View>
-                <Text style={styles.date}>Name</Text>
-                <TextInput
-                    style={styles.input}
-                    // onChangeText={onChangeNumber}
-                    // value={number}
-                    placeholder=""
-                />
+                {showTextBox && (
+                    <>
+                        <Text style={styles.date}>Name</Text>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={setName}
+                            value={name}
+                            placeholder=""
+                        />
+                    </>
+                )}
                 <Text style={styles.date}>Number of Worker</Text>
                 <TextInput
                     style={styles.input}
-                    // onChangeText={onChangeNumber}
-                    // value={number}
+                    onChangeText={handleNumWorkersChange}
+                    value={workerSections}
                     placeholder=""
+                    keyboardType="numeric"
                 />
-                <View style={styles.align}>
-                    <Text style={styles.date}>Name of Person</Text>
-                    <TextInput
-                        style={styles.input}
-                        // onChangeText={onChangeNumber}
-                        // value={number}
-                        placeholder=""
-                    />
-                    <Text style={styles.date}>Start Time</Text>
-                    <TextInput
-                        style={styles.input}
-                        // onChangeText={onChangeNumber}
-                        // value={number}
-                        placeholder=""
-                    />
-                    <Text style={styles.date}>End Time</Text>
-                    <TextInput
-                        style={styles.input}
-                        // onChangeText={onChangeNumber}
-                        // value={number}
-                        placeholder=""
-                    />
-                </View>
-                <View style={{ marginBottom: 40 }}>
-                </View>
+                {workerSections.map((section, index) => (
+                    <View key={section.id} style={styles.align}>
+                        <Text style={styles.date}>Name of Person {index + 1}</Text>
+                        {/* <TextInput
+                            style={styles.input}
+                            value={personName}
+                            onChangeText={setPersonName}
+                        /> */}
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(text) => {
+                                setPersonName({
+                                    ...personName,
+                                    [index]: text,
+                                });
+                            }}
+                            value={personName[index] || ''}
+                            placeholder=""
+                        />
+                        <Text style={styles.date}>Start Time {index + 1}</Text>
+
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(text) => {
+                                setStartTime({
+                                    ...startTime,
+                                    [index]: text,
+                                });
+                            }}
+                            value={startTime[index] || ''}
+                            placeholder=""
+                        />
+                        <Text style={styles.date}>End Time {index + 1}</Text>
+
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={(text) => {
+                                setEndTime({
+                                    ...endTime,
+                                    [index]: text,
+                                });
+                            }}
+                            value={endTime[index] || ''}
+                            placeholder=""
+                        />
+                    </View>
+                ))}
+
+                <View style={{ marginBottom: 40 }}></View>
+                <Pressable style={styles.btn} onPress={AddReport}>
+                    {loading ?
+                        (
+                            <ActivityIndicator size="small" color={Colors.white} />
+                        )
+                        :
+                        (
+                            <Text style={styles.btnText}>
+
+                                Submit
+                            </Text>
+                        )}
+                </Pressable>
             </ScrollView>
         </>
     );
 };
 
+
 const styles = StyleSheet.create({
+    btn: {
+        backgroundColor: Colors.brand_primary,
+        padding: 10,
+        alignItems: 'center',
+        borderRadius: 8,
+        width: 200,
+        alignSelf: 'center',
+        marginVertical: 40
+    },
+    btnText: {
+        color: Colors.white,
+        fontFamily: 'Roboto-Medium',
+        fontSize: 16
+    },
     container: {
         flex: 1,
         backgroundColor: Colors.screen_bg,

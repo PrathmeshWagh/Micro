@@ -5,13 +5,16 @@ import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
 import { Checkbox, Modal, Portal } from 'react-native-paper';
 import { CommonActions, useNavigation } from '@react-navigation/native';
-import { FormPostMethod, getMethod } from '../../utils/helper';
+import { FormPostMethod, getMethod, postMethod } from '../../utils/helper';
 import Snackbar from 'react-native-snackbar';
+import Feather from 'react-native-vector-icons/Feather';
+import moment from 'moment';
+import DatePicker from 'react-native-date-picker';
 
 interface Props {
   navigation: any
 }
-const DailyActivityDescriptionScreen: FC<Props> = ({ route }:any): JSX.Element => {
+const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element => {
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const navigation = useNavigation();
@@ -20,19 +23,24 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }:any): JSX.Element =
   const { selectedTaskIds, project_id } = route.params;
   const [dailyActivity, setDailyActivity] = useState([]);
   const [selectedImageRemark, setSelectedImageRemark] = useState<string>();
+  const [remark, setRemark] = useState<string[]>([]);
+  const [area, setArea] = useState<string[]>([]);
+  const [plan, setPlan] = useState<string[]>([]);
+  const [completion, setCompletion] = useState<string[]>([]);
+  const [status, setStatus] = useState<string[]>([]);
+  const [selectedImageIds, setSelectedImageIds] = useState<string[]>([]);
+  const [date, setDate] = useState(new Date())
+  const timestamp = date;
+  const formattedDate = moment(timestamp).format('DD-MM-YYYY');
+  const [open, setOpen] = useState(false);
 
-  const imagePaths = [
-    { id: 1, imagePath: require('../../style/Img/RectangleImages.png'), text: 'Image 1' },
-    { id: 2, imagePath: require('../../style/Img/RectangleImages.png'), text: 'Image 2' },
-    { id: 3, imagePath: require('../../style/Img/RectangleImages.png'), text: 'Image 3' },
-    { id: 4, imagePath: require('../../style/Img/RectangleImages.png'), text: 'Image 4' },
-  ];
-
-  const handleImageSelection = (imagePath: string) => {
+  const handleImageSelection = (imagePath: string, imageId: string) => {
     if (selectedImages.includes(imagePath)) {
       setSelectedImages(selectedImages.filter(item => item !== imagePath));
+      setSelectedImageIds(selectedImageIds.filter(id => id !== imageId));
     } else {
       setSelectedImages([...selectedImages, imagePath]);
+      setSelectedImageIds([...selectedImageIds, imageId]);
     }
   };
 
@@ -43,17 +51,14 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }:any): JSX.Element =
   const Upload = async () => {
     const raw = {
       project_id: project_id,
-      task_id: selectedTaskIds
+      task_id: selectedTaskIds,
     }
-    console.log("imageUri....", raw)
     try {
       setLoading(true);
-      const api: any = await FormPostMethod(`get_daily_activity`, raw);
-      console.log(".....", api.data)
+      const api: any = await postMethod(`get_daily_activity`, raw);
       if (api.status === 200) {
         setDailyActivity(api.data)
         setLoading(false);
-        // navigation.dispatch(CommonActions.goBack())
       } else {
         setLoading(false);
         Snackbar.show({
@@ -76,8 +81,8 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }:any): JSX.Element =
   }
 
 
-  const openZoomedImage = (imagePath: string, remark:string) => {
-    console.log('imagePath',remark);
+  const openZoomedImage = (imagePath: string, remark: string) => {
+    console.log('imagePath', remark);
     setZoomedImage(imagePath);
     setSelectedImageRemark(remark);
   };
@@ -90,6 +95,64 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }:any): JSX.Element =
     // getdata();
     setRefreshing(false);
   };
+
+  const AddDescription = async (props: any) => {
+    const taskRemarkValues = Object.values(remark);
+    const taskAreaValues = Object.values(area);
+    const taskPlanValues = Object.values(plan);
+    const taskCompletionValues = Object.values(completion);
+    const taskStatusValues = Object.values(status);
+
+    const raw = {
+      project_id: project_id,
+      task_id: selectedTaskIds,
+      image_id: selectedImageIds,
+      task_remark: taskRemarkValues,
+      area: taskAreaValues,
+      plan: taskPlanValues,
+      completation: taskCompletionValues,
+      status: taskStatusValues,
+      date: formattedDate
+    }
+    console.log("raw", raw)
+    try {
+      setLoading(true);
+      const api: any = await postMethod(`add_daily_activity`, raw);
+      if (api.status === 200) {
+        console.log('data', api.data)
+        setLoading(false);
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: 'ManpowerReportScreen',
+            params: {
+              activity: api.data,
+              project_id: project_id
+            },
+          })
+        )
+
+      } else {
+        setLoading(false);
+        Snackbar.show({
+          text: api.data.message,
+          duration: Snackbar.LENGTH_SHORT,
+          textColor: '#AE1717',
+          backgroundColor: '#F2A6A6',
+        });
+      }
+    }
+    catch (e) {
+      Snackbar.show({
+        text: "Some Error Occured" + e,
+        duration: Snackbar.LENGTH_SHORT,
+        textColor: '#AE1717',
+        backgroundColor: '#F2A6A6',
+      });
+    }
+
+  }
+
+
   return (
     <>
       <Appbar title={'Daily Activity'} />
@@ -105,79 +168,125 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }:any): JSX.Element =
               />
             }>
             <Text style={styles.date}>Date</Text>
-            <TextInput
-              style={styles.input}
-              // onChangeText={onChangeNumber}
-              // value={number}
-              placeholder=""
-
-            />
+            <View style={styles.input}>
+              <View style={{ flexDirection: 'row' }}>
+                {/* <Image
+                            style={styles.tinyLogo}
+                            source={require('../../style/Img.calender.png')}
+                        /> */}
+                <Text style={styles.date}>{formattedDate}</Text>
+              </View>
+              <Feather
+                name="chevron-down"
+                size={22}
+                color={'#000'}
+                style={{ position: 'absolute', right: 20, top: 12, }}
+                onPress={() => setOpen(true)}
+              />
+              <DatePicker
+                modal
+                open={open}
+                mode="date"
+                date={date}
+                onConfirm={(date) => {
+                  setOpen(false)
+                  setDate(date)
+                }}
+                onCancel={() => {
+                  setOpen(false)
+                }}
+              />
+            </View>
             {dailyActivity.map((item, index) => (
               <View key={index}>
                 <View style={styles.cover}>
                   <Text style={styles.Task}>Task {index + 1}</Text>
                   <Text style={styles.date}>Name</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={item.task_name || ''}
-                    placeholder=""
-                  />
+                  <Text style={styles.name}> {item.task_name || ''}</Text>
 
                   <Text style={styles.date}>Task Remarks</Text>
                   <TextInput
                     style={styles.inputRemark}
-                    // onChangeText={onChangeNumber}
-                    // value={number}
+                    onChangeText={(text) => {
+                      setRemark({
+                        ...remark,
+                        [index]: text,
+                      });
+                    }}
+                    value={remark[index] || ''}
                     placeholder=""
                   />
-                  <Text style={styles.date}>Images</Text>
-                  <View >
-                    {dailyActivity?.map((activity) => (
-                      <View key={activity.task_id} style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
-                        {activity?.images?.map((item) => (
-                          <TouchableOpacity key={item.image_id} onPress={() => openZoomedImage(item.image, item.remark)}>
+                  {item?.images.length > 0 && (
+                    <>
+                      <Text style={styles.date}>Images</Text>
+                      <ScrollView horizontal>
+                        {item?.images?.map((image) => (
+                          <TouchableOpacity key={image.image_id} onPress={() => openZoomedImage(image.image, image.remark)}>
                             <View style={{ margin: 10 }}>
                               <View style={{ backgroundColor: Colors.lightGray, borderRadius: 8, padding: 10 }}>
-                                <Checkbox
-                                  status={selectedImages.includes(item.image) ? 'checked' : 'unchecked'}
-                                  onPress={() => handleImageSelection(item.image)}
-                                />
-                                <Image style={styles.tinyImg} source={{ uri: item.image }} />
+                                <View style={{ position: 'absolute', right: 2 }}>
+                                  <Checkbox
+                                    status={selectedImages.includes(image.image) ? 'checked' : 'unchecked'}
+                                    onPress={() => handleImageSelection(image.image, image.image_id)}
+                                  />
+                                </View>
+                                <Image style={styles.tinyImg} source={{ uri: image.image }} />
                                 <Text style={styles.remark}>
-                               {item.remark.length >= 5 ? `${item.remark.slice(0, 5)}...` : item.remark}
+                                  {image.remark.length >= 5 ? `${image.remark.slice(0, 5)}...` : image.remark}
                                 </Text>
                               </View>
                             </View>
                           </TouchableOpacity>
                         ))}
-                      </View>
-                    ))}
-                  </View>
+                      </ScrollView>
+                    </>
+                  )}
                   <Text style={styles.date}>Area</Text>
                   <TextInput
                     style={styles.input}
-                    // value={number}
+                    onChangeText={(text) => {
+                      setArea({
+                        ...area,
+                        [index]: text, // Store the value with the corresponding index
+                      });
+                    }}
+                    value={area[index] || ''}
                     placeholder=""
                   />
                   <Text style={styles.date}>Plan</Text>
                   <TextInput
                     style={styles.input}
-                    // onChangeText={onChangeNumber}
-                    // value={number}
+                    onChangeText={(text) => {
+                      setPlan({
+                        ...plan,
+                        [index]: text, // Store the value with the corresponding index
+                      });
+                    }}
+                    value={plan[index] || ''}
                     placeholder=""
                   />
                   <Text style={styles.date}>Completation</Text>
                   <TextInput
                     style={styles.input}
-                    // onChangeText={onChangeNumber}
-                    // value={number}
+                    onChangeText={(text) => {
+                      setCompletion({
+                        ...completion,
+                        [index]: text, // Store the value with the corresponding index
+                      });
+                    }}
+                    value={completion[index] || ''}
                     placeholder=""
                   />
                   <Text style={styles.date}>Status</Text>
                   <TextInput
                     style={styles.input}
-                    // onChangeText={onChangeNumber}
-                    // value={number}
+                    onChangeText={(text) => {
+                      setStatus({
+                        ...status,
+                        [index]: text, // Store the value with the corresponding index
+                      });
+                    }}
+                    value={status[index] || ''}
                     placeholder=""
                   />
                 </View>
@@ -185,10 +294,18 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }:any): JSX.Element =
             ))}
 
             {/* <View style={{ paddingBottom: 50 }}></View> */}
-            <Pressable style={styles.btn} onPress={() => navigation.navigate('ManpowerReportScreen')}>
-              <Text style={styles.btnText}>
-                Submit
-              </Text>
+            <Pressable style={styles.btn} onPress={AddDescription}>
+              {loading ?
+                (
+                  <ActivityIndicator size="small" color={Colors.white} />
+                )
+                :
+                (
+                  <Text style={styles.btnText}>
+
+                    Submit
+                  </Text>
+                )}
             </Pressable>
           </ScrollView >
 
@@ -202,9 +319,9 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }:any): JSX.Element =
               style={styles.zoomedImg}
               source={{ uri: zoomedImage || '' }}
             />
-         <Text style={styles.remark}> {/* Display the selectedImageRemark here */}
-         Remark:-{'\n'}{'\n'}{selectedImageRemark}
-        </Text>
+            <Text style={styles.remark}> {/* Display the selectedImageRemark here */}
+              Remark:-{'\n'}{'\n'}{selectedImageRemark}
+            </Text>
             <Pressable onPress={closeZoomedImage} style={styles.close}>
               <Text style={{ fontSize: 18, color: Colors.text_primary }}>Close</Text>
             </Pressable>
@@ -222,10 +339,21 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.screen_bg,
     padding: 24,
   },
-  remark:{
-    alignSelf:'center',
-    marginTop:10,
+  remark: {
+    alignSelf: 'center',
+    marginTop: 10,
     fontFamily: 'Roboto-Regular',
+  },
+  name: {
+    height: 50,
+    marginVertical: 5,
+    padding: 10,
+    borderColor: Colors.lightGray,
+    backgroundColor: Colors.lightGray,
+    borderRadius: 8,
+    color: Colors.text_primary,
+    paddingVertical: 15,
+    marginBottom: 10
   },
   btn: {
     backgroundColor: Colors.brand_primary,
@@ -256,6 +384,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.lightGray,
     backgroundColor: Colors.lightGray,
     borderRadius: 8,
+    textAlignVertical: 'top'
   },
   cover: {
     backgroundColor: Colors.white,
@@ -266,7 +395,9 @@ const styles = StyleSheet.create({
   },
   date: {
     fontFamily: 'Roboto-Medium',
-    color: Colors.text_primary
+    color: Colors.text_primary,
+    paddingLeft: 10,
+    fontSize: 16
   },
   Task: {
     fontFamily: 'Roboto-Medium',
@@ -277,6 +408,7 @@ const styles = StyleSheet.create({
   tinyImg: {
     width: 100,
     height: 100,
+    marginTop: 20
   },
   modalContainer: {
     flex: 1,
