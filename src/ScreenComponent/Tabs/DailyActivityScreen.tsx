@@ -1,92 +1,125 @@
 import React from 'react';
 import { FC } from 'react';
-import { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, Pressable, RefreshControl, Image, FlatList, ActivityIndicator } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, Image, FlatList, ActivityIndicator } from 'react-native';
 import { Card, Avatar, Checkbox } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import Colors from '../../style/Colors/colors';
 import { useNavigation } from '@react-navigation/native';
 import { getMethod } from '../../utils/helper';
-import { AuthContext } from '../../utils/appContext';
 
 interface Props {
   navigate: any;
 }
-const DailyActivityScreen: FC<Props> = (): JSX.Element => {
-  const [refreshing, setRefreshing] = useState(false);
-  const [checked, setChecked] = useState(false);
+const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
+  const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [checked, setChecked] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const navigation = useNavigation();
+  const [dailyActivity, setDailyActivity] = useState([]);
+  const { project_id } = route.params;
+  useEffect(() => {
+    getdata();
+  }, []);
 
+  const getdata = async () => {
+    setLoading(true);
+    const api: any = await getMethod(`task_list/${project_id}`);
+    if (api.status === 200) {
+      console.log("apiData", api.data)
+      setLoading(false);
+      setDailyActivity(api.data)
+      setRefreshing(false);
+      //  console.log("", taskList.task_id)
+    }
+  }
   const onRefresh = () => {
     setRefreshing(true);
-    // getdata();
+    getdata();
     setRefreshing(false);
   };
 
+
+
   return (
     <>
-      <ScrollView style={styles.cover}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
-        }>
-        {/* {
-            taskList.map((data, index) => (
-              <View key={index}>
-                <Pressable onPress={() => navigation.navigate('TaskDetailScreen', {
-                  taskId: data?.task_id
-                })}> */}
-        <Card style={styles.card}>
-          <View style={{ position: 'absolute', right: -25, top: -25 }}>
-            <Checkbox
-              status={checked ? 'checked' : 'unchecked'}
-              onPress={() => {
-                setChecked(!checked);
-              }}
-            />
-          </View>
-          <View>
-            <Text style={styles.jobSheet}>Task 1</Text>
-            <Text style={styles.address}>1 Yishun Industrial Street 1,
-              #07-36 A'Posh Bizhub, Singapore 768160</Text>
-            <Text style={styles.team}>Team members</Text>
-            <View style={styles.align}>
-              {/* {
+      {loading ? (
+        <ActivityIndicator size="large" color="#000" />
+      ) : (
+        <>
+          <ScrollView style={styles.cover}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />
+            }>
+            {
+              dailyActivity.map((data, index) => (
+                <View key={index}>
+                  <Card style={styles.card}>
+                    <View style={{ position: 'absolute', right: -25, top: -25 }}>
+                      <Checkbox
+                        status={selectedTaskIds.includes(data?.task_id) ? 'checked' : 'unchecked'}
+                        onPress={() => {
+                          const taskId = data?.task_id;
+                          if (selectedTaskIds.includes(taskId)) {
+                            // If the task_id is already selected, remove it
+                            setSelectedTaskIds(selectedTaskIds.filter(id => id !== taskId));
+                          } else {
+                            // If the task_id is not selected, add it
+                            setSelectedTaskIds([...selectedTaskIds, taskId]);
+                          }
+                        }}
+                      />
+                    </View>
+                    <View>
+                      <Text style={styles.jobSheet}>{data?.task_title}</Text>
+                      <Text style={styles.address}>{data?.task_description}</Text>
+                      <Text style={styles.team}>Team members</Text>
+                      <View style={styles.align}>
+                        {
                           data.user_data.map((data, index) => (
                             <View key={index}>
                               <Avatar.Image size={24} source={{ uri: data.profile }} />
                             </View>
-                          ))} */}
+                          ))}
 
-            </View>
-            <Text style={styles.startDate}>Start Date</Text>
-            <View style={styles.align}>
-              <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
-              <Text style={styles.date}>task_date_start</Text>
-            </View>
-          </View>
-          <View>
-            <View style={styles.indecator}>
-              <View style={styles.taskIconAlign}>
-                <Text style={{ bottom: 15, right: -70 }}>End Date</Text>
-                <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
-                <Text style={styles.date}>task_date_due</Text>
-              </View>
-            </View>
-          </View>
-        </Card>
-        {/* </Pressable>
-              </View>
-             ))} */}
+                      </View>
+                      <Text style={styles.startDate}>Start Date</Text>
+                      <View style={styles.align}>
+                        <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
+                        <Text style={styles.date}>{data?.task_date_start}</Text>
+                      </View>
+                    </View>
+                    <View>
+                      <View style={styles.indecator}>
+                        <View style={styles.taskIconAlign}>
+                          <Text style={{ bottom: 15, right: -70 }}>End Date</Text>
+                          <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
+                          <Text style={styles.date}>{data?.task_date_due}</Text>
+                        </View>
+                      </View>
+                    </View>
+                  </Card>
+                </View>
+              ))}
 
-      </ScrollView>
-      <Pressable style={styles.btn} onPress={()=> navigation.navigate('DailyActivityDescriptionScreen')}>
-        <Text style={styles.btnText}>
-          Submit
-        </Text>
-      </Pressable>
+          </ScrollView>
+          <Pressable
+            style={styles.btn}
+            onPress={() =>
+              navigation.navigate('DailyActivityDescriptionScreen', {
+                selectedTaskIds: selectedTaskIds,
+                project_id:project_id
+              })
+            }
+          >
+            <Text style={styles.btnText}>Submit</Text>
+          </Pressable>
+        </>
+      )}
     </>
   )
 };
@@ -101,7 +134,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     borderRadius: 8,
-    marginBottom: 24,
+    marginVertical: 24,
     width: 200,
     alignSelf: 'center'
   },
@@ -152,7 +185,8 @@ const styles = StyleSheet.create({
   card: {
     marginTop: 30,
     padding: 20,
-    backgroundColor: Colors.card_bg
+    backgroundColor: Colors.card_bg,
+    margin: 5
   },
   task: {
     color: Colors.text_secondary,

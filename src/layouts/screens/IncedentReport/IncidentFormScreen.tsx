@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { FC } from 'react';
 import { StyleSheet, ScrollView, Text, TextInput, View, Pressable } from 'react-native';
-import Appbar from '../../components/Appbar';
-import Colors from '../../style/Colors/colors';
+import Appbar from '../../../components/Appbar';
+import Colors from '../../../style/Colors/colors';
 import Feather from 'react-native-vector-icons/Feather';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';

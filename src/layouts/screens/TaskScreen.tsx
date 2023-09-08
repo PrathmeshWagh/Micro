@@ -7,7 +7,6 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import Colors from '../../style/Colors/colors';
 import JobDescriptionScreen from '../../ScreenComponent/Tabs/JobDescriptionScreen';
 import VarientationOderScreen from '../../ScreenComponent/Tabs/VarientationOderScreen';
-import IncidentReportScreen from '../../ScreenComponent/Tabs/IncidentReportscreen';
 import { getMethod } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
 

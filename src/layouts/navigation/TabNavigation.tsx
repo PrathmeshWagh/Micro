@@ -6,11 +6,7 @@ import JobSheetScreen from '../screens/JobSheetScreen';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
-
 import Colors from '../../style/Colors/colors';
-import JobDescriptionScreen from '../../ScreenComponent/Tabs/JobDescriptionScreen';
-import IncidentReportScreen from '../../ScreenComponent/Tabs/IncidentReportscreen';
-import VarientationOderScreen from '../../ScreenComponent/Tabs/VarientationOderScreen';
 
 const Tab = createBottomTabNavigator();
 const TabNavigation = () => {

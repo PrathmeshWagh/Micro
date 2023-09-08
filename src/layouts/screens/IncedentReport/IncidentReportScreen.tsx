@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Image, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl, Alert } from 'react-native';
-
 import { Card, Avatar } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
-import Colors from '../../style/Colors/colors';
+import Colors from '../../../style/Colors/colors';
 import { CommonActions, useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../../utils/appContext';
-import { getMethod, postMethod } from '../../utils/helper';
+import { getMethod, postMethod } from '../../../utils/helper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Snackbar from 'react-native-snackbar';
 

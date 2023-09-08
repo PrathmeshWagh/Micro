@@ -1,14 +1,12 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { View, Text, ScrollView, Image, Alert, ActivityIndicator } from 'react-native';
-import Appbar from '../../components/Appbar';
 import { StyleSheet, Pressable } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
-import Colors from '../../style/Colors/colors';
-import { getMethod } from '../../utils/helper';
-import { AuthContext } from '../../utils/appContext';
+import Appbar from '../../../components/Appbar';
+import { getMethod } from '../../../utils/helper';
+import Colors from '../../../style/Colors/colors';
 
 const IncidentReportDescriptionScreen = ({ route }: any) => {
-    const { user, setUser } = useContext(AuthContext);
     const [loading, setLoading] = useState(true);
     const [incidentDetails, setIncidentDetails] = useState();
     const { incident_reports_id } = route.params;
