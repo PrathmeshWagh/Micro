@@ -4,14 +4,15 @@ import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, Image, FlatList, ActivityIndicator } from 'react-native';
 import { Card, Avatar, Checkbox } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
-import Colors from '../../style/Colors/colors';
 import { useNavigation } from '@react-navigation/native';
-import { getMethod } from '../../utils/helper';
+import Colors from '../../../style/Colors/colors';
+import Appbar from '../../../components/Appbar';
+import { getMethod } from '../../../utils/helper';
 
 interface Props {
   navigate: any;
 }
-const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
+const DailyActivityCardScreen: FC<Props> = ({ route }: any): JSX.Element => {
   const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [checked, setChecked] = useState<boolean>(false);
@@ -48,6 +49,7 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
         <ActivityIndicator size="large" color="#000" />
       ) : (
         <>
+        <Appbar title={'Daily Activity'}/>
           <ScrollView style={styles.cover}
             refreshControl={
               <RefreshControl
@@ -128,6 +130,20 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.screen_bg,
     marginHorizontal: 14,
     flex: 1
+  }, 
+  add: {
+    borderWidth: 1,
+    borderColor: '#041B8E',
+    backgroundColor: '#041B8E',
+    height: 35,
+    width: 65,
+    padding: 5,
+    paddingLeft: 10,
+    alignSelf: 'center'
+  },
+  addText: {
+    color: 'white',
+    fontFamily: 'Roboto-Medium',
   },
   btn: {
     backgroundColor: Colors.brand_primary,
@@ -240,4 +256,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default DailyActivityScreen;
+export default DailyActivityCardScreen;

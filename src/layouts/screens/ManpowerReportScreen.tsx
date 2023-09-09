@@ -8,6 +8,8 @@ import { postMethod } from '../../utils/helper';
 import { stat } from 'react-native-fs';
 import Snackbar from 'react-native-snackbar';
 import { CommonActions, useNavigation } from '@react-navigation/native';
+import DatePicker from 'react-native-date-picker';
+import Feather from 'react-native-vector-icons/Feather';
 
 interface Props { }
 const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
@@ -23,6 +25,17 @@ const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
     const [endTime, setEndTime] = useState<number[]>([]);
     const [name, setName] = useState('');
     const [personName, setPersonName] = useState<string[]>([]);
+    const [startOpen, setStartOpen] = useState<boolean>(false);
+    const [Starttime, setStartingTime] = useState(new Date());
+    const [endOpen, setEndOpen] = useState(false);
+    const starttime = new Date(Starttime);
+    const hourss = starttime.getHours();
+    const minutess = starttime.getMinutes();
+    const starttimeString = `${hourss}:${minutess}`;
+    const [openModalIndex, setOpenModalIndex] = useState<number | null>(null);
+    const [startTimes, setStartTimes] = useState<string[]>([]);
+
+
     const { activity, project_id } = route.params;
     console.log("activity", activity)
     const data = [
@@ -40,7 +53,7 @@ const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
         }
     };
     const handleNumWorkersChange = (text: string) => {
-        console.log("test",text)
+        console.log("test", text)
         const num = parseInt(text, 10);
         if (!isNaN(num)) {
             const newSections = Array.from({ length: num }, (_, id) => ({ id: id + 1 }));
@@ -67,7 +80,7 @@ const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
             project_id: project_id,
             task_id: activity,
             name_of_person: taskStatusValues,
-            start_time: StartimeValue,
+            start_time: starttimeString,
             end_time: EndtimeValue,
             type_of_worker: value,
             types_of_worker_name: name,
@@ -83,12 +96,12 @@ const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
                 setLoading(false);
                 navigation.dispatch(
                     CommonActions.navigate({
-                      name: 'TopTabNavigation',
-                      params: {
-                        id: project_id
-                      },
+                        name: 'TopTabNavigation',
+                        params: {
+                            id: project_id
+                        },
                     })
-                  )
+                )
             } else {
                 setLoading(false);
                 Snackbar.show({
@@ -177,7 +190,35 @@ const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
                             placeholder=""
                         />
                         <Text style={styles.date}>Start Time {index + 1}</Text>
-
+                        {/* <View style={styles.dateCard}>
+                            <View style={{ flexDirection: 'row' }}>
+                                <View style={styles.inputTime}>
+                                    <Text style={styles.date}>{starttimeString}</Text>
+                                </View>
+                            </View>
+                            <Feather
+                                name="chevron-down"
+                                size={18}
+                                color={'#000'}
+                                style={{ position: 'absolute', right: 20, top: 12 }}
+                                onPress={() => setOpenModalIndex(index)} // Set the index of the worker modal to open
+                            />
+                            <DatePicker
+                                modal
+                                mode="time"
+                                is24hourSource="device"
+                                open={openModalIndex === index} // Only open the modal for the selected worker
+                                date={Starttime}
+                                onConfirm={(time2) => {
+                                    setOpenModalIndex(null); // Close the modal after confirming
+                                    setStartingTime(time2);
+                                }}
+                                onCancel={() => {
+                                    setOpenModalIndex(null); // Close the modal when canceled
+                                }}
+                            />
+                           
+                        </View> */}
                         <TextInput
                             style={styles.input}
                             onChangeText={(text) => {
@@ -235,6 +276,15 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginVertical: 40
     },
+    inputTime: {
+        height: 45,
+        width: '100%',
+        marginVertical: 5,
+        padding: 10,
+        borderColor: Colors.lightGray,
+        backgroundColor: Colors.lightGray,
+        borderRadius: 2,
+    },
     btnText: {
         color: Colors.white,
         fontFamily: 'Roboto-Medium',
@@ -281,7 +331,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto-Medium',
         color: Colors.text_primary,
         fontSize: 16,
-        marginTop: 15
+
     },
     Manpower: {
         fontFamily: 'Roboto-Medium',

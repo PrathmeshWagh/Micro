@@ -44,7 +44,6 @@ const DailyReportScreen = ({ route, navigation }: any) => {
     const hourss = starttime.getHours();
     const minutess = starttime.getMinutes();
 
-
     const endtimeString = `${hours}:${minutes}`;
     const starttimeString = `${hourss}:${minutess}`;
     // console.log("endtimeString", endtimeString)

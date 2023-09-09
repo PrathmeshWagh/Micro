@@ -28,13 +28,11 @@ import ViewDailyReportScreen from '../screens/ViewDailyReportScreen';
 import ReviewImageScreen from '../screens/ReviewImageScreen';
 import CompleteScreen from '../screens/CompleteScreen';
 import JobDescriptionScreen from '../../ScreenComponent/Tabs/JobDescriptionScreen';
-import DailyActivityScreen from '../../ScreenComponent/Tabs/DailyActivityScreen';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 import InprogressScreen from '../screens/InprogressScreen';
 import PendingScreen from '../screens/PendingScreen';
 import SplashScreen from 'react-native-splash-screen';
 import CustomTopTabBar from '../../components/CustomTopTabBar';
-import DailyActivityDescriptionScreen from '../screens/DailyActivityDescriptionScreen';
 import ManpowerReportScreen from '../screens/ManpowerReportScreen';
 import EditImageScreen from '../screens/EditImageScreen';
 import RemarkScreen from '../screens/RemarkScreen';
@@ -44,6 +42,9 @@ import IncidentReportScreen from '../screens/IncedentReport/IncidentReportScreen
 import IncidentFormScreen from '../screens/IncedentReport/IncidentFormScreen';
 import IncidentReportDescriptionScreen from '../screens/IncedentReport/IncidentReportDescriptionScreen';
 import VarientationOderScreen from '../../ScreenComponent/Tabs/VarientationOderScreen';
+import DailyActivityDescriptionScreen from '../screens/DailyActivity/DailyActivityDescriptionScreen';
+import DailyActivityScreen from '../screens/DailyActivity/DailyActivityScreen';
+import DailyActivityCardScreen from '../screens/DailyActivity/DailyActivityCardScreen';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const TabTop = createMaterialTopTabNavigator();
@@ -105,6 +106,7 @@ function AppNavigation() {
         <Stack.Screen name="VarientationOder" component={VarientationOderScreen} />
         <Stack.Screen name="IncidentReportDescriptionScreen" component={IncidentReportDescriptionScreen} />
         <Stack.Screen name="DailyActivityDescriptionScreen" component={DailyActivityDescriptionScreen} />
+        <Stack.Screen name="DailyActivityCardScreen" component={DailyActivityCardScreen} />
         <Stack.Screen name="ManpowerReportScreen" component={ManpowerReportScreen} />
         <Stack.Screen name="InprogressScreen" component={InprogressScreen} />
         <Stack.Screen name="PendingScreen" component={PendingScreen} />

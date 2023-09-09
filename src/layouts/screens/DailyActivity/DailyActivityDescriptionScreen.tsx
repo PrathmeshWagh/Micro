@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { FC } from 'react';
 import { ActivityIndicator, FlatList, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import Appbar from '../../components/Appbar';
-import Colors from '../../style/Colors/colors';
+
 import { Checkbox, Modal, Portal } from 'react-native-paper';
 import { CommonActions, useNavigation } from '@react-navigation/native';
-import { FormPostMethod, getMethod, postMethod } from '../../utils/helper';
 import Snackbar from 'react-native-snackbar';
 import Feather from 'react-native-vector-icons/Feather';
 import moment from 'moment';
 import DatePicker from 'react-native-date-picker';
+import { postMethod } from '../../../utils/helper';
+import Appbar from '../../../components/Appbar';
+import Colors from '../../../style/Colors/colors';
 
 interface Props {
   navigation: any
@@ -110,7 +111,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
       task_remark: taskRemarkValues,
       area: taskAreaValues,
       plan: taskPlanValues,
-      completation: taskCompletionValues,
+      completion: taskCompletionValues,
       status: taskStatusValues,
       date: formattedDate
     }
@@ -265,7 +266,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
                     value={plan[index] || ''}
                     placeholder=""
                   />
-                  <Text style={styles.date}>Completation</Text>
+                  <Text style={styles.date}>Completion</Text>
                   <TextInput
                     style={styles.input}
                     onChangeText={(text) => {
