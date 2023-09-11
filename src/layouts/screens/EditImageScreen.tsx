@@ -37,16 +37,13 @@ const EditImageScreen: FC<Props> = ({ route }: any): JSX.Element => {
     useEffect(() => {
         getdata();
     }, []);
+
     useEffect(() => {
         if (details) {
-            // If details.name is available, set it as the initial value for 'name'
-            if (details.name) {
-                setName(details.name);
-            }
-            // If details.remark_for_photo is available, set it as the initial value for 'remark'
-            if (details.remark_for_photo) {
-                setRemark(details.remark_for_photo);
-            }
+            const { name, remark_for_photo } = details;
+            setName(name || '');
+            setRemark(remark_for_photo || '');
+
         }
     }, [details]);
     const open = () => {
@@ -172,7 +169,7 @@ const EditImageScreen: FC<Props> = ({ route }: any): JSX.Element => {
 
     return (
         <>
-        <Appbar title={'Edit Image'}/>
+            <Appbar title={'Edit Image'} />
             <View style={{ padding: 30 }}>
                 {isLoading ? ( // Show loader when isLoading is true
                     <ActivityIndicator size="large" color={Colors.brand_primary} />

@@ -95,7 +95,7 @@ const AddOderScreen = ({ navigation, route }: any) => {
     formData.append('remarks', remarks);
     formData.append('contact', contact);
 
-    console.log("imageUri....", imageUri)
+    console.log("imageUri....", formData)
     try {
       setLoading(true);
       const api: any = await FormPostMethod(`add_variation_order`, formData);
@@ -148,7 +148,7 @@ const AddOderScreen = ({ navigation, route }: any) => {
           style={styles.input}
           onChangeText={setSize}
           value={size}
-          keyboardType="numeric"
+          
         />
         <Text style={styles.inputText}>Description</Text>
         <TextInput

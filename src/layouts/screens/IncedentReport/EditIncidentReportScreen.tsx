@@ -15,19 +15,16 @@ import { Modal, Portal } from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { FormPostMethod } from '../../../utils/helper';
 import Snackbar from 'react-native-snackbar';
-import { CommonActions } from '@react-navigation/native';
+
 
 interface Props { }
-const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element => {
-    const { project_id } = route.params;
+const EditIncidentReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
+    // const { project_id } = route.params;
 
     const [imageUri, setImageUri] = useState<string[]>([]);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-    const [value, setValue] = useState('');
-    const [showTextBox, setShowTextBox] = useState(false);
     const [Starttime, setStartTime] = useState(new Date());
-    const [startOpen, setStartOpen] = useState(false);
     const starttime = new Date(Starttime);
     const hourss = starttime.getHours();
     const minutess = starttime.getMinutes();
@@ -208,90 +205,90 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
 
 
 
-    const IncidentReport = async () => {
-        const formData = new FormData();
-        for (let i = 0; i < imageUri.length; i++) {
-            formData.append('file[]', {
-                uri: imageUri[i],
-                type: 'image/jpg', // Make sure to determine the correct image type
-                name: `image_${i}.jpg`, // Use a unique name for each image
-            });
-        }
-        formData.append('report_serial_number', serialNo)
-        formData.append('revision', revision)
-        formData.append('company_department_reporting', company)
-        formData.append('name_or_person_reporting', personReporting);
-        formData.append('designation_of_person_reporting', reportingDesignation);
-        formData.append('nric_fin_wp_no_of_person_reporting', NRICpersonReporting);
-        formData.append('date_of_report_submission', formattedDate);
-        formData.append('time_of_report_submission', formattedTime);
+    // const IncidentReport = async () => {
+    //     const formData = new FormData();
+    //     for (let i = 0; i < imageUri.length; i++) {
+    //         formData.append('file[]', {
+    //             uri: imageUri[i],
+    //             type: 'image/jpg', // Make sure to determine the correct image type
+    //             name: `image_${i}.jpg`, // Use a unique name for each image
+    //         });
+    //     }
+    //     formData.append('report_serial_number', serialNo)
+    //     formData.append('revision', revision)
+    //     formData.append('company_department_reporting', company)
+    //     formData.append('name_or_person_reporting', personReporting);
+    //     formData.append('designation_of_person_reporting', reportingDesignation);
+    //     formData.append('nric_fin_wp_no_of_person_reporting', NRICpersonReporting);
+    //     formData.append('date_of_report_submission', formattedDate);
+    //     formData.append('time_of_report_submission', formattedTime);
 
-        formData.append('catergory_of_event', selectedValue);
-        formData.append('catergory_of_event_please_specify_below', eventValue);
-        formData.append('injury_to_person', injuryToPerson);
-        formData.append('damage_to_property', damageValue);
-        formData.append('full_name_of_injured_person', injuredPersonName);
-        formData.append('nric_wp_no_of_injured_person', nricInjuredPerson);
-        formData.append('designation_of_injured_person', desInjuredPerson);
-        formData.append('nature_of_injury', natureInjury);
-        formData.append('injured_person_sent_to', selectedValue2);
-        formData.append('injured_person_sent_to_please_specify_below', injuredvalue);
-        formData.append('description_of_property_damage', desPropertyDamage);
-        formData.append('project', project);
-        formData.append('job_number', jobNumber);
-        formData.append('name_of_coordinator_supervisor_in_charge', cordinatorName);
-        formData.append('full_workplace_address', workAddress);
-        formData.append('location', location);
-        formData.append('date_of_acc_inc_do', formattedDate2);
-        formData.append('time_of_acc_inc_do', endtimeString);
-        formData.append('details_of_accident_incident_dangerous_occurance', accidentDetails);
-        formData.append('incident_report_remark', remark);
-        formData.append('signature_of_person_reporting', signature);
-        formData.append('date', formattedDate3);
-        formData.append('project_id', project_id);
+    //     formData.append('catergory_of_event', selectedValue);
+    //     formData.append('catergory_of_event_please_specify_below', eventValue);
+    //     formData.append('injury_to_person', injuryToPerson);
+    //     formData.append('damage_to_property', damageValue);
+    //     formData.append('full_name_of_injured_person', injuredPersonName);
+    //     formData.append('nric_wp_no_of_injured_person', nricInjuredPerson);
+    //     formData.append('designation_of_injured_person', desInjuredPerson);
+    //     formData.append('nature_of_injury', natureInjury);
+    //     formData.append('injured_person_sent_to', selectedValue2);
+    //     formData.append('injured_person_sent_to_please_specify_below', injuredvalue);
+    //     formData.append('description_of_property_damage', desPropertyDamage);
+    //     formData.append('project', project);
+    //     formData.append('job_number', jobNumber);
+    //     formData.append('name_of_coordinator_supervisor_in_charge', cordinatorName);
+    //     formData.append('full_workplace_address', workAddress);
+    //     formData.append('location', location);
+    //     formData.append('date_of_acc_inc_do', formattedDate2);
+    //     formData.append('time_of_acc_inc_do', endtimeString);
+    //     formData.append('details_of_accident_incident_dangerous_occurance', accidentDetails);
+    //     formData.append('incident_report_remark', remark);
+    //     formData.append('signature_of_person_reporting', signature);
+    //     formData.append('date', formattedDate3);
+    //     formData.append('project_id', project_id);
 
 
 
-        // console.log("imageUri....", formData)
-        try {
-            setLoading(true);
-            const api: any = await FormPostMethod(`add_incident_report`, formData);
-            console.log(".....", api.data)
-            if (api.status === 200) {
-                setLoading(false);
-                setImageUri([])
-                Snackbar.show({
-                    text: api.data,
-                    duration: Snackbar.LENGTH_SHORT,
-                    textColor: 'white',
-                    backgroundColor: 'green',
-                });
-                navigation.dispatch(CommonActions.goBack())
-            } else {
-                setLoading(false);
-                Snackbar.show({
-                    text: api.data.message,
-                    duration: Snackbar.LENGTH_SHORT,
-                    textColor: '#AE1717',
-                    backgroundColor: '#F2A6A6',
-                });
-            }
-        }
-        catch (e) {
-            Snackbar.show({
-                text: "Some Error Occured" + e,
-                duration: Snackbar.LENGTH_SHORT,
-                textColor: '#AE1717',
-                backgroundColor: '#F2A6A6',
-            });
-        }
+    //     // console.log("imageUri....", formData)
+    //     try {
+    //         setLoading(true);
+    //         const api: any = await FormPostMethod(`add_incident_report`, formData);
+    //         console.log(".....", api.data)
+    //         if (api.status === 200) {
+    //             setLoading(false);
+    //             setImageUri([])
+    //             Snackbar.show({
+    //                 text: api.data,
+    //                 duration: Snackbar.LENGTH_SHORT,
+    //                 textColor: 'white',
+    //                 backgroundColor: 'green',
+    //             });
+    //             navigation.dispatch(CommonActions.goBack())
+    //         } else {
+    //             setLoading(false);
+    //             Snackbar.show({
+    //                 text: api.data.message,
+    //                 duration: Snackbar.LENGTH_SHORT,
+    //                 textColor: '#AE1717',
+    //                 backgroundColor: '#F2A6A6',
+    //             });
+    //         }
+    //     }
+    //     catch (e) {
+    //         Snackbar.show({
+    //             text: "Some Error Occured" + e,
+    //             duration: Snackbar.LENGTH_SHORT,
+    //             textColor: '#AE1717',
+    //             backgroundColor: '#F2A6A6',
+    //         });
+    //     }
 
-    }
+    // }
 
 
     return (
         <>
-            <Appbar title={'Incident Report'} />
+            <Appbar title={'Edit Incident Report'} />
             <ScrollView style={styles.container}>
                 <View style={styles.part}>
                     <Text style={styles.partText}>PART A</Text>
@@ -819,7 +816,7 @@ const styles = StyleSheet.create({
         padding: 15,
         alignSelf: 'center',
         borderRadius: 8,
-        marginTop:10
+        marginTop: 10
     },
     submit: {
         color: Colors.white,
@@ -908,9 +905,9 @@ const styles = StyleSheet.create({
     },
     Btntext: {
         fontFamily: 'Roboto-Medium',
-        color:Colors.white,
-        fontSize:16
+        color: Colors.white,
+        fontSize: 16
     }
 });
 
-export default IncidentFormScreen;
+export default EditIncidentReportScreen;

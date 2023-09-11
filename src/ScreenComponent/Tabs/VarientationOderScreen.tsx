@@ -17,7 +17,7 @@ const VarientationOder = ({ route }: any) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [veriationList, setVeriationList] = useState([]);
 
- 
+
   useFocusEffect(
     useCallback(() => {
       // This code will run when the screen focuses
@@ -28,7 +28,7 @@ const VarientationOder = ({ route }: any) => {
     setLoading(true);
     const api: any = await getMethod(`get_all_variation_order/${project_id}`);
     if (api.status === 200) {
-      console.log("api",api.data)
+      console.log("api", api.data)
       setLoading(false);
       setVeriationList(api.data)
       setRefreshing(false);
@@ -50,7 +50,7 @@ const VarientationOder = ({ route }: any) => {
   const deleteList = async (variationId: any) => {
     const raw = {
       variation_order_id: variationId,
-      project_id:project_id
+      project_id: project_id
     }
     try {
       const api: any = await postMethod(`delete_variation_order`, raw);
@@ -120,26 +120,42 @@ const VarientationOder = ({ route }: any) => {
             />
           }>
             {veriationList.map((item, index) => (
-                <Pressable
+              <Pressable
                 key={index}
-                  onPress={() =>
-                    navigation.dispatch(
-                      CommonActions.navigate({
-                        name: 'ViewVariationOderScreen',
-                        params: {
-                          id: item.variation_order_id,
-                        },
-                      })
-                    )
-                  }
-                >
+                onPress={() =>
+                  navigation.dispatch(
+                    CommonActions.navigate({
+                      name: 'ViewVariationOderScreen',
+                      params: {
+                        id: item.variation_order_id,
+                      },
+                    })
+                  )
+                }
+              >
                 <Card style={styles.card}>
-                  <View style={{ marginVertical: 10, }}>
-                  {item.check_edit_delete === 1 && (
-                    <Pressable onPress={() => createTwoButtonAlert(item.variation_order_id)}>
-                      <Ionicons name="trash-bin" color={Colors.red} size={22} style={styles.delete} />
-                    </Pressable>
-                  )}
+                  <View style={{ marginVertical: 10, justifyContent: 'flex-end' }}>
+
+                    {item.check_edit_delete === 1 && (
+                      <>
+                        <Pressable onPress={() =>
+                          navigation.dispatch(
+                            CommonActions.navigate({
+                              name: 'EditVariationOrder',
+                              params: {
+                                project_id:project_id,
+                                variation_id: item.variation_order_id,
+                              },
+                            })
+                          )
+                        }>
+                          <Feather name="edit-3" color={Colors.red} size={22} style={styles.edit} />
+                        </Pressable>
+                        <Pressable onPress={() => createTwoButtonAlert(item.variation_order_id)}>
+                          <Ionicons name="trash-bin" color={Colors.red} size={22} style={styles.delete} />
+                        </Pressable>
+                      </>
+                    )}
                   </View>
                   <View style={styles.align}>
                     <Text style={styles.text}>Product Service -</Text>
@@ -182,6 +198,13 @@ const styles = StyleSheet.create({
   cover: {
     marginTop: 14,
     marginHorizontal: 14
+  },
+  edit: {
+
+    position: 'absolute',
+    right: 30,
+    top: -20
+
   },
   delete: {
     position: 'absolute',

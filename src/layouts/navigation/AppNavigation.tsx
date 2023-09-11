@@ -45,6 +45,8 @@ import VarientationOderScreen from '../../ScreenComponent/Tabs/VarientationOderS
 import DailyActivityDescriptionScreen from '../screens/DailyActivity/DailyActivityDescriptionScreen';
 import DailyActivityScreen from '../screens/DailyActivity/DailyActivityScreen';
 import DailyActivityCardScreen from '../screens/DailyActivity/DailyActivityCardScreen';
+import EditIncidentReportScreen from '../screens/IncedentReport/EditIncidentReportScreen';
+import EditVariationOrder from '../screens/VariationOder/EditVariationOder';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const TabTop = createMaterialTopTabNavigator();
@@ -113,6 +115,9 @@ function AppNavigation() {
         <Stack.Screen name="RemarkScreen" component={RemarkScreen} />
         <Stack.Screen name="ViewVariationOderScreen" component={ViewVariationOderScreen} />
         <Stack.Screen name="ViewIncidentReportScreen" component={ViewIncidentReportScreen} />
+        <Stack.Screen name="EditIncidentReportScreen" component={EditIncidentReportScreen} />
+        <Stack.Screen name="EditVariationOrder" component={EditVariationOrder} />
+
 
       </Stack.Navigator>
     )

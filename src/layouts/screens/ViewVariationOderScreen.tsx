@@ -103,7 +103,7 @@ const ViewVariationOderScreen: FC<Props> = ({ route }: any): JSX.Element => {
                 {selectedImage && (
                   <Image
                     source={{ uri: selectedImage }}
-                    style={{ width: '100%', height: 300, borderRadius: 8 }}
+                    style={{ width: '100%', height: 350, borderRadius: 8 }}
                   />
                 )}
                 <Pressable onPress={closeModal} style={styles.close}>

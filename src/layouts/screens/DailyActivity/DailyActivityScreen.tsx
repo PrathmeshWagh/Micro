@@ -70,7 +70,9 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
                                 <Text style={styles.upload}>Uploaded By:</Text>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                     <Text style={styles.name}>{item.uploaded_by}</Text>
+                                    <Pressable>
                                     <Feather name="edit-3" size={18} color={Colors.brand_primary} style={styles.edit} />
+                                    </Pressable>
                                 </View>
                             </View>
 
