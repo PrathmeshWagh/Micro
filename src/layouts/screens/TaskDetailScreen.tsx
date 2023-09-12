@@ -82,16 +82,21 @@ const TaskDetailScreen = ({ route }: any) => {
 
                 </View>
                 <Text style={styles.startDate}>Deadline: <Text style={{ color: Colors.red }}>{taskDetails?.task_date_due}</Text></Text>
-                <Text style={styles.startDate}>
-                  Task End User: <Text style={{ color: Colors.red }}>
-                    {taskDetails?.task_end_user_id || 'null'}
+                {taskDetails?.task_end_user_id ? (
+                  <Text style={styles.startDate}>
+                    Task End User: <Text style={{ color: Colors.red }}>
+                      {taskDetails?.task_end_user_id}
+                    </Text>
                   </Text>
-                </Text>
-                <Text style={styles.startDate}>
-                  Task End Date: <Text style={{ color: Colors.red }}>
-                    {taskDetails?.task_end_date || 'null'}
+                ) : null}
+                {taskDetails?.task_end_date ? (
+                  <Text style={styles.startDate}>
+                    Task End User: <Text style={{ color: Colors.red }}>
+                      {taskDetails?.task_end_date}
+                    </Text>
                   </Text>
-                </Text>
+                ) : null}
+                
               </View>
               <View>
               </View>
@@ -133,7 +138,7 @@ const TaskDetailScreen = ({ route }: any) => {
                 <Image size={24} source={require('../../style/Img/2.png')} />
               </Pressable>
             </View>
-            <View style={{ marginLeft: 20 ,padding:10}}>
+            <View style={{ marginLeft: 20, padding: 10 }}>
               <Pressable
                 style={styles.AddPic}
                 onPress={() =>

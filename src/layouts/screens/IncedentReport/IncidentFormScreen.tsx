@@ -819,7 +819,7 @@ const styles = StyleSheet.create({
         padding: 15,
         alignSelf: 'center',
         borderRadius: 8,
-        marginTop:10
+        marginTop: 10
     },
     submit: {
         color: Colors.white,
@@ -908,8 +908,8 @@ const styles = StyleSheet.create({
     },
     Btntext: {
         fontFamily: 'Roboto-Medium',
-        color:Colors.white,
-        fontSize:16
+        color: Colors.white,
+        fontSize: 16
     }
 });
 

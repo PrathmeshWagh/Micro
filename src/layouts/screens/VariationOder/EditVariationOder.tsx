@@ -31,8 +31,8 @@ interface DetailsData {
     images: ImageData[];
 }
 const EditVariationOrder: React.FC<EditVariationOrderProps> = ({ navigation, route }) => {
-    const { project_id, variation_id } = route.params;
-    console.log("....", variation_id)
+    const { project_id,} = route.params;
+    console.log("....", project_id)
     const [imageUri, setImageUri] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [loader, setLoader] = useState<boolean>(false);

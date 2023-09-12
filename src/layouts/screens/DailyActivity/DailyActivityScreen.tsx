@@ -27,7 +27,6 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
             setLoading(false);
             setDailyActivity(api.data)
             setRefreshing(false);
-            //  console.log("", taskList.task_id)
         }
     }
     const onRefresh = () => {
@@ -37,6 +36,18 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
     };
     return (
         <>
+            <Pressable style={styles.add} onPress={() =>
+                navigation.dispatch(
+                    CommonActions.navigate({
+                        name: 'DailyActivityCardScreen',
+                        params: {
+                            project_id: project_id,
+                        },
+                    })
+                )
+            }>
+                <Text style={styles.addText}>+ Add</Text>
+            </Pressable>
             {loading ? (
                 <ActivityIndicator size="large" color="#000" />
             ) : (
@@ -48,18 +59,7 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
                             onRefresh={onRefresh}
                         />
                     }>
-                    <Pressable style={styles.add} onPress={() =>
-                        navigation.dispatch(
-                            CommonActions.navigate({
-                                name: 'DailyActivityCardScreen',
-                                params: {
-                                    project_id: project_id,
-                                },
-                            })
-                        )
-                    }>
-                        <Text style={styles.addText}>+ Add</Text>
-                    </Pressable>
+
                     {dailyActivity.map((item, index) => (
                         <View style={styles.cover}>
                             <View style={styles.align2}>
@@ -71,7 +71,7 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                                     <Text style={styles.name}>{item.uploaded_by}</Text>
                                     <Pressable>
-                                    <Feather name="edit-3" size={18} color={Colors.brand_primary} style={styles.edit} />
+                                        <Feather name="edit-3" size={18} color={Colors.brand_primary} style={styles.edit} />
                                     </Pressable>
                                 </View>
                             </View>
@@ -98,12 +98,12 @@ const styles = StyleSheet.create({
         padding: 5,
         paddingLeft: 10,
         alignSelf: 'center',
-        marginBottom:20
-      },
-      addText: {
+        marginBottom: 20
+    },
+    addText: {
         color: 'white',
         fontFamily: 'Roboto-Medium',
-      },
+    },
     cover: {
         borderWidth: 1,
         backgroundColor: Colors.screen_bgDark,

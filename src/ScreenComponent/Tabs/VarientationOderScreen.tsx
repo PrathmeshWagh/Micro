@@ -97,11 +97,7 @@ const VarientationOder = ({ route }: any) => {
 
   return (
     <View style={styles.cover}>
-      {loading ? (
-        <ActivityIndicator size="large" color={Colors.brand_primary} />
-      ) : (
-        <>
-          <Pressable style={styles.add} onPress={() =>
+       <Pressable style={styles.add} onPress={() =>
             navigation.dispatch(
               CommonActions.navigate({
                 name: 'AddOderScreen',
@@ -113,6 +109,10 @@ const VarientationOder = ({ route }: any) => {
           }>
             <Text style={styles.addText}>+ Add</Text>
           </Pressable>
+      {loading ? (
+        <ActivityIndicator size="large" color={Colors.brand_primary} />
+      ) : (
+        <>
           <ScrollView refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -141,7 +141,7 @@ const VarientationOder = ({ route }: any) => {
                         <Pressable onPress={() =>
                           navigation.dispatch(
                             CommonActions.navigate({
-                              name: 'EditVariationOrder',
+                              name: 'EditIncidentReportScreen',
                               params: {
                                 project_id:project_id,
                                 variation_id: item.variation_order_id,

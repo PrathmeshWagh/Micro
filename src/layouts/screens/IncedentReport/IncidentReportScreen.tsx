@@ -7,6 +7,7 @@ import { CommonActions, useNavigation } from '@react-navigation/native';
 import { getMethod, postMethod } from '../../../utils/helper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Snackbar from 'react-native-snackbar';
+import Feather from 'react-native-vector-icons/Feather';
 
 const IncidentReport = ({ route }: any) => {
   const { project_id } = route.params;
@@ -54,7 +55,7 @@ const IncidentReport = ({ route }: any) => {
   const deleteList = async (incidentId: number) => {
     const raw = {
       incident_reports_id: incidentId,
-      project_id:project_id
+      project_id: project_id
     }
     try {
       const api: any = await postMethod(`delete_incident_report`, raw);
@@ -105,11 +106,27 @@ const IncidentReport = ({ route }: any) => {
 
         {incidentList?.map((item, index) => (
           <View style={styles.card}>
-            {item.check_edit_delete === 1 && ( 
-             <Pressable onPress={() => createTwoButtonAlert(item.incident_reports_id)}>
-              <Ionicons name="trash-bin" color={Colors.red} size={22} style={styles.delete} />
-            </Pressable>
-             )} 
+            {item.check_edit_delete === 1 && (
+              <>
+                <Pressable onPress={() =>
+                  navigation.dispatch(
+                    CommonActions.navigate({
+                      name: 'EditIncidentReportScreen',
+                      params: {
+                        project_id: project_id,
+                        incident_id: item.incident_reports_id,
+                      },
+                    })
+                  )
+                }>
+                  <Feather name="edit-3" color={Colors.red} size={22} style={styles.edit} />
+                </Pressable>
+                <Pressable onPress={() => createTwoButtonAlert(item.incident_reports_id)}>
+                  <Ionicons name="trash-bin" color={Colors.red} size={22} style={styles.delete} />
+                </Pressable>
+
+              </>
+            )}
             <View style={styles.align}>
               <Text style={styles.text}>Report Serial Number:</Text>
               <Text style={styles.text2}>{item?.report_serial_number}</Text>
@@ -126,8 +143,8 @@ const IncidentReport = ({ route }: any) => {
               CommonActions.navigate({
                 name: 'ViewIncidentReportScreen',
                 params: {
-                  projectId:project_id,
-                  incidentReportsId:item.incident_reports_id
+                  projectId: project_id,
+                  incidentReportsId: item.incident_reports_id
                 },
               }))}>
               <Text style={styles.viewDetails}>View Details</Text>
@@ -154,6 +171,11 @@ const styles = StyleSheet.create({
     right: 0,
     top: -20
   },
+  edit: {
+    position: 'absolute',
+    right: 30,
+    top: -20
+  },
   provide: {
     color: 'gray',
     marginVertical: 5,
@@ -174,7 +196,7 @@ const styles = StyleSheet.create({
     margin: 10,
     elevation: 8,
     marginTop: 20,
-   paddingBottom:-20
+    paddingBottom: -20
   },
   text: {
     color: Colors.text_primary,
