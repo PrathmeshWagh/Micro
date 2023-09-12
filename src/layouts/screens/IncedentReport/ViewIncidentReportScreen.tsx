@@ -292,10 +292,11 @@ const styles = StyleSheet.create({
     text2: {
         color: Colors.black,
         fontFamily: 'Roboto-Regular',
+        marginTop:5
     },
     align: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
+        // flexDirection: 'row',
+        // justifyContent: 'space-between',
         marginVertical: 5
     },
     add: {

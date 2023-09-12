@@ -25,7 +25,6 @@ const IncidentReport = ({ route }: any) => {
     setLoading(true);
     const api: any = await getMethod(`get_all_incident_report/${project_id}`);
     if (api.status === 200) {
-      console.log("apiData", api.data)
       setLoading(false);
       setIncidentList(api.data)
       setRefreshing(false);
@@ -34,7 +33,7 @@ const IncidentReport = ({ route }: any) => {
   }
   const onRefresh = () => {
     setRefreshing(true);
-    // getdata();
+    getdata();
     setRefreshing(false);
   };
 
@@ -91,70 +90,82 @@ const IncidentReport = ({ route }: any) => {
 
 
   return (
-    <View style={styles.cover}>
-      <Pressable style={styles.add} onPress={() => navigation.navigate('IncidentFormScreen', {
-        project_id: project_id
-      })}>
-        <Text style={styles.addText}>+ Add</Text>
-      </Pressable>
-      <ScrollView style={styles.gap}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh} />
-        }>
+    <>
+      {loading ? (
+        <ActivityIndicator size="large" color="#000" />
+      ) : (
+        <View style={styles.cover}>
+          <Pressable style={styles.add} onPress={() => navigation.navigate('IncidentFormScreen', {
+            project_id: project_id
+          })}>
+            <Text style={styles.addText}>+ Add</Text>
+          </Pressable>
+          <ScrollView style={styles.gap}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh} />
+            }>
 
-        {incidentList?.map((item, index) => (
-          <View style={styles.card}>
-            {item.check_edit_delete === 1 && (
-              <>
-                <Pressable onPress={() =>
-                  navigation.dispatch(
-                    CommonActions.navigate({
-                      name: 'EditIncidentReportScreen',
-                      params: {
-                        project_id: project_id,
-                        incident_id: item.incident_reports_id,
-                      },
-                    })
-                  )
-                }>
-                  <Feather name="edit-3" color={Colors.red} size={22} style={styles.edit} />
-                </Pressable>
-                <Pressable onPress={() => createTwoButtonAlert(item.incident_reports_id)}>
-                  <Ionicons name="trash-bin" color={Colors.red} size={22} style={styles.delete} />
-                </Pressable>
+            {incidentList?.map((item, index) => (
+              <View style={styles.card}>
+                {item.check_edit_delete === 1 && (
+                  <>
+                    <Pressable onPress={() =>
+                      navigation.dispatch(
+                        CommonActions.navigate({
+                          name: 'EditIncidentReportScreen',
+                          params: {
+                            project_id: project_id,
+                            incident_id: item.incident_reports_id,
+                          },
+                        })
+                      )
+                    }>
+                      <Feather name="edit-3" color={Colors.red} size={22} style={styles.edit} />
+                    </Pressable>
+                    <Pressable onPress={() => createTwoButtonAlert(item.incident_reports_id)}>
+                      <Ionicons name="trash-bin" color={Colors.red} size={22} style={styles.delete} />
+                    </Pressable>
 
-              </>
-            )}
-            <View style={styles.align}>
-              <Text style={styles.text}>Report Serial Number:</Text>
-              <Text style={styles.text2}>{item?.report_serial_number}</Text>
-            </View>
-            <View style={styles.align}>
-              <Text style={styles.text}>Revision:</Text>
-              <Text style={styles.text2}>{item?.revision}</Text>
-            </View>
-            <View style={styles.align}>
-              <Text style={styles.text}>Company / Department Reporting:</Text>
-              <Text style={styles.text2}>{item?.company_department_reporting}</Text>
-            </View>
-            <TouchableOpacity onPress={() => navigation.dispatch(
-              CommonActions.navigate({
-                name: 'ViewIncidentReportScreen',
-                params: {
-                  projectId: project_id,
-                  incidentReportsId: item.incident_reports_id
-                },
-              }))}>
-              <Text style={styles.viewDetails}>View Details</Text>
-            </TouchableOpacity>
+                  </>
+                )}
+                <View style={styles.align}>
+                  <Text style={styles.text}>Report Serial Number:</Text>
+                  <Text style={styles.text2}>
+                  {item?.report_serial_number !== undefined ? item.report_serial_number.substring(0, 5) + "......" : ''}
+                  </Text>
+                </View>
+                <View style={styles.align}>
+                  <Text style={styles.text}>Revision:</Text>
+                  <Text style={styles.text2}>
+                  {item?.revision !== undefined ? item.revision.substring(0, 5) + "......" : ''}
+                  </Text>
 
-            <View style={{ marginBottom: 30 }}></View>
-          </View>
-        ))}
-      </ScrollView>
-    </View>
+                </View>
+                <View style={styles.align}>
+                  <Text style={styles.text}>Company / Department Reporting:</Text>
+                  <Text style={styles.text2}>{item?.company_department_reporting !== undefined ? item.company_department_reporting.substring(0, 4) + ".." : ''}
+                  </Text>
+                </View>
+                <TouchableOpacity onPress={() => navigation.dispatch(
+                  CommonActions.navigate({
+                    name: 'ViewIncidentReportScreen',
+                    params: {
+                      projectId: project_id,
+                      incidentReportsId: item.incident_reports_id
+                    },
+                  }))}>
+                  <Text style={styles.viewDetails}>View Details</Text>
+                </TouchableOpacity>
+
+                <View style={{ marginBottom: 30 }}></View>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+    </>
   )
 
 }
@@ -208,6 +219,7 @@ const styles = StyleSheet.create({
   text2: {
     color: Colors.black,
     fontFamily: 'Roboto-Regular',
+    marginTop: 5
   },
   align: {
     flexDirection: 'row',

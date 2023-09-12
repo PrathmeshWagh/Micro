@@ -45,11 +45,11 @@ const DailyActivityCardScreen: FC<Props> = ({ route }: any): JSX.Element => {
 
   return (
     <>
+      <Appbar title={'Daily Activity'} />
       {loading ? (
         <ActivityIndicator size="large" color="#000" />
       ) : (
         <>
-        <Appbar title={'Daily Activity'}/>
           <ScrollView style={styles.cover}
             refreshControl={
               <RefreshControl
@@ -114,7 +114,7 @@ const DailyActivityCardScreen: FC<Props> = ({ route }: any): JSX.Element => {
             onPress={() =>
               navigation.navigate('DailyActivityDescriptionScreen', {
                 selectedTaskIds: selectedTaskIds,
-                project_id:project_id
+                project_id: project_id
               })
             }
           >
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.screen_bg,
     marginHorizontal: 14,
     flex: 1
-  }, 
+  },
   add: {
     borderWidth: 1,
     borderColor: '#041B8E',

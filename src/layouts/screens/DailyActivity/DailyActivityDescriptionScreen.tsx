@@ -93,7 +93,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
   };
   const onRefresh = () => {
     setRefreshing(true);
-    // getdata();
+    Upload();
     setRefreshing(false);
   };
 

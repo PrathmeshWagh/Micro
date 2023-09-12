@@ -123,6 +123,7 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
             setJobNumber(job_number || '');
             setCordinatorName(name_of_coordinator_supervisor_in_charge || '');
             setWorkAddress(full_workplace_address || '');
+            setEventValue(catergory_of_event_please_specify_below || '')
             setLocation(location || '');
             setAccidentDetails(details_of_accident_incident_dangerous_occurance || '');
             setRemark(incident_report_remark || '');
@@ -137,8 +138,6 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
 
     const [imageUri, setImageUri] = useState<string[]>([]);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
-
-
 
 
     const [selectedValue, setSelectedValue] = useState('');
@@ -159,21 +158,12 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
     const [endtime, setEndTime] = useState();
     const [startTime, setStartTime] = useState();
 
-
-    const timestamp = date1;
-    const formattedDate = moment(timestamp).format('DD-MM-YYYY');
-
-    const timestamp2 = date;
-    const formattedDate2 = moment(timestamp2).format('DD-MM-YYYY');
-
-
-    const timestamp3 = selectedDate;
-    const formattedDate3 = moment(timestamp3).format('DD-MM-YYYY');
     const [dateViewReport, setDateViewReport] = useState<string>()
     const [signatureDate, setSignatureDate] = useState<string>()
     const [dateViewAcc, setDateViewAcc] = useState<string>()
     const [reportTime, setReportTime] = useState('')
     const [AccTime, setAccTime] = useState('')
+    const [modalVisible, setModalVisible] = useState<boolean>(false);
 
 
     useEffect(() => {
@@ -182,7 +172,53 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
 
 
 
+    const UpdateImage = async () => {
 
+        const formData = new FormData();
+        for (let i = 0; i < imageUri.length; i++) {
+            formData.append('file[]', {
+                uri: imageUri[i],
+                type: 'image/jpg', // Make sure to determine the correct image type
+                name: `image_${i}.jpg`, // Use a unique name for each image
+            });
+        }
+        formData.append('incident_reports_id', incident_id);
+        formData.append('project_id', project_id);
+        console.log("formData", formData)
+        try {
+            setLoading(true);
+            const api: any = await FormPostMethod(`upload_incident_report_image`, formData);
+            if (api.status === 200) {
+                setLoading(false);
+                console.log("...", api.data)
+                Snackbar.show({
+                    text: api.data,
+                    duration: Snackbar.LENGTH_SHORT,
+                    textColor: 'white',
+                    backgroundColor: 'green',
+                });
+                // navigation.dispatch(CommonActions.goBack())
+            } else {
+                setLoading(false);
+                Snackbar.show({
+                    text: api.data.message,
+                    duration: Snackbar.LENGTH_SHORT,
+                    textColor: '#AE1717',
+                    backgroundColor: '#F2A6A6',
+                });
+            }
+        }
+        catch (e) {
+            console.log("catch", e)
+            Snackbar.show({
+                text: "Some Error Occured" + e,
+                duration: Snackbar.LENGTH_SHORT,
+                textColor: '#AE1717',
+                backgroundColor: '#F2A6A6',
+            });
+        }
+
+    }
 
 
 
@@ -244,13 +280,7 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
             },
         });
     };
-    const openZoomedImage = (imagePath: string) => {
-        setSelectedImage(imagePath);
-    };
-
-    const closeZoomedImage = () => {
-        setSelectedImage(null);
-    };
+   
     const handleDropdownChangeText = (value) => {
         console.log("value", value.value)
         setSelectedValue(value.value);
@@ -271,7 +301,15 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
         setSelectedValue2(value.value);
         setShowSpecifyInput2(value.value === 'Others');
     };
+    const openModal = (uri: string) => {
+        setSelectedImage(uri);
+        setModalVisible(true);
+    };
 
+    const closeModal = () => {
+        setSelectedImage(null);
+        setModalVisible(false);
+    };
 
     const event = [
         { value: 'Accident', label: 'Accident' },
@@ -300,7 +338,6 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
         setIsLoading(true);
         const api: any = await getMethod(`edit_incident_report/${project_id}/${incident_id}`);
         if (api.status === 200) {
-            console.log("apidata", api.data)
             setIsLoading(false);
             setDetails(api.data)
             //  console.log("apiData", viewImage)
@@ -370,8 +407,8 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
             incident_report_remark: remark, // Remarks about the incident report
             signature_of_person_reporting: signature, // Signature of the person reporting
             date: signatureDate, // Date of the signature
-            project_id: project_id, 
-            incident_reports_id:incident_id // Project ID (assuming this is an identifier for the project)
+            project_id: project_id,
+            incident_reports_id: incident_id // Project ID (assuming this is an identifier for the project)
         };
         try {
             setLoading(true);
@@ -379,7 +416,6 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
             console.log(".....", api.data)
             if (api.status === 200) {
                 setLoading(false);
-                setImageUri([])
                 Snackbar.show({
                     text: api.data,
                     duration: Snackbar.LENGTH_SHORT,
@@ -408,6 +444,42 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
 
     }
 
+    const ImageDelete: any = async (img_id: number) => {
+        const raw = {
+            incident_reports_id: incident_id,
+            image_id: img_id
+        }
+        console.log("raw",raw)
+        try {
+            const api: any = await postMethod(`delete_incident_report_image`, raw);
+            if (api.status === 200) {
+                console.log("api", api.data)
+                Snackbar.show({
+                    text: api.data,
+                    duration: Snackbar.LENGTH_SHORT,
+                    textColor: 'white',
+                    backgroundColor: 'green',
+                });
+                getdata()
+            } else {
+                Snackbar.show({
+                    text: api.data.message,
+                    duration: Snackbar.LENGTH_SHORT,
+                    textColor: '#AE1717',
+                    backgroundColor: '#F2A6A6',
+                });
+            }
+        }
+        catch (e) {
+            Snackbar.show({
+                text: "Some Error Occured" + e,
+                duration: Snackbar.LENGTH_SHORT,
+                textColor: '#AE1717',
+                backgroundColor: '#F2A6A6',
+            });
+        }
+
+    }
 
     return (
         <>
@@ -803,25 +875,29 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                             placeholder=""
 
                         />
-                        <Text style={styles.text}>Photo Upload <IonIcon name="camera" color={Colors.text_primary} size={20} onPress={openAlart} /></Text>
-                        <ScrollView horizontal>
 
-                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', paddingVertical: 5 }}>
-                                {details?.images.map((uri) => (
-                                    <Pressable key={uri.image_id} onPress={() => openZoomedImage(uri.image)}>
+                        <Text style={styles.text}>Upload Images</Text>
 
-                                        <View key={uri.image_id} style={{ padding: 5 }}>
-                                            <Image
-                                                source={{ uri: uri.image }}
-                                                style={{ width: 150, height: 150, borderRadius: 8 }} // Adjust the width and height as needed
-                                            />
+                        <View style={styles.imgCard}>
+                            <ScrollView horizontal>
+                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', }}>
+                                    {details?.images.map((uri, index) => (
+                                        <View key={index} style={{ padding: 8, marginTop: -10 }}>
+                                            <Pressable onPress={() => ImageDelete(uri.image_id)}>
+                                                <IonIcon name="close-sharp" color={Colors.text_primary} size={20} style={{ marginLeft: 100 }} />
+                                            </Pressable>
+                                            <Pressable onPress={() => openModal(uri.image)}>
+                                                <Image
+                                                    source={{ uri: uri.image }}
+                                                    style={{ width: 120, height: 150, borderRadius: 8 }} // Adjust the width and height as needed
+                                                />
+                                            </Pressable>
                                         </View>
-                                    </Pressable>
-                                ))}
-                            </View>
+                                    ))}
+                                </View>
+                            </ScrollView>
 
-
-                        </ScrollView>
+                        </View>
 
                         <View>
                             <Text style={styles.text}>Signature</Text>
@@ -869,26 +945,61 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
 
 
                     <Pressable
-                    style={styles.button}
-                    onPress={loading ? null : IncidentReport} // Disable onPress when isLoading is true
-                    disabled={loading} // Optionally disable the button visually
-                >
-                    {loading ? (
-                        <ActivityIndicator size="small" color="#fff" />
-                    ) : (
-                        <Text style={styles.Btntext}>Submit</Text>
-                    )}
-                </Pressable>
+                        style={styles.button}
+                        onPress={loading ? null : IncidentReport} // Disable onPress when isLoading is true
+                        disabled={loading} // Optionally disable the button visually
+                    >
+                        {loading ? (
+                            <ActivityIndicator size="small" color="#fff" />
+                        ) : (
+                            <Text style={styles.Btntext}>Submit</Text>
+                        )}
+                    </Pressable>
+                    <Pressable onPress={() => openAlart()}>
+                        <Text style={styles.text}>Images <IonIcon name="camera" color={Colors.text_primary} size={20} /></Text>
+                    </Pressable>
+
+                    <View style={styles.imgCard}>
+                        <ScrollView horizontal>
+                            <View style={{ flexDirection: 'row', flexWrap: 'wrap', }}>
+                                {imageUri?.map((uri, index) => (
+                                    <View key={index} style={{ padding: 8, marginTop: -10 }}>
+                                        <Image
+                                            source={{ uri: uri }}
+                                            style={{ width: 120, height: 150, borderRadius: 8 }} // Adjust the width and height as needed
+                                        />
+
+                                    </View>
+                                ))}
+                            </View>
+                        </ScrollView>
+
+                    </View>
+
+
+                    <Pressable
+                        style={styles.button2}
+                        onPress={loading ? null : UpdateImage} // Disable onPress when isLoading is true
+                        disabled={loading} // Optionally disable the button visually
+                    >
+                        {loading ? (
+                            <ActivityIndicator size="small" color="#fff" />
+                        ) : (
+                            <Text style={styles.Btntext}>Update Image</Text>
+                        )}
+                    </Pressable>
                 </ScrollView>
             )}
             <Portal>
-                <Modal visible={selectedImage !== null} onDismiss={closeZoomedImage}>
+                <Modal visible={modalVisible} onDismiss={closeModal}>
                     <View style={{ backgroundColor: 'white', padding: 30 }}>
-                        <Image
-                            style={styles.zoomedImg}
-                            source={{ uri: selectedImage || '' }}
-                        />
-                        <Pressable onPress={closeZoomedImage} style={styles.close}>
+                        {selectedImage && (
+                            <Image
+                                source={{ uri: selectedImage }}
+                                style={{ width: '100%', height: 350, borderRadius: 8 }}
+                            />
+                        )}
+                        <Pressable onPress={closeModal} style={styles.close}>
                             <Text style={{ fontSize: 18, color: Colors.text_primary }}>Close</Text>
                         </Pressable>
                     </View>
@@ -903,6 +1014,24 @@ const styles = StyleSheet.create({
     container: {
         padding: 14,
         backgroundColor: Colors.screen_bg,
+    },
+    imageAlign: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        paddingVertical: 5,
+        marginBottom: 20
+    },
+    imgCard: {
+        backgroundColor: Colors.white,
+        borderColor: Colors.white,
+        borderWidth: 1,
+        marginTop: 10,
+        padding: 20,
+        margin: 12,
+        elevation: 5,
+        height: 200,
+
     },
     zoomedImg: {
         width: '100%',
@@ -947,12 +1076,22 @@ const styles = StyleSheet.create({
         borderRadius: 2,
         elevation: 8
     },
+    button2: {
+        backgroundColor: Colors.brand_primary,
+        marginBottom: 40,
+        width: '100%',
+        alignItems: 'center',
+        padding: 10,
+        alignSelf: 'center',
+        borderRadius: 8,
+        marginTop: 10
+    },
     button: {
         backgroundColor: Colors.brand_primary,
-        marginBottom: 60,
-        width: 120,
+        marginBottom: 10,
+        width: '100%',
         alignItems: 'center',
-        padding: 15,
+        padding: 10,
         alignSelf: 'center',
         borderRadius: 8,
         marginTop: 10
@@ -962,6 +1101,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'Roboto-Medium',
     },
+
     info: {
         color: Colors.text_secondary,
         marginLeft: 10,
