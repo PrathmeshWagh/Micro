@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { FC } from 'react';
 import { StyleSheet, ScrollView, Text, TextInput, View, Pressable, Alert, Image, ActivityIndicator } from 'react-native';
 import Appbar from '../../../components/Appbar';
@@ -16,6 +16,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { FormPostMethod, getMethod, postMethod } from '../../../utils/helper';
 import Snackbar from 'react-native-snackbar';
 import { CommonActions } from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import SignatureScreen from "react-native-signature-canvas";
 
 interface Props {
     navigation: any;
@@ -65,6 +67,8 @@ interface DetailsData {
 const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element => {
     const [details, setDetails] = useState<DetailsData | null>(null);
     const { project_id, incident_id } = route.params;
+    const signatureRef = useRef();
+
     useEffect(() => {
         if (details) {
             const {
@@ -127,7 +131,7 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
             setLocation(location || '');
             setAccidentDetails(details_of_accident_incident_dangerous_occurance || '');
             setRemark(incident_report_remark || '');
-            setSignature(signature_of_person_reporting || '');
+            setSignatureImageUri(signature_of_person_reporting || '');
             setReportTime(time_of_report_submission || '');
             setAccTime(time_of_acc_inc_do || '')
             setDateViewReport(date_of_report_submission || '');
@@ -164,6 +168,8 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
     const [reportTime, setReportTime] = useState('')
     const [AccTime, setAccTime] = useState('')
     const [modalVisible, setModalVisible] = useState<boolean>(false);
+    const [load, setLoad] = useState<boolean>(false);
+    const [signatureModalVisible, setSignatureModalVisible] = useState<boolean>(false);
 
 
     useEffect(() => {
@@ -186,10 +192,10 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
         formData.append('project_id', project_id);
         console.log("formData", formData)
         try {
-            setLoading(true);
+            setLoad(true);
             const api: any = await FormPostMethod(`upload_incident_report_image`, formData);
             if (api.status === 200) {
-                setLoading(false);
+                setLoad(false);
                 console.log("...", api.data)
                 Snackbar.show({
                     text: api.data,
@@ -199,7 +205,7 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                 });
                 // navigation.dispatch(CommonActions.goBack())
             } else {
-                setLoading(false);
+                setLoad(false);
                 Snackbar.show({
                     text: api.data.message,
                     duration: Snackbar.LENGTH_SHORT,
@@ -280,23 +286,23 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
             },
         });
     };
-   
-    const handleDropdownChangeText = (value) => {
+
+    const handleDropdownChangeText = (value: string) => {
         console.log("value", value.value)
         setSelectedValue(value.value);
         setShowSpecifyInput(value.value === 'Others');
     };
-    const handleDropdownChangeInjury = (injury) => {
+    const handleDropdownChangeInjury = (injury: string) => {
         console.log("valueInjury", injury.value)
         setInjuryToPerson(injury.value);
     };
 
-    const handleDropdownChangeDamage = (damage) => {
+    const handleDropdownChangeDamage = (damage: string) => {
         console.log("setDamageValue", damage.value)
         setDamageValue(damage.value);
     };
 
-    const handleDropdownChangeText2 = (value) => {
+    const handleDropdownChangeText2 = (value: string) => {
         console.log("value2", value.value)
         setSelectedValue2(value.value);
         setShowSpecifyInput2(value.value === 'Others');
@@ -345,6 +351,17 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
     }
 
 
+    const handleSignatureModal = () => {
+        setSignatureModalVisible(!signatureModalVisible);
+    };
+
+    const handleOK = (signature: string) => {
+        const path = RNFS.CachesDirectoryPath + `img-${new Date().valueOf()}.jpg`;
+        RNFS.writeFile(path, signature.replace("data:image/png;base64,", ""), 'base64')
+        setSignatureImageUri('file://' + path);
+
+        setSignatureModalVisible(false)
+    };
     const [serialNo, setSerialNo] = useState<string>();
     const [revision, setRevision] = useState<string>();
     const [company, setCompany] = useState('');
@@ -370,49 +387,53 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
 
     const [accidentDetails, setAccidentDetails] = useState('');
     const [remark, setRemark] = useState('');
-    const [signature, setSignature] = useState('');
+    const [signatureImageUri, setSignatureImageUri] = useState<string>();
     const [loading, setLoading] = useState<boolean>(false);
 
 
     const IncidentReport = async () => {
-        const incidentData = {
-            report_serial_number: serialNo, // Serial number of the incident report
-            revision: revision, // Revision number of the report
-            company_department_reporting: company, // Company or department reporting the incident
-            name_or_person_reporting: personReporting, // Name of the person reporting the incident
-            designation_of_person_reporting: reportingDesignation, // Designation of the person reporting
-            nric_fin_wp_no_of_person_reporting: NRICpersonReporting, // Identification number of the person reporting
-            date_of_report_submission: dateViewReport, // Date of report submission
-            time_of_report_submission: startTime || reportTime, // Time of report submission
+        const formData = new FormData();
 
-            catergory_of_event: selectedValue, // Category of the event (selected value)
-            catergory_of_event_please_specify_below: eventValue, // Further details on the event category
-            injury_to_person: injuryToPerson, // Details of injury to a person
-            damage_to_property: damageValue, // Details of damage to property
-            full_name_of_injured_person: injuredPersonName, // Full name of the injured person
-            nric_wp_no_of_injured_person: nricInjuredPerson, // Identification number of the injured person
-            designation_of_injured_person: desInjuredPerson, // Designation of the injured person
-            nature_of_injury: natureInjury, // Nature of the injury
-            injured_person_sent_to: selectedValue2, // Where the injured person was sent (selected value)
-            injured_person_sent_to_please_specify_below: injuredvalue, // Further details on where the injured person was sent
-            description_of_property_damage: desPropertyDamage, // Description of property damage
-            project: project, // Project name
-            job_number: jobNumber, // Job number
-            name_of_coordinator_supervisor_in_charge: cordinatorName, // Name of the coordinator or supervisor in charge
-            full_workplace_address: workAddress, // Full workplace address
-            location: location, // Location of the incident
-            date_of_acc_inc_do: dateViewAcc, // Date of the accident or incident
-            time_of_acc_inc_do: endtime || AccTime, // Time of the accident or incident
-            details_of_accident_incident_dangerous_occurance: accidentDetails, // Details of the accident, incident, or dangerous occurrence
-            incident_report_remark: remark, // Remarks about the incident report
-            signature_of_person_reporting: signature, // Signature of the person reporting
-            date: signatureDate, // Date of the signature
-            project_id: project_id,
-            incident_reports_id: incident_id // Project ID (assuming this is an identifier for the project)
-        };
+        formData.append("report_serial_number", serialNo);
+        formData.append("revision", revision);
+        formData.append("company_department_reporting", company);
+        formData.append("name_or_person_reporting", personReporting);
+        formData.append("designation_of_person_reporting", reportingDesignation);
+        formData.append("nric_fin_wp_no_of_person_reporting", NRICpersonReporting);
+        formData.append("date_of_report_submission", dateViewReport);
+        formData.append("time_of_report_submission", startTime || reportTime);
+        formData.append("catergory_of_event", selectedValue);
+        formData.append("catergory_of_event_please_specify_below", eventValue);
+        formData.append("injury_to_person", injuryToPerson);
+        formData.append("damage_to_property", damageValue);
+        formData.append("full_name_of_injured_person", injuredPersonName);
+        formData.append("nric_wp_no_of_injured_person", nricInjuredPerson);
+        formData.append("designation_of_injured_person", desInjuredPerson);
+        formData.append("nature_of_injury", natureInjury);
+        formData.append("injured_person_sent_to", selectedValue2);
+        formData.append("injured_person_sent_to_please_specify_below", injuredvalue);
+        formData.append("description_of_property_damage", desPropertyDamage);
+        formData.append("project", project);
+        formData.append("job_number", jobNumber);
+        formData.append("name_of_coordinator_supervisor_in_charge", cordinatorName);
+        formData.append("full_workplace_address", workAddress);
+        formData.append("location", location);
+        formData.append("date_of_acc_inc_do", dateViewAcc);
+        formData.append("time_of_acc_inc_do", endtime || AccTime);
+        formData.append("details_of_accident_incident_dangerous_occurance", accidentDetails);
+        formData.append("incident_report_remark", remark);
+        formData.append('signature_of_person_reporting', {
+            uri: signatureImageUri,
+            type: 'image/jpg',
+            name: 'image.jpg',
+        });
+        formData.append("date", signatureDate);
+        formData.append("project_id", project_id);
+        formData.append("incident_reports_id", incident_id);
+        console.log("...", formData);
         try {
             setLoading(true);
-            const api: any = await postMethod(`update_incident_report`, incidentData);
+            const api: any = await FormPostMethod(`update_incident_report`, formData);
             console.log(".....", api.data)
             if (api.status === 200) {
                 setLoading(false);
@@ -449,7 +470,7 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
             incident_reports_id: incident_id,
             image_id: img_id
         }
-        console.log("raw",raw)
+        console.log("raw", raw)
         try {
             const api: any = await postMethod(`delete_incident_report_image`, raw);
             if (api.status === 200) {
@@ -480,7 +501,6 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
         }
 
     }
-
     return (
         <>
             <Appbar title={'Edit Incident Report'} />
@@ -900,14 +920,21 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                         </View>
 
                         <View>
-                            <Text style={styles.text}>Signature</Text>
-                            <TextInput
-                                style={styles.SignatureInput}
-                                onChangeText={setSignature}
-                                value={signature}
-                                placeholder=""
+                            <View style={{ flexDirection: 'row' }}>
+                                <Text style={styles.text}>Signature</Text>
+                                <Pressable onPress={handleSignatureModal}>
+                                    <MaterialCommunityIcons name="pencil" size={20} color="black" style={styles.icon} />
+                                </Pressable>
+                            </View>
+                            <View style={styles.signatureCard}>
 
-                            />
+                                {signatureImageUri ? (
+                                    <Image source={{ uri: signatureImageUri }} style={{ width: 150, height: 150, paddingLeft: 18 }} />
+                                ) : (
+                                    <Text style={styles.chooseFile2} onPress={handleSignatureModal}>Signature</Text>
+                                )}
+
+                            </View>
                         </View>
                         <View>
                             <Text style={styles.text}>Date</Text>
@@ -979,10 +1006,10 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
 
                     <Pressable
                         style={styles.button2}
-                        onPress={loading ? null : UpdateImage} // Disable onPress when isLoading is true
-                        disabled={loading} // Optionally disable the button visually
+                        onPress={load ? null : UpdateImage} // Disable onPress when isLoading is true
+                        disabled={load} // Optionally disable the button visually
                     >
-                        {loading ? (
+                        {load ? (
                             <ActivityIndicator size="small" color="#fff" />
                         ) : (
                             <Text style={styles.Btntext}>Update Image</Text>
@@ -1005,7 +1032,18 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                     </View>
                 </Modal>
             </Portal>
-
+            <Modal
+                visible={signatureModalVisible}
+                onDismiss={handleSignatureModal}
+                contentContainerStyle={styles.modalContent}
+            >
+                <View style={styles.whiteBoard}>
+                    <SignatureScreen
+                        ref={signatureRef}
+                        onOK={handleOK}
+                    />
+                </View>
+            </Modal>
         </>
     )
 };
@@ -1014,6 +1052,29 @@ const styles = StyleSheet.create({
     container: {
         padding: 14,
         backgroundColor: Colors.screen_bg,
+    },
+    chooseFile2: {
+        color: Colors.text_secondary,
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        height: '50%'
+    },
+    signatureCard: {
+        borderWidth: 1,
+        borderColor: '#ffffff',
+        marginTop: 10,
+        backgroundColor: '#ffffff',
+        padding: 12,
+        elevation: 5,
+        marginBottom: 10,
+        marginHorizontal: 10,
+        flexDirection: 'row'
+    },
+    whiteBoard: {
+        flex: 1,
+        backgroundColor: 'white',
+        marginTop: 10,
     },
     imageAlign: {
         flexDirection: 'row',

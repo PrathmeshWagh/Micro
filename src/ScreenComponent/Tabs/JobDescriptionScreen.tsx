@@ -1,12 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, Pressable, RefreshControl, Image, FlatList, ActivityIndicator } from 'react-native';
 
 import { Card, Avatar } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import Colors from '../../style/Colors/colors';
-import { CommonActions, useNavigation } from '@react-navigation/native';
+import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { getMethod } from '../../utils/helper';
-import { AuthContext } from '../../utils/appContext';
 
 const JobDescriptionScreen = ({ props, route }: any) => {
   const navigation = useNavigation();
@@ -16,9 +15,12 @@ const JobDescriptionScreen = ({ props, route }: any) => {
   const { project_id } = route.params;
 
 
-  useEffect(() => {
-    getdata();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      // This code will run when the screen focuses
+      getdata();
+    }, [])
+  );
 
   const getdata = async () => {
     setLoading(true);

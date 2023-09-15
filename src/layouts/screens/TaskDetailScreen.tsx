@@ -96,7 +96,7 @@ const TaskDetailScreen = ({ route }: any) => {
                     </Text>
                   </Text>
                 ) : null}
-                
+
               </View>
               <View>
               </View>
@@ -138,7 +138,7 @@ const TaskDetailScreen = ({ route }: any) => {
                 <Image size={24} source={require('../../style/Img/2.png')} />
               </Pressable>
             </View>
-            <View style={{ marginLeft: 20, padding: 10 }}>
+            <View style={{ alignSelf:'flex-start' ,marginLeft:25}}>
               <Pressable
                 style={styles.AddPic}
                 onPress={() =>
@@ -173,7 +173,7 @@ const TaskDetailScreen = ({ route }: any) => {
                 <Image size={24} source={require('../../style/Img/4.png')} />
               </Pressable>
             </View> */}
-            {!taskDetails?.task_end_date ? (
+            {!taskDetails?.task_end_user_id ? (
               <Pressable onPress={endTask} style={styles.endButton}>
                 {load ? (
                   <ActivityIndicator size="small" color={Colors.white} />

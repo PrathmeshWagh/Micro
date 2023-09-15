@@ -97,18 +97,18 @@ const VarientationOder = ({ route }: any) => {
 
   return (
     <View style={styles.cover}>
-       <Pressable style={styles.add} onPress={() =>
-            navigation.dispatch(
-              CommonActions.navigate({
-                name: 'AddOderScreen',
-                params: {
-                  project_id: project_id,
-                },
-              })
-            )
-          }>
-            <Text style={styles.addText}>+ Add</Text>
-          </Pressable>
+      <Pressable style={styles.add} onPress={() =>
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: 'AddOderScreen',
+            params: {
+              project_id: project_id,
+            },
+          })
+        )
+      }>
+        <Text style={styles.addText}>+ Add</Text>
+      </Pressable>
       {loading ? (
         <ActivityIndicator size="large" color={Colors.brand_primary} />
       ) : (
@@ -141,9 +141,9 @@ const VarientationOder = ({ route }: any) => {
                         <Pressable onPress={() =>
                           navigation.dispatch(
                             CommonActions.navigate({
-                              name: 'EditIncidentReportScreen',
+                              name: 'EditVariationOrder',
                               params: {
-                                project_id:project_id,
+                                project_id: project_id,
                                 variation_id: item.variation_order_id,
                               },
                             })
@@ -166,20 +166,37 @@ const VarientationOder = ({ route }: any) => {
                     <Text style={styles.text}>{item.size}</Text>
                   </View>
                   <View style={styles.align}>
-                    <Text style={styles.text}>Customer Contact Details - </Text>
-                    {/* <Text style={styles.text}>
-                  {item.contact.length > 6
-                    ? `${item.contact.substring(0, 6)}...`
-                    : item.contact}
-                </Text> */}
+
+
+                    <Text style={styles.text}>Customer Contact Details -</Text>
+                    {item.contact ? (
+                      <>
+                        <Text style={styles.text}>
+                          {item.contact.length > 6
+                            ? `${item.contact.substring(0, 6)}...`
+                            : item.contact}
+                        </Text>
+                      </>
+                    ) : (
+                      <Text style={styles.text}>....</Text>
+                    )
+                    }
                   </View>
                   <View style={styles.align}>
                     <Text style={styles.text}>Remarks-</Text>
-                    {/* <Text style={styles.text}>
-                  {item.remark.length > 6
-                    ? `${item.remark.substring(0, 6)}...`
-                    : item.remark}
-                </Text> */}
+                    {item.remark ? (
+                      <>
+                        <Text style={styles.text}>
+                          {item.remark.length > 6
+                            ? `${item.remark.substring(0, 6)}...`
+                            : item.remark}
+                        </Text>
+                      </>
+                    ) : (
+                      <Text style={styles.text}>....</Text>
+                    )
+                    }
+
                   </View>
                 </Card>
               </Pressable>

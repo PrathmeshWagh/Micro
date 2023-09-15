@@ -13,16 +13,16 @@ import Appbar from '../../../components/Appbar';
 import Colors from '../../../style/Colors/colors';
 
 interface Props {
-  navigation: any
+  route: any
 }
-const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element => {
+const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
+  const { project_id, dailyId, selectedTaskIds } = route.params;
+  console.log("ids", dailyId, selectedTaskIds)
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const { selectedTaskIds, project_id } = route.params;
-  const [dailyActivity, setDailyActivity] = useState([]);
   const [selectedImageRemark, setSelectedImageRemark] = useState<string>();
   const [remark, setRemark] = useState<string[]>([]);
   const [area, setArea] = useState<string[]>([]);
@@ -35,55 +35,51 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
   const formattedDate = moment(timestamp).format('DD-MM-YYYY');
   const [open, setOpen] = useState(false);
   const [isloading, setIsLoading] = useState<boolean>(false);
-
-  const handleImageSelection = (imagePath: string, imageId: string) => {
-    if (selectedImages.includes(imagePath)) {
-      setSelectedImages(selectedImages.filter(item => item !== imagePath));
-      setSelectedImageIds(selectedImageIds.filter(id => id !== imageId));
-    } else {
-      setSelectedImages([...selectedImages, imagePath]);
-      setSelectedImageIds([...selectedImageIds, imageId]);
-    }
-  };
+  const [dailyActivity, setDailyActivity] = useState([]);
+  const [dateViewReport, setDateViewReport] = useState<string>()
 
   useEffect(() => {
-    Upload();
+    getdata();
   }, []);
 
 
-  const Upload = async () => {
-    const raw = {
-      project_id: project_id,
-      task_id: selectedTaskIds,
-    }
-    try {
-      setIsLoading(true);
-      const api: any = await postMethod(`get_daily_activity`, raw);
-      if (api.status === 200) {
-        setDailyActivity(api.data)
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-        Snackbar.show({
-          text: api.data.message,
-          duration: Snackbar.LENGTH_SHORT,
-          textColor: '#AE1717',
-          backgroundColor: '#F2A6A6',
-        });
-      }
-    }
-    catch (e) {
-      Snackbar.show({
-        text: "Some Error Occured" + e,
-        duration: Snackbar.LENGTH_SHORT,
-        textColor: '#AE1717',
-        backgroundColor: '#F2A6A6',
-      });
-    }
 
-  }
+  useEffect(() => {
+    if (dailyActivity.length > 0) {
+      // Assuming dailyActivity is an array of objects like the example data
+      const details = dailyActivity[0]; // You can choose which item to use
+      const {
+        task_remark,
+        area,
+        plan,
+        completion,
+        status,
+        date,
+      } = details;
+
+      // Now you can set the state variables based on the details object
+
+      setRemark(task_remark);
+      setArea(area);
+      setPlan(plan);
+      setCompletion(completion);
+      setStatus(status);
+      // setDate(date);
+    }
+  }, [dailyActivity]);
 
 
+
+
+
+
+
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    getdata();
+    setRefreshing(false);
+  };
   const openZoomedImage = (imagePath: string, remark: string) => {
     console.log('imagePath', remark);
     setZoomedImage(imagePath);
@@ -93,47 +89,22 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
   const closeZoomedImage = () => {
     setZoomedImage(null);
   };
-  const onRefresh = () => {
-    setRefreshing(true);
-    Upload();
-    setRefreshing(false);
-  };
-
-  const AddDescription = async () => {
-    const taskRemarkValues = Object.values(remark);
-    const taskAreaValues = Object.values(area);
-    const taskPlanValues = Object.values(plan);
-    const taskCompletionValues = Object.values(completion);
-    const taskStatusValues = Object.values(status);
+  const getdata = async () => {
 
     const raw = {
       project_id: project_id,
       task_id: selectedTaskIds,
-      image_id: selectedImageIds,
-      task_remark: taskRemarkValues,
-      area: taskAreaValues,
-      plan: taskPlanValues,
-      completion: taskCompletionValues,
-      status: taskStatusValues,
-      date: formattedDate
+      daily_activities_id: dailyId,
+
     }
     console.log("raw", raw)
     try {
       setLoading(true);
-      const api: any = await postMethod(`add_daily_activity`, raw);
-      if (api.data.status === true) {
+      const api: any = await postMethod(`edit_daily_activity_task_details`, raw);
+      if (api.status === 200) {
         console.log('data', api.data)
+        setDailyActivity(api.data);
         setLoading(false);
-        navigation.dispatch(
-          CommonActions.navigate({
-            name: 'ManpowerReportScreen',
-            params: {
-              activity: api.data,
-              project_id: project_id,
-              date:formattedDate
-            },
-          })
-        )
 
       } else {
         setLoading(false);
@@ -174,11 +145,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
             <Text style={styles.date}>Date</Text>
             <View style={styles.input}>
               <View style={{ flexDirection: 'row' }}>
-                {/* <Image
-                            style={styles.tinyLogo}
-                            source={require('../../style/Img.calender.png')}
-                        /> */}
-                <Text style={styles.date}>{formattedDate}</Text>
+                <Text style={styles.date}>{dateViewReport}</Text>
               </View>
               <Feather
                 name="chevron-down"
@@ -193,13 +160,28 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
                 mode="date"
                 date={date}
                 onConfirm={(date) => {
+                  const formattedDate = moment(date).format('DD-MM-YYYY');
+                  setDateViewReport(formattedDate); // Update dateViewReport with the selected date
+                  setDate(date);
+                  setOpen(false);
+                }}
+                onCancel={() => {
+                  setOpen(false);
+                }}
+              />
+              {/* <DatePicker
+                modal
+                open={open}
+                mode="date"
+                date={date}
+                onConfirm={(date) => {
                   setOpen(false)
                   setDate(date)
                 }}
                 onCancel={() => {
                   setOpen(false)
                 }}
-              />
+              /> */}
             </View>
             {dailyActivity.map((item, index) => (
               <View key={index}>
@@ -209,17 +191,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
                   <Text style={styles.name}> {item.task_name || ''}</Text>
 
                   <Text style={styles.date}>Task Remarks</Text>
-                  <TextInput
-                    style={styles.inputRemark}
-                    onChangeText={(text) => {
-                      setRemark({
-                        ...remark,
-                        [index]: text,
-                      });
-                    }}
-                    value={remark[index] || ''}
-                    placeholder=""
-                  />
+                  <Text style={styles.name}> {item.task_remark || ''}</Text>
                   {item?.images.length > 0 && (
                     <>
                       <Text style={styles.date}>Images</Text>
@@ -246,59 +218,26 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
                     </>
                   )}
                   <Text style={styles.date}>Area</Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => {
-                      setArea({
-                        ...area,
-                        [index]: text, // Store the value with the corresponding index
-                      });
-                    }}
-                    value={area[index] || ''}
-                    placeholder=""
-                  />
+                  <Text style={styles.name}> {item.area || ''}</Text>
+
                   <Text style={styles.date}>Plan</Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => {
-                      setPlan({
-                        ...plan,
-                        [index]: text, // Store the value with the corresponding index
-                      });
-                    }}
-                    value={plan[index] || ''}
-                    placeholder=""
-                  />
+
+                  <Text style={styles.name}> {item.plan || ''}</Text>
+
                   <Text style={styles.date}>Completion</Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => {
-                      setCompletion({
-                        ...completion,
-                        [index]: text, // Store the value with the corresponding index
-                      });
-                    }}
-                    value={completion[index] || ''}
-                    placeholder=""
-                  />
+
+                  <Text style={styles.name}> {item.completion || ''}</Text>
+
                   <Text style={styles.date}>Status</Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={(text) => {
-                      setStatus({
-                        ...status,
-                        [index]: text, // Store the value with the corresponding index
-                      });
-                    }}
-                    value={status[index] || ''}
-                    placeholder=""
-                  />
+                  <Text style={styles.name}> {item.status || ''}</Text>
+
                 </View>
+               
               </View>
             ))}
 
             {/* <View style={{ paddingBottom: 50 }}></View> */}
-            <Pressable style={styles.btn} onPress={AddDescription}>
+            {/* <Pressable style={styles.btn} onPress={AddDescription}>
               {loading ?
                 (
                   <ActivityIndicator size="small" color={Colors.white} />
@@ -310,7 +249,8 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
                     Submit
                   </Text>
                 )}
-            </Pressable>
+            </Pressable> */}
+             <View style={{paddingBottom:40}}></View>
           </ScrollView >
 
 
@@ -445,4 +385,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default DailyActivityDescriptionScreen;
+export default EditDailyActivityScreen;

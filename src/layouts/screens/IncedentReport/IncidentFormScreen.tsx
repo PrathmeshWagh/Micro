@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { FC } from 'react';
 import { StyleSheet, ScrollView, Text, TextInput, View, Pressable, Alert, Image, ActivityIndicator } from 'react-native';
 import Appbar from '../../../components/Appbar';
@@ -16,13 +16,17 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { FormPostMethod } from '../../../utils/helper';
 import Snackbar from 'react-native-snackbar';
 import { CommonActions } from '@react-navigation/native';
+import SignatureScreen from "react-native-signature-canvas";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface Props { }
 const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element => {
     const { project_id } = route.params;
+    const signatureRef = useRef();
 
     const [imageUri, setImageUri] = useState<string[]>([]);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [signatureImageUri, setSignatureImageUri] = useState<string>();
 
     const [value, setValue] = useState('');
     const [showTextBox, setShowTextBox] = useState(false);
@@ -246,13 +250,17 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
         formData.append('time_of_acc_inc_do', endtimeString);
         formData.append('details_of_accident_incident_dangerous_occurance', accidentDetails);
         formData.append('incident_report_remark', remark);
-        formData.append('signature_of_person_reporting', signature);
+        formData.append('signature_of_person_reporting', {
+            uri: 'file://' + signatureImageUri,
+            type: 'image/jpg',
+            name: 'image.jpg',
+        });
         formData.append('date', formattedDate3);
         formData.append('project_id', project_id);
 
 
 
-        // console.log("imageUri....", formData)
+        console.log("imageUri....", 'file://'+ signatureImageUri)
         try {
             setLoading(true);
             const api: any = await FormPostMethod(`add_incident_report`, formData);
@@ -287,8 +295,20 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
         }
 
     }
+    const [signatureModalVisible, setSignatureModalVisible] = useState<boolean>(false);
+
+    const handleSignatureModal = () => {
+        setSignatureModalVisible(!signatureModalVisible);
+    };
 
 
+
+    const handleOK = (signature: string) => {
+        const path = RNFS.CachesDirectoryPath + `img-${new Date().valueOf()}.jpg`;
+        RNFS.writeFile(path, signature.replace("data:image/png;base64,", ""), 'base64')
+        setSignatureImageUri(path);
+        setSignatureModalVisible(false)
+    };
     return (
         <>
             <Appbar title={'Incident Report'} />
@@ -543,6 +563,7 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                 <View style={styles.part}>
                     <Text style={styles.partText}>PART C</Text>
                 </View>
+
                 <View style={{ paddingBottom: 30, backgroundColor: '#F2EEEE' }}>
 
                     <Text style={styles.text}>Project</Text>
@@ -646,7 +667,7 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                 </View>
 
                 <View style={styles.part}>
-                    <Text style={styles.partText}>PART C</Text>
+                    <Text style={styles.partText}>PART D</Text>
                 </View>
 
                 <View style={{ paddingBottom: 30, backgroundColor: '#F2EEEE' }}>
@@ -690,16 +711,21 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                         )}
                     </ScrollView>
 
-                    <View>
+                    <View style={{ flexDirection: 'row' }}>
                         <Text style={styles.text}>Signature</Text>
-                        <TextInput
-                            style={styles.SignatureInput}
-                            onChangeText={setSignature}
-                            value={signature}
-                            placeholder=""
-
-                        />
+                        <Pressable onPress={handleSignatureModal}>
+                            <MaterialCommunityIcons name="pencil" size={20} color="black" style={styles.icon} />
+                        </Pressable>
                     </View>
+                    <View style={styles.signatureCard}>
+                        {signatureImageUri ? (
+                            <Image source={{ uri: 'file://' + signatureImageUri }} style={{ width: 150, height: 150, paddingLeft: 18 }} />
+                        ) : (
+                            <Text style={styles.chooseFile2} onPress={handleSignatureModal}>Signature</Text>
+                        )}
+
+                    </View>
+
                     <View>
                         <Text style={styles.text}>Date</Text>
                         <View style={styles.dateCard}>
@@ -730,21 +756,21 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
 
                     </View>
 
+
+                    <Pressable
+                        style={styles.button}
+                        onPress={isLoading ? null : IncidentReport} // Disable onPress when isLoading is true
+                        disabled={isLoading} // Optionally disable the button visually
+                    >
+                        {isLoading ? (
+                            <ActivityIndicator size="small" color="#fff" />
+                        ) : (
+                            <Text style={styles.Btntext}>Submit</Text>
+                        )}
+                    </Pressable>
                 </View>
+            </ScrollView >
 
-
-                <Pressable
-                    style={styles.button}
-                    onPress={isLoading ? null : IncidentReport} // Disable onPress when isLoading is true
-                    disabled={isLoading} // Optionally disable the button visually
-                >
-                    {isLoading ? (
-                        <ActivityIndicator size="small" color="#fff" />
-                    ) : (
-                        <Text style={styles.Btntext}>Submit</Text>
-                    )}
-                </Pressable>
-            </ScrollView>
             <Portal>
                 <Modal visible={selectedImage !== null} onDismiss={closeZoomedImage}>
                     <View style={{ backgroundColor: 'white', padding: 30 }}>
@@ -758,7 +784,18 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                     </View>
                 </Modal>
             </Portal>
-
+            <Modal
+                visible={signatureModalVisible}
+                onDismiss={handleSignatureModal}
+                contentContainerStyle={styles.modalContent}
+            >
+                <View style={styles.whiteBoard}>
+                    <SignatureScreen
+                        ref={signatureRef}
+                        onOK={handleOK}
+                    />
+                </View>
+            </Modal>
         </>
     )
 };
@@ -767,6 +804,28 @@ const styles = StyleSheet.create({
     container: {
         padding: 14,
         backgroundColor: Colors.screen_bg,
+    },
+    signatureFileBackground: {
+        backgroundColor: '#E3E3E3',
+        paddingTop: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingBottom: 10,
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    icon: {
+        paddingLeft: 10,
+        paddingTop: 10
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        height: '50%'
+    },
+    whiteBoard: {
+        flex: 1,
+        backgroundColor: 'white',
+        marginTop: 10,
     },
     zoomedImg: {
         width: '100%',
@@ -778,6 +837,16 @@ const styles = StyleSheet.create({
     close: {
         alignSelf: 'center',
         marginTop: 10
+    },
+    chooseFile2: {
+        // borderWidth: 1,
+        // borderColor: Colors.lightGray,
+        // padding: 10,
+        // marginVertical: 10,
+        // marginHorizontal: 10,
+        // backgroundColor: Colors.lightGray,
+        color: Colors.text_secondary,
+        //  width: '100%'
     },
     chooseFile: {
         borderWidth: 1,
@@ -866,6 +935,17 @@ const styles = StyleSheet.create({
         elevation: 5,
         marginBottom: 10,
         marginHorizontal: 10
+    },
+    signatureCard: {
+        borderWidth: 1,
+        borderColor: '#ffffff',
+        marginTop: 10,
+        backgroundColor: '#ffffff',
+        padding: 12,
+        elevation: 5,
+        marginBottom: 10,
+        marginHorizontal: 10,
+        flexDirection: 'row'
     },
     part: {
         borderColor: Colors.lightGray,

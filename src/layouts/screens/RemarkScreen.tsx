@@ -136,7 +136,7 @@ const RemarkScreen: FC<Props> = ({ route }: any): JSX.Element => {
         const raw = {
             remark_id: editRemarks?.remark_id,
             task_id: taskId,
-            remark:remarkvalue
+            remark: remarkvalue
         }
         console.log("raw", raw)
         try {
@@ -339,13 +339,14 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     input: {
-        paddingVertical: 40,
         marginVertical: 12,
         borderWidth: 1,
         borderColor: Colors.lightGray,
         backgroundColor: Colors.lightGray,
         padding: 10,
-        textAlignVertical: 'top'
+        height:200,
+        textAlignVertical:'top'
+      
     },
 });
 

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FC } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Colors from '../../../style/Colors/colors';
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import Feather from 'react-native-vector-icons/Feather'
 import { getMethod } from '../../../utils/helper';
-import { CommonActions, useNavigation } from '@react-navigation/native';
+import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
 
 
 interface Props { }
@@ -15,15 +15,18 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
     const [dailyActivity, setDailyActivity] = useState([]);
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const navigation = useNavigation();
-    useEffect(() => {
-        getdata();
-    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            // This code will run when the screen focuses
+            getdata();
+        }, [])
+    );
 
     const getdata = async () => {
         setLoading(true);
         const api: any = await getMethod(`get_all_daily_activity/${project_id}`);
         if (api.status === 200) {
-            console.log("apiData", api.data)
             setLoading(false);
             setDailyActivity(api.data)
             setRefreshing(false);
@@ -61,22 +64,42 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
                     }>
 
                     {dailyActivity.map((item, index) => (
-                        <View style={styles.cover}>
+                        <Pressable style={styles.cover}
+                            onPress={() =>
+                                navigation.dispatch(
+                                    CommonActions.navigate({
+                                        name: 'ViewDailyActivityScreen',
+                                        params: {
+                                            project_id: project_id,
+                                            dailyId: item.daily_activities_id
+                                        },
+                                    })
+                                )
+                            }
+                        >
                             <View style={styles.align2}>
-                                <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
+                                <IonIcon style={styles.icon} name="calendar" size={18} color={Colors.text_primary} style={styles.calender} />
                                 <Text style={styles.time}>{item.date}</Text>
                             </View>
                             <View style={styles.align}>
                                 <Text style={styles.upload}>Uploaded By:</Text>
-                                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                    <Text style={styles.name}>{item.uploaded_by}</Text>
-                                    <Pressable>
-                                        <Feather name="edit-3" size={18} color={Colors.brand_primary} style={styles.edit} />
-                                    </Pressable>
-                                </View>
+                                <Text style={styles.name}>{item.uploaded_by}</Text>
                             </View>
-
-                        </View>
+                            <Pressable
+                                onPress={() =>
+                                    navigation.dispatch(
+                                        CommonActions.navigate({
+                                            name: 'EditDailyActivityCardScreen',
+                                            params: {
+                                                project_id: project_id,
+                                                dailyId: item.daily_activities_id
+                                            },
+                                        })
+                                    )
+                                }>
+                                <Feather name="edit-3" size={22} color={Colors.brand_primary} style={styles.edit} />
+                            </Pressable>
+                        </Pressable>
                     ))}
 
                 </ScrollView>
@@ -109,16 +132,17 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.screen_bgDark,
         borderColor: Colors.screen_bgDark,
         marginBottom: 10,
-        borderRadius: 8
+        borderRadius: 8,
     },
     edit: {
         // flexDirection: 'row',
-        justifyContent: 'flex-end',
-        paddingLeft: 10
+        alignSelf: 'flex-end',
+        padding: 10
     },
     time: {
         paddingHorizontal: 10,
-        paddingTop: 5
+        paddingTop: 5,
+        color: Colors.text_primary
     },
     calender: {
         paddingTop: 5
@@ -134,7 +158,8 @@ const styles = StyleSheet.create({
     },
     align: {
         flexDirection: 'row',
-        padding: 20
+        padding: 10,
+        marginTop: 10
     },
     task: {
         paddingLeft: 20,

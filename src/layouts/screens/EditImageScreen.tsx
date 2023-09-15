@@ -21,19 +21,35 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 interface Props {
-    params: { data: any; }
+    route: {
+        params: {
+            data: {
+                task_id: number;
+                image_id: number;
+            };
+        };
+    };
+}
+interface ImageData {
+    date: string;
+    file: string;
+    image_id: number;
+    name: string;
+    remark_for_photo: string | null;
+    task_id: number;
 }
 const EditImageScreen: FC<Props> = ({ route }: any): JSX.Element => {
     const { data } = route.params;
     // console.log("imgdata", data)
     const navigation = useNavigation();
 
-    const [remark, setRemark] = useState<string>();
-    const [imageUri, setImageUri] = useState<string>();
-    const [isLoading, setIsLoading] = useState(true); // Initially, show loader
-    const [loading, setLoading] = useState(false); // Initially, show loader
-    const [details, setDetails] = useState();
-    const [name, setName] = useState<string>();
+    const [remark, setRemark] = useState<string>('');
+    const [imageUri, setImageUri] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [details, setDetails] = useState<ImageData | null>(null);
+    const [name, setName] = useState<string>('');
+
     useEffect(() => {
         getdata();
     }, []);
@@ -109,7 +125,7 @@ const EditImageScreen: FC<Props> = ({ route }: any): JSX.Element => {
         setIsLoading(true);
         const api: any = await getMethod(`edit_attachment/${data.task_id}/${data.image_id}`);
         if (api.status === 200) {
-            // console.log("apiData", api.data)
+            console.log("apiData", api.data)
             setIsLoading(false);
             setDetails(api.data)
             //  console.log("apiData", viewImage)
@@ -131,27 +147,27 @@ const EditImageScreen: FC<Props> = ({ route }: any): JSX.Element => {
         });
         formData.append('task_id', data.task_id);
         formData.append('image_id', data.image_id);
-        // console.log("formData", formData)
+        console.log("formData", formData)
         try {
             const api: any = await FormPostMethod(`update_attachment`, formData);
             if (api.status === 200) {
                 setLoading(true);
-                // console.log("...", api.data)
-                Snackbar.show({
-                    text: api.data.message,
-                    duration: Snackbar.LENGTH_SHORT,
-                    textColor: 'white',
-                    backgroundColor: 'green',
-                });
+                console.log("...", api.data)
+                // Snackbar.show({
+                //     text: api.data,
+                //     duration: Snackbar.LENGTH_SHORT,
+                //     textColor: 'white',
+                //     backgroundColor: 'green',
+                // });
                 navigation.dispatch(CommonActions.goBack())
             } else {
                 setLoading(false);
-                Snackbar.show({
-                    text: api.data.message,
-                    duration: Snackbar.LENGTH_SHORT,
-                    textColor: '#AE1717',
-                    backgroundColor: '#F2A6A6',
-                });
+                // Snackbar.show({
+                //     text: api.data,
+                //     duration: Snackbar.LENGTH_SHORT,
+                //     textColor: '#AE1717',
+                //     backgroundColor: '#F2A6A6',
+                // });
             }
         }
         catch (e) {

@@ -36,8 +36,8 @@ const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
     const [startTimes, setStartTimes] = useState<string[]>([]);
 
 
-    const { activity, project_id } = route.params;
-    console.log("activity", activity)
+    const { activity, project_id,date } = route.params;
+    console.log("...",activity)
     const data = [
         { value: 'mac', label: 'MAC' },
         { value: 'sub_con', label: 'Sub Con' },
@@ -78,20 +78,21 @@ const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
 
         const raw = {
             project_id: project_id,
-            task_id: activity,
+            task_id: activity.daily_activity,
             name_of_person: taskStatusValues,
             start_time: starttimeString,
             end_time: EndtimeValue,
             type_of_worker: value,
             types_of_worker_name: name,
-            no_of_worker: numWorkers
+            no_of_worker: numWorkers,
+            date:date
 
         }
         console.log("raw", raw)
         try {
             setLoading(true);
             const api: any = await postMethod(`add_manpower_report`, raw);
-            if (api.status === 200) {
+            if (api.data.status === true) {
                 console.log('data', api.data)
                 setLoading(false);
                 navigation.dispatch(
@@ -107,8 +108,8 @@ const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
                 Snackbar.show({
                     text: api.data.message,
                     duration: Snackbar.LENGTH_SHORT,
-                    textColor: '#AE1717',
-                    backgroundColor: '#F2A6A6',
+                    textColor: 'white',
+                    backgroundColor: 'red',
                 });
             }
         }
@@ -116,8 +117,8 @@ const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
             Snackbar.show({
                 text: "Some Error Occured" + e,
                 duration: Snackbar.LENGTH_SHORT,
-                textColor: '#AE1717',
-                backgroundColor: '#F2A6A6',
+                textColor: 'white',
+                backgroundColor: 'red',
             });
         }
 

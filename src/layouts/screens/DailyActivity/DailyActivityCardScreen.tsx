@@ -19,6 +19,8 @@ const DailyActivityCardScreen: FC<Props> = ({ route }: any): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(false);
   const navigation = useNavigation();
   const [dailyActivity, setDailyActivity] = useState([]);
+  const [selectAll, setSelectAll] = useState<boolean>(false);
+
   const { project_id } = route.params;
   useEffect(() => {
     getdata();
@@ -41,6 +43,24 @@ const DailyActivityCardScreen: FC<Props> = ({ route }: any): JSX.Element => {
     setRefreshing(false);
   };
 
+  useEffect(() => {
+    const allChecked = dailyActivity.every(data => selectedTaskIds.includes(data?.task_id));
+    if (allChecked) {
+      setSelectAll(true);
+    } else {
+      setSelectAll(false);
+    }
+  }, [selectedTaskIds, dailyActivity]);
+
+  const toggleSelectAll = () => {
+    if (selectAll) {
+      setSelectedTaskIds([]);
+    } else {
+      setSelectedTaskIds(dailyActivity.map(data => data?.task_id));
+    }
+    setSelectAll(!selectAll);
+  };
+
 
 
   return (
@@ -57,6 +77,15 @@ const DailyActivityCardScreen: FC<Props> = ({ route }: any): JSX.Element => {
                 onRefresh={onRefresh}
               />
             }>
+            <View style={styles.checkBox}>
+              {/*  Render the "Select All" checkbox */}
+
+              <Text style={styles.team}>Select All</Text>
+              <Checkbox
+                status={selectAll ? 'checked' : 'unchecked'}
+                onPress={toggleSelectAll}
+              />
+            </View>
             {
               dailyActivity.map((data, index) => (
                 <View key={index}>
@@ -130,6 +159,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.screen_bg,
     marginHorizontal: 14,
     flex: 1
+  },
+  checkBox: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingLeft: 10,
+    paddingTop: 5
   },
   add: {
     borderWidth: 1,

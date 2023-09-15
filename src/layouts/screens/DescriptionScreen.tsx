@@ -9,12 +9,12 @@ import { CommonActions, useNavigation } from '@react-navigation/native';
 
 const DescriptionScreen = ({route }: any, props: any) => {
   const { id } = route.params;
-  const [details, setDetails] = useState('')
+  const [details, setDetails] = useState('');
   const [loading, setLoading] = useState(false);
   const [load, setLoad] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [project, setProject] = useState('')
-  console.log("id", id)
+  console.log("id", id);
  const navigation = useNavigation();
   useEffect(() => {
     getdata();

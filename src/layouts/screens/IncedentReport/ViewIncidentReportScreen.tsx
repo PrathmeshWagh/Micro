@@ -215,7 +215,12 @@ const ViewIncidentReportScreen: FC<Props> = ({ route }): JSX.Element => {
                                     </View>
                                     <View style={{ paddingVertical: 10 }}>
                                         <Text style={styles.text}>Signature:</Text>
-                                        <Text style={styles.text2}>{incidentList?.time_of_acc_inc_do}</Text>
+                                        <View style={styles.signatureFileBackground}>
+                                            <Image
+                                                source={{ uri: incidentList?.signature_of_person_reporting }}
+                                                style={{ width: '80%', height: 200, borderRadius: 8, padding: 20 }} // Adjust the width and height as needed
+                                            />
+                                        </View>
                                     </View>
                                     <Text style={styles.text}>Images:</Text>
                                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', }}>
@@ -263,6 +268,15 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.screen_bg
     },
+    signatureFileBackground: {
+        backgroundColor: '#E3E3E3',
+        paddingTop: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingBottom: 10,
+        marginTop: 10,
+        marginBottom: 10,
+    },
     close: {
         marginVertical: 20,
         alignSelf: 'center',
@@ -292,7 +306,7 @@ const styles = StyleSheet.create({
     text2: {
         color: Colors.black,
         fontFamily: 'Roboto-Regular',
-        marginTop:5
+        marginTop: 5
     },
     align: {
         // flexDirection: 'row',

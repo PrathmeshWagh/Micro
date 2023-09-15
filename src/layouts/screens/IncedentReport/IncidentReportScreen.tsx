@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Image, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl, Alert } from 'react-native';
 import { Card, Avatar } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import Colors from '../../../style/Colors/colors';
-import { CommonActions, useNavigation } from '@react-navigation/native';
+import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
 import { getMethod, postMethod } from '../../../utils/helper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Snackbar from 'react-native-snackbar';
@@ -17,10 +17,12 @@ const IncidentReport = ({ route }: any) => {
   const navigation = useNavigation();
   const [showDetails, setShowDetails] = useState(false);
 
-  useEffect(() => {
-    getdata();
-  }, []);
-
+  useFocusEffect(
+    useCallback(() => {
+      // This code will run when the screen focuses
+      getdata();
+    }, [])
+  );
   const getdata = async () => {
     setLoading(true);
     const api: any = await getMethod(`get_all_incident_report/${project_id}`);
@@ -133,19 +135,20 @@ const IncidentReport = ({ route }: any) => {
                 <View style={styles.align}>
                   <Text style={styles.text}>Report Serial Number:</Text>
                   <Text style={styles.text2}>
-                  {item?.report_serial_number !== undefined ? item.report_serial_number.substring(0, 5) + "......" : ''}
+                    {item?.report_serial_number !== null ? item.report_serial_number.substring(0, 5) + "......" : ''}
                   </Text>
                 </View>
                 <View style={styles.align}>
                   <Text style={styles.text}>Revision:</Text>
                   <Text style={styles.text2}>
-                  {item?.revision !== undefined ? item.revision.substring(0, 5) + "......" : ''}
+                    {item?.revision !== null ? item.revision.substring(0, 5) + "......" : ''}
                   </Text>
 
                 </View>
                 <View style={styles.align}>
                   <Text style={styles.text}>Company / Department Reporting:</Text>
-                  <Text style={styles.text2}>{item?.company_department_reporting !== undefined ? item.company_department_reporting.substring(0, 4) + ".." : ''}
+                  <Text style={styles.text2}>
+                    {item?.company_department_reporting !== null ? item.company_department_reporting.substring(0, 4) + ".." : ''}
                   </Text>
                 </View>
                 <TouchableOpacity onPress={() => navigation.dispatch(

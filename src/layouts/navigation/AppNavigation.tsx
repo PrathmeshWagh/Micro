@@ -47,6 +47,9 @@ import DailyActivityScreen from '../screens/DailyActivity/DailyActivityScreen';
 import DailyActivityCardScreen from '../screens/DailyActivity/DailyActivityCardScreen';
 import EditIncidentReportScreen from '../screens/IncedentReport/EditIncidentReportScreen';
 import EditVariationOrder from '../screens/VariationOder/EditVariationOder';
+import ViewDailyActivityScreen from '../screens/DailyActivity/ViewDailyActivityScreen';
+import EditDailyActivityCardScreen from '../screens/DailyActivity/EditDailyActivityCardScreen';
+import EditDailyActivityScreen from '../screens/DailyActivity/EditDailyActivityScreen';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const TabTop = createMaterialTopTabNavigator();
@@ -117,7 +120,9 @@ function AppNavigation() {
         <Stack.Screen name="ViewIncidentReportScreen" component={ViewIncidentReportScreen} />
         <Stack.Screen name="EditIncidentReportScreen" component={EditIncidentReportScreen} />
         <Stack.Screen name="EditVariationOrder" component={EditVariationOrder} />
-
+        <Stack.Screen name="ViewDailyActivityScreen" component={ViewDailyActivityScreen} />
+        <Stack.Screen name="EditDailyActivityCardScreen" component={EditDailyActivityCardScreen} />
+        <Stack.Screen name="EditDailyActivityScreen" component={EditDailyActivityScreen} />
 
       </Stack.Navigator>
     )

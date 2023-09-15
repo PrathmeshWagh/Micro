@@ -13,12 +13,11 @@ import { CommonActions } from '@react-navigation/native';
 interface ImageItem {
     image_id: number;
     task_id: number;
-    // ... Other properties
     check_edit_delete: number;
 }
 const ViewImageScreen = ({ route, navigation }: any) => {
     const { taskId } = route.params;
-    console.log("id",taskId)
+    console.log("id", taskId)
     const [viewImage, setViewImage] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -86,7 +85,7 @@ const ViewImageScreen = ({ route, navigation }: any) => {
         }
 
     }
-    const openModal = (imageURI:string) => {
+    const openModal = (imageURI: string) => {
         setModalImageURI(imageURI);
         setModalVisible(true);
     };
@@ -158,7 +157,7 @@ const ViewImageScreen = ({ route, navigation }: any) => {
         <>
             <Appbar title={'View Photo'} />
             {loading ? (
-                <ActivityIndicator size="small" color="#000" />
+                <ActivityIndicator size="large" color={Colors.brand_primary} />
             ) : (
                 <View style={styles.container}>
                     <FlatList
@@ -226,8 +225,8 @@ const styles = StyleSheet.create({
     },
     closeBtn: {
         color: Colors.white,
-        fontFamily:'Roboto-Bold',
-        fontSize:20
+        fontFamily: 'Roboto-Bold',
+        fontSize: 20
     },
     modalImage: {
         width: 400,
