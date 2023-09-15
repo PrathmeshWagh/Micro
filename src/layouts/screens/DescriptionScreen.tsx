@@ -135,7 +135,7 @@ const DescriptionScreen = ({route }: any, props: any) => {
                     )}
                   </Pressable>
                   <Pressable style={styles.button} onPress={StartProject}>
-                    {isLoading ? (
+                    {load ? (
                       <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
                     ) : (
                       <Text style={styles.startProject}>View Project</Text>
@@ -144,7 +144,7 @@ const DescriptionScreen = ({route }: any, props: any) => {
                 </View>
               ) : (
                 <Pressable style={styles.button} onPress={StartProject}>
-                  {isLoading ? (
+                  {load ? (
                     <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
                   ) : (
                     <Text style={styles.startProject}>View Project</Text>

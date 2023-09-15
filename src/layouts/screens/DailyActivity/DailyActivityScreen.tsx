@@ -54,55 +54,60 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
             {loading ? (
                 <ActivityIndicator size="large" color="#000" />
             ) : (
+                <>
+                    <ScrollView style={styles.container}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                            />
+                        }>
 
-                <ScrollView style={styles.container}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={onRefresh}
-                        />
-                    }>
-
-                    {dailyActivity.map((item, index) => (
-                        <Pressable style={styles.cover}
-                            onPress={() =>
-                                navigation.dispatch(
-                                    CommonActions.navigate({
-                                        name: 'ViewDailyActivityScreen',
-                                        params: {
-                                            project_id: project_id,
-                                            dailyId: item.daily_activities_id
-                                        },
-                                    })
-                                )
-                            }
-                        >
-                            <View style={styles.align2}>
-                                <IonIcon style={styles.icon} name="calendar" size={18} color={Colors.text_primary} style={styles.calender} />
-                                <Text style={styles.time}>{item.date}</Text>
-                            </View>
-                            <View style={styles.align}>
-                                <Text style={styles.upload}>Uploaded By:</Text>
-                                <Text style={styles.name}>{item.uploaded_by}</Text>
-                            </View>
-                            <Pressable
+                        {dailyActivity.map((item, index) => (
+                            <Pressable style={styles.cover}
                                 onPress={() =>
                                     navigation.dispatch(
                                         CommonActions.navigate({
-                                            name: 'EditDailyActivityCardScreen',
+                                            name: 'ViewDailyActivityScreen',
                                             params: {
                                                 project_id: project_id,
                                                 dailyId: item.daily_activities_id
                                             },
                                         })
                                     )
-                                }>
-                                <Feather name="edit-3" size={22} color={Colors.brand_primary} style={styles.edit} />
+                                }
+                            >
+                                <View style={styles.align2}>
+                                    <IonIcon style={styles.icon} name="calendar" size={18} color={Colors.text_primary} style={styles.calender} />
+                                    <Text style={styles.time}>{item.date}</Text>
+                                </View>
+                                <View style={styles.align}>
+                                    <Text style={styles.upload}>Uploaded By:</Text>
+                                    <Text style={styles.name}>{item.uploaded_by}</Text>
+                                </View>
+                                <View>
+                                    <Pressable
+                                        onPress={() =>
+                                            navigation.dispatch(
+                                                CommonActions.navigate({
+                                                    name: 'EditDailyActivityCardScreen',
+                                                    params: {
+                                                        project_id: project_id,
+                                                        dailyId: item.daily_activities_id
+                                                    },
+                                                })
+                                            )
+                                        }>
+                                        <Feather name="edit-3" size={22} color={Colors.brand_primary} style={styles.edit} />
+                                    </Pressable>
+                                </View>
                             </Pressable>
-                        </Pressable>
-                    ))}
 
-                </ScrollView>
+                        ))}
+
+
+                    </ScrollView>
+                </>
             )}
         </>
     );

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, SafeAreaView, Pressable, ScrollView, Image, FlatList, ActivityIndicator, RefreshControl, Modal, Alert } from 'react-native';
 import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
@@ -7,7 +7,7 @@ import { getMethod, postMethod } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { CommonActions } from '@react-navigation/native';
+import { CommonActions, useFocusEffect } from '@react-navigation/native';
 
 
 interface ImageItem {
@@ -23,9 +23,14 @@ const ViewImageScreen = ({ route, navigation }: any) => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const [isModalVisible, setModalVisible] = useState<boolean>(false);
     const [modalImageURI, setModalImageURI] = useState(null);
-    useEffect(() => {
-        getdata();
-    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            // This code will run when the screen focuses
+            getdata(); // Refresh your data when the screen is in focus
+        }, [])
+    );
+
 
     const getdata = async () => {
         setLoading(true);

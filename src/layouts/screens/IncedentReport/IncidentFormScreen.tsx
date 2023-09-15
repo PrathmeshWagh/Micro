@@ -250,17 +250,22 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
         formData.append('time_of_acc_inc_do', endtimeString);
         formData.append('details_of_accident_incident_dangerous_occurance', accidentDetails);
         formData.append('incident_report_remark', remark);
-        formData.append('signature_of_person_reporting', {
-            uri: 'file://' + signatureImageUri,
-            type: 'image/jpg',
-            name: 'image.jpg',
-        });
+        if (signatureImageUri === undefined || signatureImageUri === "") {
+            formData.append('signature_of_person_reporting', "");
+        } else {
+            formData.append('signature_of_person_reporting', {
+                uri: signatureImageUri,
+                type: 'image/jpg',
+                name: 'image.jpg',
+            });
+        }
         formData.append('date', formattedDate3);
         formData.append('project_id', project_id);
 
 
 
-        console.log("imageUri....", 'file://'+ signatureImageUri)
+        console.log("imageUri....", signatureImageUri)
+        console.log("imageUrwwwi....", imageUri)
         try {
             setLoading(true);
             const api: any = await FormPostMethod(`add_incident_report`, formData);
@@ -306,7 +311,7 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
     const handleOK = (signature: string) => {
         const path = RNFS.CachesDirectoryPath + `img-${new Date().valueOf()}.jpg`;
         RNFS.writeFile(path, signature.replace("data:image/png;base64,", ""), 'base64')
-        setSignatureImageUri(path);
+        setSignatureImageUri('file://' + path);
         setSignatureModalVisible(false)
     };
     return (
@@ -719,7 +724,7 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                     </View>
                     <View style={styles.signatureCard}>
                         {signatureImageUri ? (
-                            <Image source={{ uri: 'file://' + signatureImageUri }} style={{ width: 150, height: 150, paddingLeft: 18 }} />
+                            <Image source={{ uri: signatureImageUri }} style={{ width: 150, height: 150, paddingLeft: 18 }} />
                         ) : (
                             <Text style={styles.chooseFile2} onPress={handleSignatureModal}>Signature</Text>
                         )}

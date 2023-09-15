@@ -11,40 +11,49 @@ import { CommonActions, useNavigation } from '@react-navigation/native';
 import DatePicker from 'react-native-date-picker';
 import Feather from 'react-native-vector-icons/Feather';
 
-interface Props { }
-const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
+interface ServerRequestPropTypes {
+    date: string[],
+    end_time: string[],
+    name_of_person: string[],
+    no_of_worker: string,
+    project_id: number,
+    start_time: string[],
+    task_id: number[],
+    type_of_worker: string,
+    types_of_worker_name: string
+
+}
+const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     const [value, setValue] = useState('');
     const [showTextBox, setShowTextBox] = useState(false);
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const [selectedValue, setSelectedValue] = useState(null);
-    const [numWorkers, setNumWorkers] = useState([]); // Default to 1 worker
+    const [numWorkers, setNumWorkers] = useState<string>("0");
     const [workerSections, setWorkerSections] = useState([]);
     const navigation = useNavigation();
     const [loading, setLoading] = useState<boolean>(false);
-    const [startTime, setStartTime] = useState<number[]>([]);
-    const [endTime, setEndTime] = useState<number[]>([]);
+    const [startTime, setStartTime] = useState<string[]>([]);
+    const [endTime, setEndTime] = useState<string[]>([]);
     const [name, setName] = useState('');
     const [personName, setPersonName] = useState<string[]>([]);
-    const [startOpen, setStartOpen] = useState<boolean>(false);
-    const [Starttime, setStartingTime] = useState(new Date());
+    const [Starttime, setStartingTime] = useState<string[]>([]);
     const [endOpen, setEndOpen] = useState(false);
-    const starttime = new Date(Starttime);
-    const hourss = starttime.getHours();
-    const minutess = starttime.getMinutes();
-    const starttimeString = `${hourss}:${minutess}`;
-    const [openModalIndex, setOpenModalIndex] = useState<number | null>(null);
-    const [startTimes, setStartTimes] = useState<string[]>([]);
+    // const starttime = new Date(Starttime);
+    // const hourss = starttime.getHours();
+    // const minutess = starttime.getMinutes();
+    // const starttimeString = `${hourss}:${minutess}`;
+    // const [openModalIndex, setOpenModalIndex] = useState<number | null>(null);
+    // const [startTimes, setStartTimes] = useState<string[]>([]);
 
 
-    const { activity, project_id,date } = route.params;
-    console.log("...",activity)
+    const { activity, project_id, date } = route.params;
     const data = [
         { value: 'mac', label: 'MAC' },
         { value: 'sub_con', label: 'Sub Con' },
         { value: 'other', label: 'Other' },
     ];
 
-    const handleDropdownChange = (selectedValue: string) => {
+    const handleDropdownChange = (selectedValue: { value: React.SetStateAction<string>; }) => {
         setValue(selectedValue.value);
         if (selectedValue.value === 'other') {
             setShowTextBox(true);
@@ -70,22 +79,22 @@ const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
         setRefreshing(false);
     };
 
+
+
+
     const AddReport = async (props: any) => {
-        const StartimeValue = Object.values(startTime);
-        const EndtimeValue = Object.values(endTime);
-        const taskworkerSections = Object.values(workerSections);
         const taskStatusValues = Object.values(personName);
 
-        const raw = {
+        const raw: ServerRequestPropTypes = {
             project_id: project_id,
             task_id: activity.daily_activity,
             name_of_person: taskStatusValues,
-            start_time: starttimeString,
-            end_time: EndtimeValue,
+            start_time: startTime,
+            end_time: endTime,
             type_of_worker: value,
             types_of_worker_name: name,
             no_of_worker: numWorkers,
-            date:date
+            date: date
 
         }
         console.log("raw", raw)
@@ -174,11 +183,6 @@ const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
                 {workerSections.map((section, index) => (
                     <View key={section.id} style={styles.align}>
                         <Text style={styles.date}>Name of Person {index + 1}</Text>
-                        {/* <TextInput
-                            style={styles.input}
-                            value={personName}
-                            onChangeText={setPersonName}
-                        /> */}
                         <TextInput
                             style={styles.input}
                             onChangeText={(text) => {
@@ -191,35 +195,7 @@ const ManpowerReportScreen: FC<Props> = ({ route }: any): JSX.Element => {
                             placeholder=""
                         />
                         <Text style={styles.date}>Start Time {index + 1}</Text>
-                        {/* <View style={styles.dateCard}>
-                            <View style={{ flexDirection: 'row' }}>
-                                <View style={styles.inputTime}>
-                                    <Text style={styles.date}>{starttimeString}</Text>
-                                </View>
-                            </View>
-                            <Feather
-                                name="chevron-down"
-                                size={18}
-                                color={'#000'}
-                                style={{ position: 'absolute', right: 20, top: 12 }}
-                                onPress={() => setOpenModalIndex(index)} // Set the index of the worker modal to open
-                            />
-                            <DatePicker
-                                modal
-                                mode="time"
-                                is24hourSource="device"
-                                open={openModalIndex === index} // Only open the modal for the selected worker
-                                date={Starttime}
-                                onConfirm={(time2) => {
-                                    setOpenModalIndex(null); // Close the modal after confirming
-                                    setStartingTime(time2);
-                                }}
-                                onCancel={() => {
-                                    setOpenModalIndex(null); // Close the modal when canceled
-                                }}
-                            />
-                           
-                        </View> */}
+
                         <TextInput
                             style={styles.input}
                             onChangeText={(text) => {

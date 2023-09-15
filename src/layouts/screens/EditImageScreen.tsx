@@ -149,25 +149,26 @@ const EditImageScreen: FC<Props> = ({ route }: any): JSX.Element => {
         formData.append('image_id', data.image_id);
         console.log("formData", formData)
         try {
+            setLoading(true);
             const api: any = await FormPostMethod(`update_attachment`, formData);
             if (api.status === 200) {
-                setLoading(true);
-                console.log("...", api.data)
-                // Snackbar.show({
-                //     text: api.data,
-                //     duration: Snackbar.LENGTH_SHORT,
-                //     textColor: 'white',
-                //     backgroundColor: 'green',
-                // });
+                setLoading(false);
+                console.log("...", api.data.message)
+                Snackbar.show({
+                    text: api.data.message,
+                    duration: Snackbar.LENGTH_SHORT,
+                    textColor: 'white',
+                    backgroundColor: 'green',
+                });
                 navigation.dispatch(CommonActions.goBack())
             } else {
                 setLoading(false);
-                // Snackbar.show({
-                //     text: api.data,
-                //     duration: Snackbar.LENGTH_SHORT,
-                //     textColor: '#AE1717',
-                //     backgroundColor: '#F2A6A6',
-                // });
+                Snackbar.show({
+                    text: api.data,
+                    duration: Snackbar.LENGTH_SHORT,
+                    textColor: '#AE1717',
+                    backgroundColor: '#F2A6A6',
+                });
             }
         }
         catch (e) {
