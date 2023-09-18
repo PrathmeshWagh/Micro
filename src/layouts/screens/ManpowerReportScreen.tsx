@@ -5,45 +5,41 @@ import Colors from '../../style/Colors/colors';
 import Appbar from '../../components/Appbar';
 import { Dropdown } from 'react-native-element-dropdown';
 import { postMethod } from '../../utils/helper';
-import { stat } from 'react-native-fs';
 import Snackbar from 'react-native-snackbar';
 import { CommonActions, useNavigation } from '@react-navigation/native';
-import DatePicker from 'react-native-date-picker';
-import Feather from 'react-native-vector-icons/Feather';
 
-interface ServerRequestPropTypes {
-    date: string[],
-    end_time: string[],
-    name_of_person: string[],
-    no_of_worker: string,
-    project_id: number,
-    start_time: string[],
-    task_id: number[],
-    type_of_worker: string,
-    types_of_worker_name: string
 
+// interface ServerRequestPropTypes {
+//     date: string[],
+//     end_time: string[],
+//     name_of_person: string[],
+//     no_of_worker: string,
+//     project_id: number,
+//     start_time: string[],
+//     task_id: number[],
+//     type_of_worker: string,
+//     types_of_worker_name: string
+
+// }
+
+interface Worker {
+    workerType: string;
+    name: string;
+    numWorkers: string;
+    showTextBox: boolean;
 }
 const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     const [value, setValue] = useState('');
-    const [showTextBox, setShowTextBox] = useState(false);
+    const [showTextBox, setShowTextBox] = useState<boolean>(false);
     const [refreshing, setRefreshing] = useState<boolean>(false);
-    const [selectedValue, setSelectedValue] = useState(null);
-    const [numWorkers, setNumWorkers] = useState<string>("0");
-    const [workerSections, setWorkerSections] = useState([]);
     const navigation = useNavigation();
     const [loading, setLoading] = useState<boolean>(false);
     const [startTime, setStartTime] = useState<string[]>([]);
     const [endTime, setEndTime] = useState<string[]>([]);
     const [name, setName] = useState('');
     const [personName, setPersonName] = useState<string[]>([]);
-    const [Starttime, setStartingTime] = useState<string[]>([]);
-    const [endOpen, setEndOpen] = useState(false);
-    // const starttime = new Date(Starttime);
-    // const hourss = starttime.getHours();
-    // const minutess = starttime.getMinutes();
-    // const starttimeString = `${hourss}:${minutess}`;
-    // const [openModalIndex, setOpenModalIndex] = useState<number | null>(null);
-    // const [startTimes, setStartTimes] = useState<string[]>([]);
+    const [numWorkersArray, setNumWorkersArray] = useState<number[]>([]);
+
 
 
     const { activity, project_id, date } = route.params;
@@ -53,26 +49,8 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
         { value: 'other', label: 'Other' },
     ];
 
-    const handleDropdownChange = (selectedValue: { value: React.SetStateAction<string>; }) => {
-        setValue(selectedValue.value);
-        if (selectedValue.value === 'other') {
-            setShowTextBox(true);
-        } else {
-            setShowTextBox(false);
-        }
-    };
-    const handleNumWorkersChange = (text: string) => {
-        console.log("test", text)
-        const num = parseInt(text, 10);
-        if (!isNaN(num)) {
-            const newSections = Array.from({ length: num }, (_, id) => ({ id: id + 1 }));
-            setWorkerSections(newSections);
-            setNumWorkers(text)
-        } else {
-            // If the input is not a valid number, reset the sections.
-            setWorkerSections([]);
-        }
-    };
+
+
     const onRefresh = () => {
         setRefreshing(true);
         // getdata();
@@ -80,62 +58,76 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     };
 
 
+    const handleNumWorkersChange = (text, index) => {
+        console.log('Number of Workers:', text);
+
+        // Create a copy of the numWorkersArray state
+        const updatedNumWorkersArray = [...numWorkersArray];
+
+        // Update the value at the specified index
+        updatedNumWorkersArray[index] = parseInt(text, 10); // Parse the text to an integer
+
+        // Update the state with the modified array
+        setNumWorkersArray(updatedNumWorkersArray);
+    };
 
 
-    const AddReport = async (props: any) => {
-        const taskStatusValues = Object.values(personName);
 
-        const raw: ServerRequestPropTypes = {
-            project_id: project_id,
-            task_id: activity.daily_activity,
-            name_of_person: taskStatusValues,
-            start_time: startTime,
-            end_time: endTime,
-            type_of_worker: value,
-            types_of_worker_name: name,
-            no_of_worker: numWorkers,
-            date: date
+    const [workers, setWorkers] = useState<Worker[]>([]);
+    const handleAddSection = () => {
+        const newWorker: Worker = {
+            workerType: '',
+            name: '',
+            numWorkers: '',
+            showTextBox: false
+        };
+        setWorkers([...workers, newWorker]);
 
+        // Initialize the numWorkersArray with zeros for this new worker
+        setNumWorkersArray([...numWorkersArray, 0]);
+
+    };
+
+
+
+
+
+
+
+
+
+    const AddReport = () => {
+        const formData = new FormData();
+        workers.forEach((worker, index) => {
+            formData.append('project_id', project_id.toString());
+            formData.append('task_id', activity.daily_activity.toString());
+            formData.append('type_of_worker', worker.workerType); // Append worker type
+            formData.append('types_of_worker_name', worker.name);
+            formData.append('no_of_worker', worker.numWorkers);
+        })
+        for (let i = 0; i < personName.length; i++) {
+            formData.append('name_of_person[]', personName[i]);
+            formData.append('start_time[]', startTime[i]);
+            formData.append('end_time[]', endTime[i]);
         }
-        console.log("raw", raw)
-        try {
-            setLoading(true);
-            const api: any = await postMethod(`add_manpower_report`, raw);
-            if (api.data.status === true) {
-                console.log('data', api.data)
-                setLoading(false);
-                navigation.dispatch(
-                    CommonActions.navigate({
-                        name: 'TopTabNavigation',
-                        params: {
-                            id: project_id
-                        },
-                    })
-                )
-            } else {
-                setLoading(false);
-                Snackbar.show({
-                    text: api.data.message,
-                    duration: Snackbar.LENGTH_SHORT,
-                    textColor: 'white',
-                    backgroundColor: 'red',
-                });
-            }
-        }
-        catch (e) {
-            Snackbar.show({
-                text: "Some Error Occured" + e,
-                duration: Snackbar.LENGTH_SHORT,
-                textColor: 'white',
-                backgroundColor: 'red',
-            });
-        }
+        // Add date array to the FormData
+        console.log("form", formData)
 
-    }
+    };
+
+
+
+
+
+
+
+
+
+
 
     return (
         <>
-            <Appbar title={'Daily Activity'} />
+            <Appbar title={'Manpower Report'} />
             <ScrollView style={styles.container}
                 refreshControl={
                     <RefreshControl
@@ -145,86 +137,136 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                 }>
                 <Text style={styles.Manpower}>Manpower Reports</Text>
 
-                <Text style={styles.date}>Worker Type +</Text>
-                <View style={styles.card}>
-                    {/* {renderLabel()} */}
-                    <Dropdown
-                        style={styles.dropdown}
-                        placeholderStyle={styles.placeholderStyle}
-                        iconStyle={styles.iconStyle}
-                        data={data}
-                        maxHeight={300}
-                        labelField="label"
-                        valueField="value"
-                        placeholder="Select item"
-                        value={value}
-                        onChange={handleDropdownChange}
-                    />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, }}>
+                    <Text style={styles.date}>Worker Type </Text>
+                    <Pressable onPress={handleAddSection}>
+                        <Text style={styles.plus}>+</Text>
+                    </Pressable>
                 </View>
-                {showTextBox && (
+                {workers.map((worker, index) => (
                     <>
-                        <Text style={styles.date}>Name</Text>
+                        <View key={index} style={styles.card}>
+                            <Dropdown
+                                style={styles.dropdown}
+                                placeholderStyle={styles.placeholderStyle}
+                                iconStyle={styles.iconStyle}
+                                data={data}
+                                maxHeight={300}
+                                labelField="label"
+                                valueField="value"
+                                placeholder="Select item"
+                                value={worker.workerType}
+                                onChange={(selectedValue) => {
+                                    console.log('Selected Value:', selectedValue);
+                                    const updatedWorkers = [...workers];
+                                    updatedWorkers[index].workerType = selectedValue.value;
+                                    updatedWorkers[index].showTextBox = selectedValue.value === 'other';
+                                    setWorkers(updatedWorkers);
+                                    // Ensure that the value state is being updated correctly
+                                    setValue(selectedValue.value);
+                                    console.log('Updated Value State:', selectedValue.value);
+                                }}
+                            />
+                        </View>
+                        {worker.showTextBox && (
+                            <>
+                                <Text style={styles.date}>Name</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    onChangeText={(text) => {
+                                        const updatedWorkers = [...workers];
+                                        updatedWorkers[index].name = text;
+                                        setWorkers(updatedWorkers);
+                                    }}
+                                    value={worker.name}
+                                    placeholder=""
+                                />
+                            </>
+                        )}
+                        <Text style={styles.date}>Number of Worker</Text>
                         <TextInput
                             style={styles.input}
-                            onChangeText={setName}
-                            value={name}
+                            onChangeText={(text) => {
+                                // Update the number of workers for this worker
+                                const updatedWorkers = [...workers];
+                                updatedWorkers[index].numWorkers = text;
+                                setWorkers(updatedWorkers);
+                                handleNumWorkersChange(text, index);
+
+                                // Handle any other logic you need to perform when the input changes
+                            }}
+                            value={worker.numWorkers}
                             placeholder=""
+                            keyboardType="numeric"
                         />
+
+
+
+                        {
+                            Array.from({ length: parseInt(worker.numWorkers) }, (_, sectionIndex) => (
+                                < View key={index * 1000 + sectionIndex} style={styles.align}>
+                                    <Text style={styles.date}>Name of Person {sectionIndex + 1}</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        onChangeText={(text) => {
+                                            // Update the personName state with the correct index
+                                            const updatedPersonName = [...personName];
+                                            updatedPersonName[index * numWorkersArray.length + sectionIndex] = text;
+                                            setPersonName(updatedPersonName);
+                                        }}
+                                        value={personName[index * numWorkersArray.length + sectionIndex] || ''}
+                                        placeholder=""
+                                    />
+                                    <Text style={styles.date}>Start Time {sectionIndex + 1}</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        onChangeText={(text) => {
+                                            // Update the startTime state with the correct index
+                                            const updatedStartTime = [...startTime];
+                                            updatedStartTime[index * numWorkersArray.length + sectionIndex] = text;
+                                            setStartTime(updatedStartTime);
+                                        }}
+                                        value={startTime[index * numWorkersArray.length + sectionIndex] || ''}
+                                        placeholder=""
+                                    />
+                                    <Text style={styles.date}>End Time {sectionIndex + 1}</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        onChangeText={(text) => {
+                                            // Update the endTime state with the correct index
+                                            const updatedEndTime = [...endTime];
+                                            updatedEndTime[index * numWorkersArray.length + sectionIndex] = text;
+                                            setEndTime(updatedEndTime);
+                                        }}
+                                        value={endTime[index * numWorkersArray.length + sectionIndex] || ''}
+                                        placeholder=""
+                                    />
+                                </View >
+
+
+                            ))
+                        }
+
                     </>
-                )}
-                <Text style={styles.date}>Number of Worker</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={handleNumWorkersChange}
-                    value={workerSections}
-                    placeholder=""
-                    keyboardType="numeric"
-                />
-                {workerSections.map((section, index) => (
-                    <View key={section.id} style={styles.align}>
-                        <Text style={styles.date}>Name of Person {index + 1}</Text>
-                        <TextInput
-                            style={styles.input}
-                            onChangeText={(text) => {
-                                setPersonName({
-                                    ...personName,
-                                    [index]: text,
-                                });
-                            }}
-                            value={personName[index] || ''}
-                            placeholder=""
-                        />
-                        <Text style={styles.date}>Start Time {index + 1}</Text>
 
-                        <TextInput
-                            style={styles.input}
-                            onChangeText={(text) => {
-                                setStartTime({
-                                    ...startTime,
-                                    [index]: text,
-                                });
-                            }}
-                            value={startTime[index] || ''}
-                            placeholder=""
-                        />
-                        <Text style={styles.date}>End Time {index + 1}</Text>
-
-                        <TextInput
-                            style={styles.input}
-                            onChangeText={(text) => {
-                                setEndTime({
-                                    ...endTime,
-                                    [index]: text,
-                                });
-                            }}
-                            value={endTime[index] || ''}
-                            placeholder=""
-                        />
-                    </View>
                 ))}
 
-                <View style={{ marginBottom: 40 }}></View>
-                <Pressable style={styles.btn} onPress={AddReport}>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                {/* <View style={{ marginBottom: 40 }}></View> */}
+                {/* <Pressable style={styles.btn} onPress={AddReport}>
                     {loading ?
                         (
                             <ActivityIndicator size="small" color={Colors.white} />
@@ -236,8 +278,14 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                                 Submit
                             </Text>
                         )}
+                </Pressable> */}
+                <Pressable style={styles.btn} onPress={AddReport}>
+                    <Text style={styles.btnText}>
+
+                        Submit
+                    </Text>
                 </Pressable>
-            </ScrollView>
+            </ScrollView >
         </>
     );
 };
@@ -252,6 +300,11 @@ const styles = StyleSheet.create({
         width: 200,
         alignSelf: 'center',
         marginVertical: 40
+    },
+    plus: {
+        fontFamily: 'Roboto-Medium',
+        color: Colors.text_primary,
+        fontSize: 26,
     },
     inputTime: {
         height: 45,
