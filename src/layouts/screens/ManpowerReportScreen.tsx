@@ -40,7 +40,11 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     const [personName, setPersonName] = useState<string[]>([]);
     const [numWorkersArray, setNumWorkersArray] = useState<number[]>([]);
 
+    const [typeOfWorkers, setTypeOfWorkers] = useState<string[]>([]);
+    const [typesOfWorkersName, setTypesOfWorkersName] = useState<string[]>([]);
+    const [numberOfWorkers, setNumberOfWorkers] = useState<string[]>([]);
 
+    const [formData, setFormData] = useState(new FormData());
 
     const { activity, project_id, date } = route.params;
     const data = [
@@ -58,7 +62,7 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     };
 
 
-    const handleNumWorkersChange = (text, index) => {
+    const handleNumWorkersChange = (text: string, index: number) => {
         console.log('Number of Workers:', text);
 
         // Create a copy of the numWorkersArray state
@@ -84,44 +88,65 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
         setWorkers([...workers, newWorker]);
 
         // Initialize the numWorkersArray with zeros for this new worker
-        setNumWorkersArray([...numWorkersArray, 0]);
-
+        setTypeOfWorkers([...typeOfWorkers, '']);
+        setTypesOfWorkersName([...typesOfWorkersName, '']);
+        setNumberOfWorkers([...numberOfWorkers, '']);
+        setPersonName([...personName, []]);
+        setStartTime([...startTime, []]);
+        setEndTime([...endTime, []]);
     };
-
-
-
-
-
 
 
 
 
     const AddReport = () => {
-        const formData = new FormData();
+
+        const typeOfWorkersArray: string[] = [];
+        const typesOfWorkersNameArray: string[] = [];
+        const numberOfWorkersArray: string[] = [];
+        const personNameArray: string[] = [];
+        const startTimeArray: string[] = [];
+        const endTimeArray: string[] = [];
+        // Loop through the workers and populate the arrays
         workers.forEach((worker, index) => {
-            formData.append('project_id', project_id.toString());
-            formData.append('task_id', activity.daily_activity.toString());
-            formData.append('type_of_worker', worker.workerType); // Append worker type
-            formData.append('types_of_worker_name', worker.name);
-            formData.append('no_of_worker', worker.numWorkers);
-        })
-        for (let i = 0; i < personName.length; i++) {
-            formData.append('name_of_person[]', personName[i]);
-            formData.append('start_time[]', startTime[i]);
-            formData.append('end_time[]', endTime[i]);
-        }
-        // Add date array to the FormData
-        console.log("form", formData)
+            typeOfWorkersArray.push(worker.workerType);
+            numberOfWorkersArray.push(worker.numWorkers);
+
+            // Check if a name is provided for this worker and push it
+            if (worker.showTextBox) {
+                typesOfWorkersNameArray.push(worker.name);
+            } else {
+                typesOfWorkersNameArray.push(''); // Push an empty string if no name is provided
+            }
+
+            // Loop through the personName, startTime, and endTime arrays for this worker
+            for (let sectionIndex = 0; sectionIndex < parseInt(worker.numWorkers); sectionIndex++) {
+                personNameArray.push(personName[index * numWorkersArray.length + sectionIndex] || '');
+                startTimeArray.push(startTime[index * numWorkersArray.length + sectionIndex] || '');
+                endTimeArray.push(endTime[index * numWorkersArray.length + sectionIndex] || '');
+            }
+        });
+        const formData = new FormData();
+        formData.append('project_id', project_id);
+        formData.append('type_of_worker[]', typeOfWorkersArray);
+        formData.append('types_of_worker_name[]', typesOfWorkersNameArray);
+        formData.append('no_of_worker[]', numberOfWorkersArray);
+        const personNameString = personNameArray.join(',');
+
+        // Append the single string to formData
+        formData.append('personName[]', personNameString);
+
+        formData.append('startTime[]', startTimeArray);
+        formData.append('endTime[]', endTimeArray);
+
+        console.log("startTimeArray", personNameString);
+        console.log("startTimeArray", startTimeArray);
+        console.log("endTimeArray", endTimeArray);
+        console.log("type_of_worker", typeOfWorkersArray);
+        console.log("types_of_worker_name", typesOfWorkersNameArray);
+        console.log("types_of_worker_name", numberOfWorkersArray);
 
     };
-
-
-
-
-
-
-
-
 
 
 
@@ -162,9 +187,7 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                                     updatedWorkers[index].workerType = selectedValue.value;
                                     updatedWorkers[index].showTextBox = selectedValue.value === 'other';
                                     setWorkers(updatedWorkers);
-                                    // Ensure that the value state is being updated correctly
                                     setValue(selectedValue.value);
-                                    console.log('Updated Value State:', selectedValue.value);
                                 }}
                             />
                         </View>
