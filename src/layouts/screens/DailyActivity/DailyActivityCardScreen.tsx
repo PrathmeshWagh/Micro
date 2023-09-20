@@ -30,7 +30,6 @@ const DailyActivityCardScreen: FC<Props> = ({ route }: any): JSX.Element => {
     setLoading(true);
     const api: any = await getMethod(`task_list/${project_id}`);
     if (api.status === 200) {
-      console.log("apiData", api.data)
       setLoading(false);
       setDailyActivity(api.data)
       setRefreshing(false);

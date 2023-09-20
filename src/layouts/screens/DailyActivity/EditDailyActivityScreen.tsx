@@ -17,7 +17,6 @@ interface Props {
 }
 const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
   const { project_id, dailyId, selectedTaskIds } = route.params;
-  console.log("ids", dailyId, selectedTaskIds)
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const navigation = useNavigation();
@@ -81,7 +80,6 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
     setRefreshing(false);
   };
   const openZoomedImage = (imagePath: string, remark: string) => {
-    console.log('imagePath', remark);
     setZoomedImage(imagePath);
     setSelectedImageRemark(remark);
   };
@@ -97,12 +95,10 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
       daily_activities_id: dailyId,
 
     }
-    console.log("raw", raw)
     try {
       setLoading(true);
       const api: any = await postMethod(`edit_daily_activity_task_details`, raw);
       if (api.status === 200) {
-        console.log('data', api.data)
         setDailyActivity(api.data);
         setLoading(false);
 

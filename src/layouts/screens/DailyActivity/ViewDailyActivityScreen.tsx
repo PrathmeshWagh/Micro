@@ -18,7 +18,6 @@ interface Props {
 }
 const ViewDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
     const { project_id, dailyId, date } = route.params;
-    // console.log("...", project_id, dailyId)
     const [zoomedImage, setZoomedImage] = useState<string | null>(null);
     const navigation = useNavigation();
     const [refreshing, setRefreshing] = useState<boolean>(false);
@@ -26,9 +25,7 @@ const ViewDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
 
     const [dailyActivity, setDailyActivity] = useState<string[]>([]);
     const [selectedImageRemark, setSelectedImageRemark] = useState<string>();
-    const [status, setStatus] = useState<string[]>([]);
-    const [open, setOpen] = useState(false);
-
+ 
 
 
     useEffect(() => {
@@ -39,7 +36,6 @@ const ViewDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
         setLoading(true);
         const api: any = await getMethod(`view_daily_activity/${project_id}/${dailyId}`);
         if (api.status === 200) {
-            console.log("apiData2", api.data)
             setLoading(false);
             setDailyActivity(api.data)
             setRefreshing(false);
@@ -48,7 +44,6 @@ const ViewDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
 
 
     const openZoomedImage = (imagePath: string, remark: string) => {
-        console.log('imagePath', remark);
         setZoomedImage(imagePath);
         setSelectedImageRemark(remark);
     };
@@ -61,8 +56,6 @@ const ViewDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
         getdata();
         setRefreshing(false);
     };
-
-
 
 
     return (

@@ -33,11 +33,9 @@ const EditDailyActivityCardScreen: FC<Props> = ({ route }): JSX.Element => {
         setLoading(true);
         const api: any = await getMethod(`edit_daily_activity_task_list/${project_id}/${dailyId}`);
         if (api.status === 200) {
-            console.log("apiData", api.data)
             setLoading(false);
             setDailyActivity(api.data)
             setRefreshing(false);
-            //  console.log("", taskList.task_id)
         }
     }
     const onRefresh = () => {

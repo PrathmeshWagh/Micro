@@ -30,13 +30,11 @@ interface Worker {
 }
 const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     const [value, setValue] = useState('');
-    const [showTextBox, setShowTextBox] = useState<boolean>(false);
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const navigation = useNavigation();
     const [loading, setLoading] = useState<boolean>(false);
     const [startTime, setStartTime] = useState<string[]>([]);
     const [endTime, setEndTime] = useState<string[]>([]);
-    const [name, setName] = useState('');
     const [personName, setPersonName] = useState<string[]>([]);
     const [numWorkersArray, setNumWorkersArray] = useState<number[]>([]);
 
@@ -44,7 +42,6 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     const [typesOfWorkersName, setTypesOfWorkersName] = useState<string[]>([]);
     const [numberOfWorkers, setNumberOfWorkers] = useState<string[]>([]);
 
-    const [formData, setFormData] = useState(new FormData());
 
     const { activity, project_id, date } = route.params;
     const data = [
