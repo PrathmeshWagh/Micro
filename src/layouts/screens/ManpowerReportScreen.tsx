@@ -99,8 +99,7 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
 
 
 
-    const AddReport = () => {
-
+    const AddReport = async () => {
         const typeOfWorkersArray: string[] = [];
         const typesOfWorkersNameArray: string[] = [];
         const numberOfWorkersArray: string[] = [];
@@ -126,29 +125,57 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                 endTimeArray.push(endTime[index * numWorkersArray.length + sectionIndex] || '');
             }
         });
-        const formData = new FormData();
-        formData.append('project_id', project_id);
-        formData.append('type_of_worker[]', typeOfWorkersArray);
-        formData.append('types_of_worker_name[]', typesOfWorkersNameArray);
-        formData.append('no_of_worker[]', numberOfWorkersArray);
-        const personNameString = personNameArray.join(',');
+        const raw = {
+            project_id: project_id,
+            task_id: activity.daily_activity,
+            types_of_worker: typeOfWorkersArray,
+            types_of_worker_name: typesOfWorkersNameArray,
+            no_of_worker: numberOfWorkersArray,
+            end_time: endTimeArray,
+            name_of_person: personNameArray,
+            start_time: startTimeArray,
+            date: date
 
-        // Append the single string to formData
-        formData.append('personName[]', personNameString);
-
-        formData.append('startTime[]', startTimeArray);
-        formData.append('endTime[]', endTimeArray);
-
-        console.log("startTimeArray", personNameString);
-        console.log("startTimeArray", startTimeArray);
-        console.log("endTimeArray", endTimeArray);
-        console.log("type_of_worker", typeOfWorkersArray);
-        console.log("types_of_worker_name", typesOfWorkersNameArray);
-        console.log("types_of_worker_name", numberOfWorkersArray);
-
-    };
-
-
+        }
+        try {
+            setLoading(true);
+            const api: any = await postMethod(`add_manpower_report`, raw);
+            if (api.status === 200) {
+                console.log('data', api.data)
+                setLoading(false);
+                Snackbar.show({
+                    text: api.data.message,
+                    duration: Snackbar.LENGTH_SHORT,
+                    textColor: 'white',
+                    backgroundColor: 'green',
+                });
+                navigation.dispatch(
+                    CommonActions.navigate({
+                        name: 'TopTabNavigation',
+                        params: {
+                            id: project_id
+                        },
+                    })
+                )
+            } else {
+                setLoading(false);
+                Snackbar.show({
+                    text: api.data.message,
+                    duration: Snackbar.LENGTH_SHORT,
+                    textColor: 'white',
+                    backgroundColor: 'red',
+                });
+            }
+        }
+        catch (e) {
+            Snackbar.show({
+                text: "Some Error Occured" + e,
+                duration: Snackbar.LENGTH_SHORT,
+                textColor: 'white',
+                backgroundColor: 'red',
+            });
+        }
+    }
 
     return (
         <>
@@ -289,7 +316,7 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
 
 
                 {/* <View style={{ marginBottom: 40 }}></View> */}
-                {/* <Pressable style={styles.btn} onPress={AddReport}>
+                <Pressable style={styles.btn} onPress={AddReport}>
                     {loading ?
                         (
                             <ActivityIndicator size="small" color={Colors.white} />
@@ -301,13 +328,8 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                                 Submit
                             </Text>
                         )}
-                </Pressable> */}
-                <Pressable style={styles.btn} onPress={AddReport}>
-                    <Text style={styles.btnText}>
-
-                        Submit
-                    </Text>
                 </Pressable>
+
             </ScrollView >
         </>
     );

@@ -164,7 +164,7 @@ function TopTabNavigation({ route }: any) {
           options={{ tabBarLabel: '  Daily\nActivity' }} />
         <TabTop.Screen name="VarientationOder" component={VarientationOderScreen}
           initialParams={{ project_id: id }}
-          options={{ tabBarLabel: 'Variation\n   Oder' }} />
+          options={{ tabBarLabel: 'Variation\n   Order' }} />
         <TabTop.Screen name="IncidentReport" component={IncidentReportScreen}
           initialParams={{ project_id: id }}
           options={{ tabBarLabel: 'Incident\n Report' }} />

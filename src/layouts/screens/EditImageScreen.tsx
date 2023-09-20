@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FC } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, Pressable, Button, Alert, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet, TextInput, Pressable, Button, Alert, ScrollView, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import PhotoEditor from 'react-native-photo-editor';
 import RNFS from 'react-native-fs';
@@ -11,14 +11,7 @@ import Appbar from '../../components/Appbar';
 import Snackbar from 'react-native-snackbar';
 import { AuthContext } from '../../utils/appContext';
 import { FormPostMethod, getMethod, postMethod, storeData } from '../../utils/helper';
-import moment from 'moment';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Card } from 'react-native-paper';
-import IonIcon from 'react-native-vector-icons/Ionicons';
-import Feather from 'react-native-vector-icons/Feather';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import { CommonActions, useNavigation } from '@react-navigation/native';
 interface Props {
     route: {
@@ -185,58 +178,66 @@ const EditImageScreen: FC<Props> = ({ route }: any): JSX.Element => {
 
 
     return (
-        <>
-            <Appbar title={'Edit Image'} />
-            <View style={{ padding: 30 }}>
-                {isLoading ? ( // Show loader when isLoading is true
-                    <ActivityIndicator size="large" color={Colors.brand_primary} />
-                ) : (
-                    <>
-                        <Pressable>
-                            <Image
-                                source={{
-                                    uri: imageUri || details?.file
-                                }}
-                                style={{ width: 300, height: 250, alignSelf: 'center' }}
+        
+
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+        >
+            <>
+                <Appbar title={'Edit Image'} />
+                <ScrollView style={{ padding: 30,flex:1 }}>
+                    {isLoading ? ( // Show loader when isLoading is true
+                        <ActivityIndicator size="large" color={Colors.brand_primary} />
+                    ) : (
+                        <>
+                            <Pressable>
+                                <Image
+                                    source={{
+                                        uri: imageUri || details?.file
+                                    }}
+                                    style={{ width: 300, height: 250, alignSelf: 'center' }}
+                                />
+                            </Pressable>
+                            <Pressable
+                                onPress={open}
+                                style={styles.uploadButton}>
+                                <Text style={styles.text}>Change Image</Text>
+                            </Pressable>
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={setName}
+                                value={name}
+                                placeholder="Name"
                             />
-                        </Pressable>
-                        <Pressable
-                            onPress={open}
-                            style={styles.uploadButton}>
-                            <Text style={styles.text}>Change Image</Text>
-                        </Pressable>
-                        <TextInput
-                            style={styles.input}
-                            onChangeText={setName}
-                            value={name}
-                            placeholder="Name"
-                        />
-                        <TextInput
-                            style={styles.input2}
-                            multiline={true}
-                            onChangeText={setRemark}
-                            value={remark}
-                            placeholder="Remarks"
-                        />
-                        <Pressable
-                            onPress={EditDetails}
-                            style={styles.uploadButton}>
-                            {
-                                loading ? (
-                                    <ActivityIndicator size="small" color={Colors.white} />
-                                )
-                                    :
-                                    (
-                                        <Text style={styles.text}>Save Details</Text>
-
+                            <TextInput
+                                style={styles.input2}
+                                multiline={true}
+                                onChangeText={setRemark}
+                                value={remark}
+                                placeholder="Remarks"
+                            />
+                            <Pressable
+                                onPress={EditDetails}
+                                style={styles.uploadButton}>
+                                {
+                                    loading ? (
+                                        <ActivityIndicator size="small" color={Colors.white} />
                                     )
+                                        :
+                                        (
+                                            <Text style={styles.text}>Save Details</Text>
 
-                            }
-                        </Pressable>
-                    </>
-                )}
-            </View>
-        </>
+                                        )
+
+                                }
+                            </Pressable>
+                        </>
+                    )}
+                </ScrollView>
+            </>
+        </KeyboardAvoidingView>
+       
     );
 };
 
@@ -252,6 +253,7 @@ const styles = StyleSheet.create({
         borderColor: Colors.lightGray,
         backgroundColor: Colors.lightGray,
         padding: 10,
+        color: Colors.black
 
     },
     input2: {
@@ -261,6 +263,7 @@ const styles = StyleSheet.create({
         padding: 10,
         borderColor: Colors.lightGray,
         backgroundColor: Colors.lightGray,
+        color: Colors.black
     },
     uploadButton: {
         borderWidth: 1,

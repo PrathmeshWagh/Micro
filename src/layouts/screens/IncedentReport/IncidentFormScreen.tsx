@@ -161,7 +161,7 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
     const event = [
         { value: 'Accident', label: 'Accident' },
         { value: 'Incident', label: 'Incident' },
-        { value: 'Dengerous Occurance', label: 'Dengerous Occurance' },
+        { value: 'Dangerous Occurance', label: 'Dangerous Occurance' },
         { value: 'Others', label: 'Others' },
     ];
 
