@@ -73,7 +73,6 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     };
 
 
-
     const [workers, setWorkers] = useState<Worker[]>([]);
     const handleAddSection = () => {
         const newWorker: Worker = {
@@ -88,13 +87,15 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
         setTypeOfWorkers([...typeOfWorkers, '']);
         setTypesOfWorkersName([...typesOfWorkersName, '']);
         setNumberOfWorkers([...numberOfWorkers, '']);
-        setPersonName([...personName, []]);
-        setStartTime([...startTime, []]);
-        setEndTime([...endTime, []]);
+        setPersonNameFields([...personNameFields, []]);
+        setStartTimeFields([...startTimeFields, []]);
+        setEndTimeFields([...endTimeFields, []]);
     };
 
 
-
+    const [personNameFields, setPersonNameFields] = useState<string[][]>([]);
+    const [startTimeFields, setStartTimeFields] = useState<string[][]>([]);
+    const [endTimeFields, setEndTimeFields] = useState<string[][]>([]);
 
     const AddReport = async () => {
         const typeOfWorkersArray: string[] = [];
@@ -128,16 +129,16 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
             types_of_worker: typeOfWorkersArray,
             types_of_worker_name: typesOfWorkersNameArray,
             no_of_worker: numberOfWorkersArray,
-            end_time: endTimeArray,
-            name_of_person: personNameArray,
-            start_time: startTimeArray,
+            end_time: endTimeFields.flat(), // Flatten the array to get a single array of values
+            name_of_person: personNameFields.flat(), // Flatten the array
+            start_time: startTimeFields.flat(), // Flatten the array
             date: date
-
-        }
+        };
+        console.log('raw', raw)
         try {
             setLoading(true);
             const api: any = await postMethod(`add_manpower_report`, raw);
-            if (api.status === 200) {
+            if (api.data.status === true) {
                 console.log('data', api.data)
                 setLoading(false);
                 Snackbar.show({
@@ -247,8 +248,6 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                             keyboardType="numeric"
                         />
 
-
-
                         {
                             Array.from({ length: parseInt(worker.numWorkers) }, (_, sectionIndex) => (
                                 < View key={index * 1000 + sectionIndex} style={styles.align}>
@@ -256,36 +255,36 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                                     <TextInput
                                         style={styles.input}
                                         onChangeText={(text) => {
-                                            // Update the personName state with the correct index
-                                            const updatedPersonName = [...personName];
-                                            updatedPersonName[index * numWorkersArray.length + sectionIndex] = text;
-                                            setPersonName(updatedPersonName);
+                                            const updatedPersonNameFields = [...personNameFields];
+                                            updatedPersonNameFields[index] = updatedPersonNameFields[index] || [];
+                                            updatedPersonNameFields[index][sectionIndex] = text;
+                                            setPersonNameFields(updatedPersonNameFields);
                                         }}
-                                        value={personName[index * numWorkersArray.length + sectionIndex] || ''}
+                                        value={personNameFields[index] ? personNameFields[index][sectionIndex] || '' : ''}
                                         placeholder=""
                                     />
                                     <Text style={styles.date}>Start Time {sectionIndex + 1}</Text>
                                     <TextInput
                                         style={styles.input}
                                         onChangeText={(text) => {
-                                            // Update the startTime state with the correct index
-                                            const updatedStartTime = [...startTime];
-                                            updatedStartTime[index * numWorkersArray.length + sectionIndex] = text;
-                                            setStartTime(updatedStartTime);
+                                            const updatedStartTimeFields = [...startTimeFields];
+                                            updatedStartTimeFields[index] = updatedStartTimeFields[index] || [];
+                                            updatedStartTimeFields[index][sectionIndex] = text;
+                                            setStartTimeFields(updatedStartTimeFields);
                                         }}
-                                        value={startTime[index * numWorkersArray.length + sectionIndex] || ''}
+                                        value={startTimeFields[index] ? startTimeFields[index][sectionIndex] || '' : ''}
                                         placeholder=""
                                     />
                                     <Text style={styles.date}>End Time {sectionIndex + 1}</Text>
                                     <TextInput
                                         style={styles.input}
                                         onChangeText={(text) => {
-                                            // Update the endTime state with the correct index
-                                            const updatedEndTime = [...endTime];
-                                            updatedEndTime[index * numWorkersArray.length + sectionIndex] = text;
-                                            setEndTime(updatedEndTime);
+                                            const updatedEndTimeFields = [...endTimeFields];
+                                            updatedEndTimeFields[index] = updatedEndTimeFields[index] || [];
+                                            updatedEndTimeFields[index][sectionIndex] = text;
+                                            setEndTimeFields(updatedEndTimeFields);
                                         }}
-                                        value={endTime[index * numWorkersArray.length + sectionIndex] || ''}
+                                        value={endTimeFields[index] ? endTimeFields[index][sectionIndex] || '' : ''}
                                         placeholder=""
                                     />
                                 </View >
@@ -297,16 +296,6 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                     </>
 
                 ))}
-
-
-
-
-
-
-
-
-
-
 
 
 
