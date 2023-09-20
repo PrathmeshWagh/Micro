@@ -11,6 +11,7 @@ import DatePicker from 'react-native-date-picker';
 import { postMethod } from '../../../utils/helper';
 import Appbar from '../../../components/Appbar';
 import Colors from '../../../style/Colors/colors';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 interface Props {
   navigation: any
@@ -35,6 +36,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
   const formattedDate = moment(timestamp).format('DD-MM-YYYY');
   const [open, setOpen] = useState(false);
   const [isloading, setIsLoading] = useState<boolean>(false);
+  const [isDatePickerVisible, setDatePickerVisible] = useState<boolean>(false);
 
   const handleImageSelection = (imagePath: string, imageId: string) => {
     if (selectedImages.includes(imagePath)) {
@@ -96,6 +98,18 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
     setRefreshing(true);
     Upload();
     setRefreshing(false);
+  };
+  const showDatePicker = () => {
+    setDatePickerVisible(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisible(false);
+  };
+
+  const handleDateConfirm = (date: Date) => {
+    hideDatePicker();
+    setDate(date);
   };
 
   const AddDescription = async () => {
@@ -178,24 +192,18 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
                 <Text style={styles.date}>{formattedDate}</Text>
               </View>
               <Feather
-                name="chevron-down"
+                name="calendar"
                 size={22}
                 color={'#000'}
-                style={{ position: 'absolute', right: 20, top: 12, }}
-                onPress={() => setOpen(true)}
+                style={{ position: 'absolute', right: 20, top: 12 }}
+                onPress={showDatePicker}
               />
-              <DatePicker
-                modal
-                open={open}
-                mode="date"
+             <DateTimePickerModal
+                isVisible={isDatePickerVisible}
+                mode="date" // You can change the mode to "datetime" for date and time selection
                 date={date}
-                onConfirm={(date) => {
-                  setOpen(false)
-                  setDate(date)
-                }}
-                onCancel={() => {
-                  setOpen(false)
-                }}
+                onConfirm={handleDateConfirm}
+                onCancel={hideDatePicker}
               />
             </View>
             {dailyActivity.map((item, index) => (

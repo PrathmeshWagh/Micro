@@ -7,7 +7,8 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { postMethod } from '../../utils/helper';
 import Snackbar from 'react-native-snackbar';
 import { CommonActions, useNavigation } from '@react-navigation/native';
-
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import Feather from 'react-native-vector-icons/Feather';
 
 // interface ServerRequestPropTypes {
 //     date: string[],
@@ -21,27 +22,41 @@ import { CommonActions, useNavigation } from '@react-navigation/native';
 //     types_of_worker_name: string
 
 // }
-
+const formatTime = (date: Date) => {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const formattedHours = hours < 10 ? `0${hours}` : `${hours}`;
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : `${minutes}`;
+    return `${formattedHours}:${formattedMinutes}`;
+};
 interface Worker {
     workerType: string;
     name: string;
     numWorkers: string;
     showTextBox: boolean;
+    startTime: string;
+    endTime: string;
 }
 const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     const [value, setValue] = useState('');
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const navigation = useNavigation();
     const [loading, setLoading] = useState<boolean>(false);
-    const [startTime, setStartTime] = useState<string[]>([]);
-    const [endTime, setEndTime] = useState<string[]>([]);
-    const [personName, setPersonName] = useState<string[]>([]);
     const [numWorkersArray, setNumWorkersArray] = useState<number[]>([]);
 
     const [typeOfWorkers, setTypeOfWorkers] = useState<string[]>([]);
     const [typesOfWorkersName, setTypesOfWorkersName] = useState<string[]>([]);
     const [numberOfWorkers, setNumberOfWorkers] = useState<string[]>([]);
 
+    const [selectedWorkerIndex, setSelectedWorkerIndex] = useState<number>(-1); // Initialize with -1
+    const [selectedWorkerIndex2, setSelectedWorkerIndex2] = useState<number>(-1); // Initialize with -1
+    const [startTimePickerVisible, setStartTimePickerVisible] = useState(false); // To control the visibility of the DateTime picker
+    const [selectedStartTime, setSelectedStartTime] = useState<string>('');
+    const [endTimePickerVisible, setEndTimePickerVisible] = useState(false); // To control the visibility of the end time picker
+    const [selectedEndTime, setSelectedEndTime] = useState<string>('');
+    const [personNameFields, setPersonNameFields] = useState<string[][]>([]);
+    const [startTimeFields, setStartTimeFields] = useState<string[][]>([]);
+    const [endTimeFields, setEndTimeFields] = useState<string[][]>([]);
 
     const { activity, project_id, date } = route.params;
     const data = [
@@ -49,14 +64,6 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
         { value: 'sub_con', label: 'Sub Con' },
         { value: 'other', label: 'Other' },
     ];
-
-
-
-    const onRefresh = () => {
-        setRefreshing(true);
-        // getdata();
-        setRefreshing(false);
-    };
 
 
     const handleNumWorkersChange = (text: string, index: number) => {
@@ -79,7 +86,9 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
             workerType: '',
             name: '',
             numWorkers: '',
-            showTextBox: false
+            showTextBox: false,
+            startTime: '',
+            endTime: '',
         };
         setWorkers([...workers, newWorker]);
 
@@ -91,47 +100,59 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
         setStartTimeFields([...startTimeFields, []]);
         setEndTimeFields([...endTimeFields, []]);
     };
+   
+
+    const handleStartTimeConfirm = (date: Date) => {
+        const formattedTime = formatTime(date);
+        if (selectedWorkerIndex !== -1) {
+            const updatedWorkers = [...workers];
+            updatedWorkers[selectedWorkerIndex].startTime = formattedTime;
+            setWorkers(updatedWorkers);
+        }
+        setSelectedStartTime(formattedTime);
+        const updatedStartTimeFields = [...startTimeFields];
+        updatedStartTimeFields[selectedWorkerIndex] = updatedStartTimeFields[selectedWorkerIndex] || [];
+        updatedStartTimeFields[selectedWorkerIndex].push(formattedTime);
+        setStartTimeFields(updatedStartTimeFields);
+        setStartTimePickerVisible(false);
+    };
 
 
-    const [personNameFields, setPersonNameFields] = useState<string[][]>([]);
-    const [startTimeFields, setStartTimeFields] = useState<string[][]>([]);
-    const [endTimeFields, setEndTimeFields] = useState<string[][]>([]);
+    const handleEndTimeConfirm = (date: Date) => {
+        const formattedTime = formatTime(date);
+        if (selectedWorkerIndex2 !== -1) {
+            const updatedWorkers = [...workers];
+            updatedWorkers[selectedWorkerIndex2].endTime = formattedTime;
+            setWorkers(updatedWorkers);
+        }
+        setSelectedEndTime(formattedTime);
+        const updatedEndTimeFields = [...endTimeFields];
+        updatedEndTimeFields[selectedWorkerIndex] = updatedEndTimeFields[selectedWorkerIndex] || [];
+        updatedEndTimeFields[selectedWorkerIndex].push(formattedTime);
+        setEndTimeFields(updatedEndTimeFields);
+        setEndTimePickerVisible(false);
+    };
+
+    const handleStartTimeChange = (index: number) => {
+        setSelectedWorkerIndex(index);
+        setStartTimePickerVisible(true);
+    };
+    const handleEndTimeChange = (index: number) => {
+        setSelectedWorkerIndex2(index);
+        setEndTimePickerVisible(true);
+    };
+   
 
     const AddReport = async () => {
-        const typeOfWorkersArray: string[] = [];
-        const typesOfWorkersNameArray: string[] = [];
-        const numberOfWorkersArray: string[] = [];
-        const personNameArray: string[] = [];
-        const startTimeArray: string[] = [];
-        const endTimeArray: string[] = [];
-        // Loop through the workers and populate the arrays
-        workers.forEach((worker, index) => {
-            typeOfWorkersArray.push(worker.workerType);
-            numberOfWorkersArray.push(worker.numWorkers);
-
-            // Check if a name is provided for this worker and push it
-            if (worker.showTextBox) {
-                typesOfWorkersNameArray.push(worker.name);
-            } else {
-                typesOfWorkersNameArray.push(''); // Push an empty string if no name is provided
-            }
-
-            // Loop through the personName, startTime, and endTime arrays for this worker
-            for (let sectionIndex = 0; sectionIndex < parseInt(worker.numWorkers); sectionIndex++) {
-                personNameArray.push(personName[index * numWorkersArray.length + sectionIndex] || '');
-                startTimeArray.push(startTime[index * numWorkersArray.length + sectionIndex] || '');
-                endTimeArray.push(endTime[index * numWorkersArray.length + sectionIndex] || '');
-            }
-        });
         const raw = {
             project_id: project_id,
             task_id: activity.daily_activity,
-            types_of_worker: typeOfWorkersArray,
-            types_of_worker_name: typesOfWorkersNameArray,
-            no_of_worker: numberOfWorkersArray,
-            end_time: endTimeFields.flat(), // Flatten the array to get a single array of values
-            name_of_person: personNameFields.flat(), // Flatten the array
-            start_time: startTimeFields.flat(), // Flatten the array
+            types_of_worker: workers.map(worker => worker.workerType),
+            types_of_worker_name: workers.map(worker => (worker.showTextBox ? worker.name : '')),
+            no_of_worker: workers.map(worker => worker.numWorkers),
+            end_time: endTimeFields.flat(),
+            name_of_person: personNameFields.flat(),
+            start_time: startTimeFields.flat(),
             date: date
         };
         console.log('raw', raw)
@@ -178,13 +199,7 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     return (
         <>
             <Appbar title={'Manpower Report'} />
-            <ScrollView style={styles.container}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                    />
-                }>
+            <ScrollView style={styles.container}>
                 <Text style={styles.Manpower}>Manpower Reports</Text>
 
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, }}>
@@ -264,29 +279,29 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                                         placeholder=""
                                     />
                                     <Text style={styles.date}>Start Time {sectionIndex + 1}</Text>
-                                    <TextInput
-                                        style={styles.input}
-                                        onChangeText={(text) => {
-                                            const updatedStartTimeFields = [...startTimeFields];
-                                            updatedStartTimeFields[index] = updatedStartTimeFields[index] || [];
-                                            updatedStartTimeFields[index][sectionIndex] = text;
-                                            setStartTimeFields(updatedStartTimeFields);
-                                        }}
-                                        value={startTimeFields[index] ? startTimeFields[index][sectionIndex] || '' : ''}
-                                        placeholder=""
-                                    />
+                                    <View style={styles.input}>
+                                        <Text style={styles.date}>{worker.startTime}</Text>
+
+                                        <Feather
+                                            name="clock"
+                                            size={22}
+                                            color={'#000'}
+                                            style={{ position: 'absolute', right: 20, top: 12, }}
+                                            onPress={() => handleStartTimeChange(index)}
+                                        />
+                                    </View>
                                     <Text style={styles.date}>End Time {sectionIndex + 1}</Text>
-                                    <TextInput
-                                        style={styles.input}
-                                        onChangeText={(text) => {
-                                            const updatedEndTimeFields = [...endTimeFields];
-                                            updatedEndTimeFields[index] = updatedEndTimeFields[index] || [];
-                                            updatedEndTimeFields[index][sectionIndex] = text;
-                                            setEndTimeFields(updatedEndTimeFields);
-                                        }}
-                                        value={endTimeFields[index] ? endTimeFields[index][sectionIndex] || '' : ''}
-                                        placeholder=""
-                                    />
+                                    <View style={styles.input}>
+                                        <Text style={styles.date}>{worker.endTime}</Text>
+
+                                        <Feather
+                                            name="clock"
+                                            size={22}
+                                            color={'#000'}
+                                            style={{ position: 'absolute', right: 20, top: 12 }}
+                                            onPress={() => handleEndTimeChange(index)}
+                                        />
+                                    </View>
                                 </View >
 
 
@@ -296,10 +311,6 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                     </>
 
                 ))}
-
-
-
-
 
                 {/* <View style={{ marginBottom: 40 }}></View> */}
                 <Pressable style={styles.btn} onPress={AddReport}>
@@ -315,7 +326,18 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                             </Text>
                         )}
                 </Pressable>
-
+                <DateTimePickerModal
+                    isVisible={startTimePickerVisible}
+                    mode="time"
+                    onConfirm={handleStartTimeConfirm}
+                    onCancel={() => setStartTimePickerVisible(false)}
+                />
+                <DateTimePickerModal
+                    isVisible={endTimePickerVisible} // Use separate state for end time picker
+                    mode="time"
+                    onConfirm={handleEndTimeConfirm}
+                    onCancel={() => setEndTimePickerVisible(false)} // Use separate state for end time picker
+                />
             </ScrollView >
         </>
     );
