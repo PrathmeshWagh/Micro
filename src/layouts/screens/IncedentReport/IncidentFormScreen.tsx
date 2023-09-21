@@ -18,6 +18,7 @@ import Snackbar from 'react-native-snackbar';
 import { CommonActions } from '@react-navigation/native';
 import SignatureScreen from "react-native-signature-canvas";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 interface Props { }
 const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element => {
@@ -314,6 +315,7 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
         setSignatureImageUri('file://' + path);
         setSignatureModalVisible(false)
     };
+
     return (
         <>
             <Appbar title={'Incident Report'} />
@@ -376,10 +378,6 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                     <Text style={styles.text}>Date of Report Submission</Text>
                     <View style={styles.dateCard}>
                         <View style={{ flexDirection: 'row' }}>
-                            {/* <Image
-                            style={styles.tinyLogo}
-                            source={require('../../style/Img.calender.png')}
-                        /> */}
                             <Text style={styles.date}>{moment(date1).format('DD-MM-YYYY')}</Text>
                         </View>
                         <Feather
@@ -389,18 +387,16 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                             style={{ position: 'absolute', right: 20, top: 12, }}
                             onPress={() => setOpenDate1(true)}
                         />
-                        <DatePicker
-                            modal
-                            open={openDate1}
+                        <DateTimePickerModal
+                            isVisible={openDate1}
                             mode="date"
                             date={date1}
                             onConfirm={(date) => {
-                                setDate1(date)
-                                setOpen(false)
-
+                                setOpenDate1(false);
+                                setDate1(date);
                             }}
                             onCancel={() => {
-                                setOpenDate1(false)
+                                setOpenDate1(false);
                             }}
                         />
                     </View>
@@ -409,18 +405,16 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                         <View style={{ flexDirection: 'row' }}>
                             <Text style={styles.date}>{starttimeString}</Text>
                         </View>
-                        <Ionicons
-                            name="timer-outline"
+                        <Feather
+                            name="clock"
                             size={24}
                             color={'#000'}
-                            style={{ position: 'absolute', right: 20, top: 12, }}
+                            style={{ position: 'absolute', right: 20, top: 12 }}
                             onPress={() => setOpenStartTime(true)}
                         />
-                        <DatePicker
-                            modal
+                        <DateTimePickerModal
+                            isVisible={openStartTime}
                             mode="time"
-                            is24hourSource="device"
-                            open={openStartTime}
                             date={Starttime}
                             onConfirm={(time) => {
                                 setOpenStartTime(false);
@@ -431,6 +425,7 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                             }}
                         />
                     </View>
+
                 </View>
                 <View style={styles.part}>
                     <Text style={styles.partText}>PART B</Text>
@@ -624,41 +619,34 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                             style={{ position: 'absolute', right: 20, top: 12, }}
                             onPress={() => setOpen(true)}
                         />
-                        <DatePicker
-                            modal
-                            open={open}
+                        <DateTimePickerModal
+                            isVisible={open}
                             mode="date"
                             date={date}
-                            onConfirm={(date) => {
-                                setOpen(false)
-                                setDate(date)
+                            onConfirm={(selectedDate) => {
+                                setOpen(false);
+                                setDate(selectedDate);
                             }}
                             onCancel={() => {
-                                setOpen(false)
+                                setOpen(false);
                             }}
                         />
                     </View>
                     <Text style={styles.text}>Time Of Acc /INC/DO</Text>
                     <View style={styles.dateCard}>
                         <View style={{ flexDirection: 'row' }}>
-                            {/* <Image
-            style={styles.tinyLogo}
-            source={require('../../style/Img.calender.png')}
-        /> */}
                             <Text style={styles.date}>{endtimeString}</Text>
                         </View>
-                        <Ionicons
-                            name="timer-outline"
+                        <Feather
+                            name="clock"
                             size={24}
                             color={'#000'}
-                            style={{ position: 'absolute', right: 20, top: 12, }}
+                            style={{ position: 'absolute', right: 20, top: 12 }}
                             onPress={() => setEndOpen(true)}
                         />
-                        <DatePicker
-                            modal
+                        <DateTimePickerModal
+                            isVisible={endOpen}
                             mode="time"
-                            is24hourSource="device"
-                            open={endOpen}
                             date={Endtime}
                             onConfirm={(time) => {
                                 setEndOpen(false);
@@ -669,6 +657,7 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                             }}
                         />
                     </View>
+
                 </View>
 
                 <View style={styles.part}>
@@ -744,11 +733,10 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                                 style={{ position: 'absolute', right: 20, top: 12 }}
                                 onPress={() => setOpenAccidentDate(true)}
                             />
-                            <DatePicker
-                                modal
+                            <DateTimePickerModal
+                                isVisible={openAccidentDate}
                                 mode="date"
                                 date={selectedDate}
-                                open={openAccidentDate}
                                 onConfirm={(date) => {
                                     setOpenAccidentDate(false);
                                     setSelectedDate(date);

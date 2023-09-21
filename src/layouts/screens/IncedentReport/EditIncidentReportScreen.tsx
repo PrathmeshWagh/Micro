@@ -18,6 +18,7 @@ import Snackbar from 'react-native-snackbar';
 import { CommonActions } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import SignatureScreen from "react-native-signature-canvas";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 interface Props {
     navigation: any;
@@ -579,9 +580,8 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                                 style={{ position: 'absolute', right: 20, top: 12, }}
                                 onPress={() => setOpenDate1(true)}
                             />
-                            <DatePicker
-                                modal
-                                open={openDate1}
+                            <DateTimePickerModal
+                                isVisible={openDate1}
                                 mode="date"
                                 date={date1}
                                 onConfirm={(date) => {
@@ -594,10 +594,6 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                                     setOpenDate1(false);
                                 }}
                             />
-
-
-
-
                         </View>
                         <Text style={styles.text}>Time of Report Submission</Text>
                         <View style={styles.dateCard}>
@@ -609,28 +605,25 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                                         : reportTime}
                                 </Text>
                             </View>
-                            <Ionicons
-                                name="timer-outline"
-                                size={24}
+                            <Feather
+                                name="clock"
+                                size={22}
                                 color={'#000'}
                                 style={{ position: 'absolute', right: 20, top: 12, }}
                                 onPress={() => setOpenStartTime(true)}
                             />
-                            <DatePicker
-                                modal
+                            <DateTimePickerModal
+                                isVisible={openStartTime} // Replace with your open state variable
                                 mode="time"
-                                is24hourSource="device"
-                                open={openStartTime}
-                                date={startTime || new Date()} // Use Starttime if available, else use current time
+                                date={startTime || new Date()} // Replace with your selected time state variable
                                 onConfirm={(time) => {
-                                    setOpenStartTime(false);
-                                    setStartTime(time);
+                                    setOpenStartTime(false); // Replace with your open state variable
+                                    setStartTime(time); // Replace with your time state variable
                                 }}
                                 onCancel={() => {
-                                    setOpenStartTime(false);
-                                }}>
-
-                            </DatePicker>
+                                    setOpenStartTime(false); // Replace with your open state variable
+                                }}
+                            />
                         </View>
                     </View>
                     <View style={styles.part}>
@@ -825,9 +818,8 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                                 onPress={() => setOpen(true)}
                             />
 
-                            <DatePicker
-                                modal
-                                open={open}
+                            <DateTimePickerModal
+                                isVisible={open}
                                 mode="date"
                                 date={date}
                                 onConfirm={(date) => {
@@ -848,25 +840,23 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                                     ? endtime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
                                     : AccTime}
                             </Text>
-                            <Ionicons
-                                name="timer-outline"
-                                size={24}
+                            <Feather
+                                name="clock"
+                                size={22}
                                 color={'#000'}
                                 style={{ position: 'absolute', right: 20, top: 12, }}
                                 onPress={() => setEndOpen(true)}
                             />
-                            <DatePicker
-                                modal
+                            <DateTimePickerModal
+                                isVisible={endOpen} // Replace with your open state variable
                                 mode="time"
-                                is24hourSource="device"
-                                open={endOpen}
-                                date={endtime || new Date()}
+                                date={endtime || new Date()} // Replace with your selected time state variable
                                 onConfirm={(time) => {
-                                    setEndOpen(false);
-                                    setEndTime(time);
+                                    setEndOpen(false); // Replace with your open state variable
+                                    setEndTime(time); // Replace with your time state variable
                                 }}
                                 onCancel={() => {
-                                    setEndOpen(false);
+                                    setEndOpen(false); // Replace with your open state variable
                                 }}
                             />
                         </View>
@@ -949,19 +939,16 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                                     style={{ position: 'absolute', right: 20, top: 12 }}
                                     onPress={() => setOpenAccidentDate(true)}
                                 />
-                                <DatePicker
-                                    modal
+                                <DateTimePickerModal
+                                    isVisible={openAccidentDate} // Replace with your open state variable
                                     mode="date"
-                                    open={openAccidentDate}
-                                    date={selectedDate}
-                                    onConfirm={(date) => {
-                                        const formattedDate = moment(date).format('DD-MM-YYYY');
-                                        setSignatureDate(formattedDate); // Update dateViewReport with the selected date
-                                        setDate1(date);
-                                        setOpenAccidentDate(false);
+                                    date={date || new Date()} // Replace with your selected date state variable
+                                    onConfirm={(selectedDate) => {
+                                        setOpenAccidentDate(false); // Replace with your open state variable
+                                        setDate(selectedDate); // Replace with your date state variable
                                     }}
                                     onCancel={() => {
-                                        setOpenAccidentDate(false);
+                                        setOpenAccidentDate(false); // Replace with your open state variable
                                     }}
                                 />
                             </View>
