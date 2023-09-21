@@ -1,8 +1,8 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 import Colors from "../style/Colors/colors";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { AuthContext } from "../utils/appContext";
 import { getStorageData, postMethod, storeData } from "../utils/helper";
 import Snackbar from "react-native-snackbar";
@@ -23,15 +23,14 @@ export interface UserData {
 
 
 const DrawerLogo = ({ props }: any) => {
-    // const { user, setUser } = useContext(AuthContext);
-    // const [person, setPerson] = useState<UserData>()
-    // console.log('token', user);
     const [userDetails, setUserDetails] = useState<UserData>()
     const navigation: any = useNavigation();
 
-    useEffect(() => {
-        getStoredData();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            getStoredData();
+        }, [])
+    );
 
     const getStoredData = async () => {
         try {
@@ -77,7 +76,7 @@ const DrawerLogo = ({ props }: any) => {
                     <View style={{ flexDirection: 'row' }}>
                         <Image
                             style={styles.tinyLogo}
-                            source={{ uri: userDetails?.avatar }}
+                            source={{ uri: userDetails?.user_details?.avatar }}
                         />
                         <Text style={styles.text}>{userDetails?.user_details?.first_name}{" "}{userDetails?.user_details?.last_name}</Text>
                     </View>

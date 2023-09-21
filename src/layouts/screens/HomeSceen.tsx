@@ -1,28 +1,33 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Touchable, TouchableOpacity } from 'react-native';
 import { View, Text, Button } from 'react-native';
 import Colors from '../../style/Colors/colors';
 import { Card, Surface } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { AuthContext } from '../../utils/appContext';
 import { getStorageData } from '../../utils/helper';
 import { UserData } from '../../components/DrawerLogo';
 const HomeScreen = ({ navigation }: any) => {
   // const navigation=useNavigation();
-  const [userDetails, setUserDetails]= useState<UserData>()
-  useEffect(() => {
-    getStoredData();
-  }, []);
-  
-    const getStoredData = async () => {
-        try {
-          const storedData = await getStorageData();
-            setUserDetails(storedData)
-          }
-         catch (error) {
-          console.log('Error retrieving images:', error);
-        }
-      };
+  const [userDetails, setUserDetails] = useState<UserData>()
+
+  useFocusEffect(
+    useCallback(() => {
+      getStoredData();
+    }, [])
+  );
+
+
+  const getStoredData = async () => {
+    try {
+      const storedData = await getStorageData();
+      console.log("storedData",storedData)
+      setUserDetails(storedData)
+    }
+    catch (error) {
+      console.log('Error retrieving images:', error);
+    }
+  };
   return (
     <ScrollView style={styles.container}>
       <View style={styles.tabBar}>
@@ -46,7 +51,7 @@ const HomeScreen = ({ navigation }: any) => {
 
       <Text style={styles.name}>Hi, {userDetails?.user_details?.first_name}{" "}{userDetails?.user_details?.last_name}</Text>
       <View style={styles.align}>
-        <Pressable onPress={()=>navigation.navigate('CompleteScreen')}>
+        <Pressable onPress={() => navigation.navigate('CompleteScreen')}>
           <Surface style={styles.surface} elevation={4}>
             <Image
               style={styles.boxIcon}
@@ -55,26 +60,26 @@ const HomeScreen = ({ navigation }: any) => {
             <Text style={styles.boxText}>Completed</Text>
           </Surface>
         </Pressable>
-        <Pressable onPress={()=>navigation.navigate('InprogressScreen')}>
-        <Surface style={styles.surface2} elevation={4}>
-          <Image
-            style={styles.boxIcon}
-            source={require('../../style/Img/Inprogress.png')}
-          />
-          <Text style={styles.boxText}>Inprogress</Text>
-        </Surface>
+        <Pressable onPress={() => navigation.navigate('InprogressScreen')}>
+          <Surface style={styles.surface2} elevation={4}>
+            <Image
+              style={styles.boxIcon}
+              source={require('../../style/Img/Inprogress.png')}
+            />
+            <Text style={styles.boxText}>Inprogress</Text>
+          </Surface>
         </Pressable>
       </View>
       <View style={styles.align2}>
-      <Pressable onPress={()=>navigation.navigate('PendingScreen')}>
+        <Pressable onPress={() => navigation.navigate('PendingScreen')}>
 
-        <Surface style={styles.surface2} elevation={4}>
-          <Image
-            style={styles.boxIcon}
-            source={require('../../style/Img/Pending.png')}
-          />
-          <Text style={styles.boxText}>Pending</Text>
-        </Surface>
+          <Surface style={styles.surface2} elevation={4}>
+            <Image
+              style={styles.boxIcon}
+              source={require('../../style/Img/Pending.png')}
+            />
+            <Text style={styles.boxText}>Pending</Text>
+          </Surface>
         </Pressable>
 
         <Surface style={styles.surface} elevation={4}>
@@ -100,7 +105,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 14,
-    backgroundColor:Colors.screen_bg
+    backgroundColor: Colors.screen_bg
   },
   bg: {
     flex: 1,

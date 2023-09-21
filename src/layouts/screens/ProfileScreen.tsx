@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Pressable, Image, StyleSheet, ScrollView, TextInput } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, Pressable, Image, StyleSheet, ScrollView, TextInput, ActivityIndicator } from 'react-native';
 import Colors from '../../style/Colors/colors';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { Avatar } from 'react-native-paper';
 import { getMethod } from '../../utils/helper';
+import { useFocusEffect } from '@react-navigation/native';
 const ProfileScreen = ({ navigation }: any) => {
   const [profile, setProfile] = useState([]);
   const [loading, setLoading] = useState(true);
 
 
-  useEffect(() => {
-    getdata();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      getdata(); 
+    }, [])
+  );
 
   const getdata = async () => {
     setLoading(true);
@@ -27,55 +30,62 @@ const ProfileScreen = ({ navigation }: any) => {
       lastname: profile.last_name,
       Email: profile.email,
       number: profile.mobile_number,
-      profile: profile.image
+      avatar: profile.avatar
     })
   };
 
   return (
     <>
-      <View style={styles.container}>
-        <View style={styles.align}>
-          <Pressable onPress={() => navigation.openDrawer()}>
-            <IonIcon style={styles.icon} name="ios-menu-outline" size={28} color={'white'} />
-          </Pressable>
-          <View style={styles.Img}>
-            <Avatar.Image size={84} source={{ uri: profile.image }} />
-            <Text style={styles.pageName}>{profile.first_name}{" "}{profile.last_name}</Text>
-          </View>
-          <Image
-            style={styles.tinyLogo}
-            source={require('../../style/Img/bell2.png')}
-          />
-        </View>
-      </View>
+      {
+        loading ? (
+          <ActivityIndicator size="large" color={Colors.brand_primary} />
+        ) : (
+          <>
+            <View style={styles.container} >
+              <View style={styles.align}>
+                <Pressable onPress={() => navigation.openDrawer()}>
+                  <IonIcon style={styles.icon} name="ios-menu-outline" size={28} color={'white'} />
+                </Pressable>
+                <View style={styles.Img}>
+                  <Avatar.Image size={84} source={{ uri: profile.avatar }} />
+                  <Text style={styles.pageName}>{profile.first_name}{" "}{profile.last_name}</Text>
+                </View>
+                <Image
+                  style={styles.tinyLogo}
+                  source={require('../../style/Img/bell2.png')}
+                />
+              </View>
+            </View >
 
-      <ScrollView style={{ flex: 1, padding: 14, }}>
-        <Text style={styles.inputText}>First Name</Text>
-        <View style={styles.input}>
-          <Text style={{ color: 'black' }}>{profile.first_name}</Text>
-        </View>
+            <ScrollView style={{ flex: 1, padding: 14, }}>
+              <Text style={styles.inputText}>First Name</Text>
+              <View style={styles.input}>
+                <Text style={{ color: 'black' }}>{profile.first_name}</Text>
+              </View>
 
-        <Text style={styles.inputText}>Last Name</Text>
-        <View style={styles.input}>
-          <Text style={{ color: 'black' }}>{profile.last_name}</Text>
-        </View>
+              <Text style={styles.inputText}>Last Name</Text>
+              <View style={styles.input}>
+                <Text style={{ color: 'black' }}>{profile.last_name}</Text>
+              </View>
 
-        <Text style={styles.inputText}>Email Adress</Text>
-        <View style={styles.input}>
-          <Text style={{ color: 'black' }}>{profile.email}</Text>
-        </View>
+              <Text style={styles.inputText}>Email Adress</Text>
+              <View style={styles.input}>
+                <Text style={{ color: 'black' }}>{profile.email}</Text>
+              </View>
 
-        <Text style={styles.inputText}>Phone</Text>
-        <View style={styles.input}>
-          <Text style={{ color: 'black' }}>{profile.mobile_number}</Text>
-        </View>
-        <Pressable onPress={() => navigation.navigate('ChangePassword')}>
-          <Text style={styles.ChngPsw}>Change Password</Text>
-        </Pressable>
-        <Pressable style={styles.add} onPress={() => goToNextScreen()}>
-          <Text style={styles.addText}>Edit Profile</Text>
-        </Pressable>
-      </ScrollView>
+              <Text style={styles.inputText}>Phone</Text>
+              <View style={styles.input}>
+                <Text style={{ color: 'black' }}>{profile.mobile_number}</Text>
+              </View>
+              <Pressable onPress={() => navigation.navigate('ChangePassword')}>
+                <Text style={styles.ChngPsw}>Change Password</Text>
+              </Pressable>
+              <Pressable style={styles.add} onPress={() => goToNextScreen()}>
+                <Text style={styles.addText}>Edit Profile</Text>
+              </Pressable>
+            </ScrollView>
+          </>
+        )}
     </>
   );
 };

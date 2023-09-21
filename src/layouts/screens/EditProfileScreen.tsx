@@ -3,50 +3,57 @@ import { View, Text, Pressable, Image, StyleSheet, ScrollView, TextInput } from 
 import Colors from '../../style/Colors/colors';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { Avatar } from 'react-native-paper';
-import { postMethod, getStorageData, storeData } from '../../utils/helper';
+import { postMethod, getStorageData, storeData, FormPostMethod } from '../../utils/helper';
 import ImagePicker from 'react-native-image-crop-picker';
 import Snackbar from 'react-native-snackbar';
+import { CommonActions } from '@react-navigation/native';
 
 const ProfileScreen = ({ navigation, route }: any) => {
   const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [imageUrl, setImageUrl] = useState(null)
-  const { firstname, lastname, Email, number, profile } = route.params;
+  const [imageUrl, setImageUrl] = useState();
+  const { firstname, lastname, number, avatar } = route.params;
   useEffect(() => {
-    // getUser();
     setFirstName(firstname);
     setLastName(lastname);
-    setEmail(Email);
     setPhone(number);
-    setImageUrl(profile);
+    setImageUrl(avatar);
   }, []);
 
   const EditProfile = async () => {
-    const raw = {
-      first_name: firstName,
-      last_name: lastName,
-      email: email,
-      mobile_number: phone,
-      image: imageUrl
-    }
+    const formData = new FormData();
+    formData.append('first_name', firstName);
+    formData.append('last_name', lastName);
+    formData.append('mobile_number', phone);
+    formData.append('avatar', {
+      uri: imageUrl,  // Use the image path
+      type: 'image/jpg', // Adjust the type as needed based on the image format
+      name: 'profile.jpg', // Adjust the name as needed
+    });
+    console.log("formData", formData)
+
     try {
-      const api: any = await postMethod(`update_profile`, raw);
-      console.log("raw", raw)
+      const api: any = await FormPostMethod(`update_profile`, formData);
       if (api.status === 200) {
+        console.log("api", api.data)
         setLoading(false);
-        const existingData = await getStorageData();
-        if (existingData) {
-          existingData.user_details.first_name = firstName;
-          existingData.user_details.last_name = lastName;
-          await storeData(existingData)
-          // console.log("existingDataObj", existingData)
-        }
-        navigation.reset({
-          routes: [{ name: 'DrawerNavigtaion' }]
-        })
+        const existingUserData = await getStorageData();
+        const updatedUserDetails = {
+          ...existingUserData.user_details, // Keep existing data
+          first_name: firstName,           // Update first_name
+          last_name: lastName,             // Update last_name 
+          mobile_number: phone,            // Update mobile_number
+          avatar: imageUrl || existingUserData.user_details.avatar, // Update avatar or keep the existing avatar
+        };
+        const updatedUserData = {
+          ...existingUserData,
+          user_details: updatedUserDetails,
+        };
+        await storeData(updatedUserData);
+        navigation.dispatch(CommonActions.goBack())
+
       } else {
         setLoading(false);
         Snackbar.show({
@@ -70,21 +77,27 @@ const ProfileScreen = ({ navigation, route }: any) => {
 
 
   const imageUpload = async () => {
-    ImagePicker.openPicker({
-      width: 300,
-      height: 400,
-      cropping: true,
-    }).then(image => {
-      // const imageUri = image.path;
-      // console.log('imageUri', imageUri);
-      setImageUrl(image.path);
-      // console.log('imageUri', imageUri);
+    console.log("hiiii")
+    try {
+      const image = await ImagePicker.openPicker({
+        width: 300,
+        height: 400,
+        cropping: true,
+      });
 
-    });
+      // Check if the image was selected successfully
+      if (image && image.path) {
+        setImageUrl(image.path);
+      } else {
+        // Handle the case when the user didn't pick any image
+        console.log('No image selected');
+      }
+    } catch (error) {
+      // Handle any errors that might occur during image selection
+      console.log('Error selecting image:', error);
+    }
+
   };
-
-
-
 
   return (
     <>
@@ -93,14 +106,10 @@ const ProfileScreen = ({ navigation, route }: any) => {
           <Pressable onPress={() => navigation.goBack()}>
             <IonIcon style={styles.icon} name="arrow-back" size={28} color={'white'} />
           </Pressable>
-          <Image
-            style={styles.tinyLogo}
-            source={require('../../style/Img/bell2.png')}
-          />
         </View>
       </View>
       <View style={styles.Img}>
-        <Avatar.Image size={84} source={{ uri: imageUrl }} />
+        <Avatar.Image size={105} source={{ uri: imageUrl || avatar }} />
         <Pressable onPress={() => imageUpload()}>
           <Image source={require('../../style/Img/Camera.png')} style={styles.camera} />
         </Pressable>
@@ -117,12 +126,6 @@ const ProfileScreen = ({ navigation, route }: any) => {
           style={styles.input}
           onChangeText={setLastName}
           value={lastName}
-        />
-        <Text style={styles.inputText}>Email Adress</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setEmail}
-          value={email}
         />
         <Text style={styles.inputText}>Phone</Text>
         <TextInput
@@ -162,8 +165,8 @@ const styles = StyleSheet.create({
   },
   add: {
     borderWidth: 1,
-    borderColor: '#041B8E',
-    backgroundColor: '#041B8E',
+    borderColor: Colors.brand_primary,
+    backgroundColor: Colors.brand_primary,
     height: 45,
 
     padding: 10,
@@ -180,7 +183,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'absolute',
     top: 50,
-    left: 150
+    left: 130
 
   },
   align: {
