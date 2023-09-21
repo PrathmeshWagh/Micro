@@ -130,6 +130,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
       status: taskStatusValues,
       date: formattedDate
     }
+    console.log("raw",raw)
     try {
       setLoading(true);
       const api: any = await postMethod(`add_daily_activity`, raw);

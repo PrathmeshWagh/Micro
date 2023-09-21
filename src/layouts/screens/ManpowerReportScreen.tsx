@@ -49,7 +49,6 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     const [numberOfWorkers, setNumberOfWorkers] = useState<string[]>([]);
 
     const [selectedWorkerIndex, setSelectedWorkerIndex] = useState<number>(-1); // Initialize with -1
-    const [selectedWorkerIndex2, setSelectedWorkerIndex2] = useState<number>(-1); // Initialize with -1
     const [startTimePickerVisible, setStartTimePickerVisible] = useState(false); // To control the visibility of the DateTime picker
     const [selectedStartTime, setSelectedStartTime] = useState<string>('');
     const [endTimePickerVisible, setEndTimePickerVisible] = useState(false); // To control the visibility of the end time picker
@@ -78,7 +77,9 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
         // Update the state with the modified array
         setNumWorkersArray(updatedNumWorkersArray);
     };
+    const [startTimes, setStartTimes] = useState<string[][][]>([]);
 
+    const [endTimes, setEndTimes] = useState<string[][][]>([]);
 
     const [workers, setWorkers] = useState<Worker[]>([]);
     const handleAddSection = () => {
@@ -100,48 +101,57 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
         setStartTimeFields([...startTimeFields, []]);
         setEndTimeFields([...endTimeFields, []]);
     };
-   
+
+    const [selectedSectionIndex, setSelectedSectionIndex] = useState<number>(0);
 
     const handleStartTimeConfirm = (date: Date) => {
         const formattedTime = formatTime(date);
         if (selectedWorkerIndex !== -1) {
-            const updatedWorkers = [...workers];
-            updatedWorkers[selectedWorkerIndex].startTime = formattedTime;
-            setWorkers(updatedWorkers);
+            const updatedStartTimes = [...startTimes];
+            updatedStartTimes[selectedWorkerIndex] = updatedStartTimes[selectedWorkerIndex] || [];
+            updatedStartTimes[selectedWorkerIndex][selectedSectionIndex] = formattedTime;
+            console.log("updatedStartTimes", updatedStartTimes)
+
+            setStartTimes(updatedStartTimes);
+
+            // Do not update the selectedStartTime state
         }
-        setSelectedStartTime(formattedTime);
-        const updatedStartTimeFields = [...startTimeFields];
-        updatedStartTimeFields[selectedWorkerIndex] = updatedStartTimeFields[selectedWorkerIndex] || [];
-        updatedStartTimeFields[selectedWorkerIndex].push(formattedTime);
-        setStartTimeFields(updatedStartTimeFields);
         setStartTimePickerVisible(false);
     };
 
-
     const handleEndTimeConfirm = (date: Date) => {
         const formattedTime = formatTime(date);
-        if (selectedWorkerIndex2 !== -1) {
-            const updatedWorkers = [...workers];
-            updatedWorkers[selectedWorkerIndex2].endTime = formattedTime;
-            setWorkers(updatedWorkers);
+        if (selectedWorkerIndex !== -1) {
+            const updatedEndTimes = [...endTimes];
+            updatedEndTimes[selectedWorkerIndex] = updatedEndTimes[selectedWorkerIndex] || [];
+            updatedEndTimes[selectedWorkerIndex][selectedSectionIndex] = formattedTime;
+            console.log("updatedEndTimes", updatedEndTimes);
+
+            setEndTimes(updatedEndTimes);
+
+            // Do not update the selectedEndTime state
         }
-        setSelectedEndTime(formattedTime);
-        const updatedEndTimeFields = [...endTimeFields];
-        updatedEndTimeFields[selectedWorkerIndex] = updatedEndTimeFields[selectedWorkerIndex] || [];
-        updatedEndTimeFields[selectedWorkerIndex].push(formattedTime);
-        setEndTimeFields(updatedEndTimeFields);
         setEndTimePickerVisible(false);
     };
 
-    const handleStartTimeChange = (index: number) => {
-        setSelectedWorkerIndex(index);
+    const handleStartTimeChange = (workerIndex: number, sectionIndex: number) => {
+        setSelectedWorkerIndex(workerIndex);
+        setSelectedSectionIndex(sectionIndex);
+
+        // Reset the selected start time for the current worker
+        setSelectedStartTime(startTimes[workerIndex] ? startTimes[workerIndex][sectionIndex] || '' : '');
+
         setStartTimePickerVisible(true);
     };
-    const handleEndTimeChange = (index: number) => {
-        setSelectedWorkerIndex2(index);
+    const handleEndTimeChange = (workerIndex: number, sectionIndex: number) => {
+        setSelectedWorkerIndex(workerIndex);
+        setSelectedSectionIndex(sectionIndex);
+
+        // Reset the selected end time for the current worker
+        setSelectedEndTime(endTimes[workerIndex] ? endTimes[workerIndex][sectionIndex] || '' : '');
+
         setEndTimePickerVisible(true);
     };
-   
 
     const AddReport = async () => {
         const raw = {
@@ -150,12 +160,12 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
             types_of_worker: workers.map(worker => worker.workerType),
             types_of_worker_name: workers.map(worker => (worker.showTextBox ? worker.name : '')),
             no_of_worker: workers.map(worker => worker.numWorkers),
-            end_time: endTimeFields.flat(),
+            end_time: endTimes.flat(),
             name_of_person: personNameFields.flat(),
-            start_time: startTimeFields.flat(),
+            start_time: startTimes.flat(),
             date: date
         };
-        console.log('raw', raw)
+        console.log("raw", raw)
         try {
             setLoading(true);
             const api: any = await postMethod(`add_manpower_report`, raw);
@@ -280,26 +290,27 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                                     />
                                     <Text style={styles.date}>Start Time {sectionIndex + 1}</Text>
                                     <View style={styles.input}>
-                                        <Text style={styles.date}>{worker.startTime}</Text>
-
+                                        <Text style={styles.date}>
+                                            {startTimes[index] && startTimes[index][sectionIndex] ? startTimes[index][sectionIndex] : ''}
+                                        </Text>
                                         <Feather
                                             name="clock"
                                             size={22}
                                             color={'#000'}
                                             style={{ position: 'absolute', right: 20, top: 12, }}
-                                            onPress={() => handleStartTimeChange(index)}
-                                        />
+                                            onPress={() => handleStartTimeChange(index, sectionIndex)} />
                                     </View>
                                     <Text style={styles.date}>End Time {sectionIndex + 1}</Text>
                                     <View style={styles.input}>
-                                        <Text style={styles.date}>{worker.endTime}</Text>
-
+                                        <Text style={styles.date}>
+                                        {endTimes[index] && endTimes[index][sectionIndex] ? endTimes[index][sectionIndex] : ''}
+                                            </Text>
                                         <Feather
                                             name="clock"
                                             size={22}
                                             color={'#000'}
                                             style={{ position: 'absolute', right: 20, top: 12 }}
-                                            onPress={() => handleEndTimeChange(index)}
+                                            onPress={() => handleEndTimeChange(index,sectionIndex)}
                                         />
                                     </View>
                                 </View >

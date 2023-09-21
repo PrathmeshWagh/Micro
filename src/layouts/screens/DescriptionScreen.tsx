@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import { Card } from 'react-native-paper';
 import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
@@ -13,9 +13,10 @@ const DescriptionScreen = ({route }: any, props: any) => {
   const [loading, setLoading] = useState(false);
   const [load, setLoad] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [project, setProject] = useState('')
   console.log("id", id);
  const navigation = useNavigation();
+ const [refreshing, setRefreshing] = useState<boolean>(false);
+
   useEffect(() => {
     getdata();
   }, []);
@@ -63,7 +64,11 @@ const DescriptionScreen = ({route }: any, props: any) => {
       );
     }
   }
-
+  const onRefresh = () => {
+    setRefreshing(true);
+    getdata();
+    setRefreshing(false);
+  };
 
 
   return (
@@ -71,7 +76,13 @@ const DescriptionScreen = ({route }: any, props: any) => {
       <Appbar title={'Job Sheet'} />
 
 
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container}
+       refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+       }>
         {loading ? (
           <ActivityIndicator size="large" color="#000" />
         ) : (

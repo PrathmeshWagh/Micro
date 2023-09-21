@@ -17,6 +17,7 @@ interface Props {
 }
 const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
   const { project_id, dailyId, selectedTaskIds } = route.params;
+  console.log("selectedTaskIds", selectedTaskIds)
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const navigation = useNavigation();
@@ -68,12 +69,6 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
   }, [dailyActivity]);
 
 
-
-
-
-
-
-
   const onRefresh = () => {
     setRefreshing(true);
     getdata();
@@ -95,6 +90,7 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
       daily_activities_id: dailyId,
 
     }
+    console.log("raw", raw)
     try {
       setLoading(true);
       const api: any = await postMethod(`edit_daily_activity_task_details`, raw);
@@ -123,6 +119,12 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
 
   }
 
+  const [selectedName, setSelectedName] = useState<string>('');
+  const [selectedRemark, setSelectedRemark] = useState<string>('');
+  const [selectedPlan, setSelectedPlan] = useState<string>('');
+  const [selectedArea, setSelectedArea] = useState<string>('');
+  const [selectedCompletion, setSelectedCompletion] = useState<string>('');
+  const [selectedStatus, setSelectedStatus] = useState<string>('');
 
   return (
     <>
@@ -184,51 +186,77 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
                 <View style={styles.cover}>
                   <Text style={styles.Task}>Task {index + 1}</Text>
                   <Text style={styles.date}>Name</Text>
-                  <Text style={styles.name}> {item.task_name || ''}</Text>
-
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter Name"
+                    onChangeText={(text) => setSelectedName(text)}
+                    value={selectedName || item.task_name}
+                  />
                   <Text style={styles.date}>Task Remarks</Text>
-                  <Text style={styles.name}> {item.task_remark || ''}</Text>
+
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter Name"
+                    onChangeText={(text) => setSelectedRemark(text)}
+                    value={selectedRemark || item.task_remark}
+                  />
                   {item?.images.length > 0 && (
                     <>
                       <Text style={styles.date}>Images</Text>
                       <ScrollView horizontal>
                         {item?.images?.map((image) => (
-                          <TouchableOpacity key={image.image_id} onPress={() => openZoomedImage(image.image, image.remark)}>
+                        
                             <View style={{ margin: 10 }}>
                               <View style={{ backgroundColor: Colors.lightGray, borderRadius: 8, padding: 10 }}>
                                 <View style={{ position: 'absolute', right: 2 }}>
                                   <Checkbox
-                                    status={selectedImages.includes(image.image) ? 'checked' : 'unchecked'}
-                                    onPress={() => handleImageSelection(image.image, image.image_id)}
+                                    status={image.image_already_check === 1 ? 'checked' : 'unchecked'}
+                                  // onPress={() => handleImageSelection(image.image, image.image_id)}
                                   />
                                 </View>
+                                <TouchableOpacity key={image.image_id} onPress={() => openZoomedImage(image.image, image.remark)}>
                                 <Image style={styles.tinyImg} source={{ uri: image.image }} />
+                                </TouchableOpacity>
                                 <Text style={styles.remark}>
                                   {image.remark.length >= 5 ? `${image.remark.slice(0, 5)}...` : image.remark}
                                 </Text>
                               </View>
                             </View>
-                          </TouchableOpacity>
+                         
                         ))}
                       </ScrollView>
                     </>
                   )}
                   <Text style={styles.date}>Area</Text>
-                  <Text style={styles.name}> {item.area || ''}</Text>
-
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter Name"
+                    onChangeText={(text) => setSelectedArea(text)}
+                    value={selectedArea || item.area}
+                  />
                   <Text style={styles.date}>Plan</Text>
-
-                  <Text style={styles.name}> {item.plan || ''}</Text>
-
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter Name"
+                    onChangeText={(text) => setSelectedPlan(text)}
+                    value={selectedPlan || item.plan}
+                  />
                   <Text style={styles.date}>Completion</Text>
-
-                  <Text style={styles.name}> {item.completion || ''}</Text>
-
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter Name"
+                    onChangeText={(text) => setSelectedCompletion(text)}
+                    value={selectedCompletion || item.completion}
+                  />
                   <Text style={styles.date}>Status</Text>
-                  <Text style={styles.name}> {item.status || ''}</Text>
-
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter Name"
+                    onChangeText={(text) => setSelectedStatus(text)}
+                    value={selectedStatus || item.status}
+                  />
                 </View>
-               
+
               </View>
             ))}
 
@@ -246,7 +274,7 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
                   </Text>
                 )}
             </Pressable> */}
-             <View style={{paddingBottom:40}}></View>
+            <View style={{ paddingBottom: 40 }}></View>
           </ScrollView >
 
 
