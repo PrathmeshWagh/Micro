@@ -167,19 +167,6 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
                   setOpen(false);
                 }}
               />
-              {/* <DatePicker
-                modal
-                open={open}
-                mode="date"
-                date={date}
-                onConfirm={(date) => {
-                  setOpen(false)
-                  setDate(date)
-                }}
-                onCancel={() => {
-                  setOpen(false)
-                }}
-              /> */}
             </View>
             {dailyActivity.map((item, index) => (
               <View key={index}>

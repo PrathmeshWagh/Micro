@@ -141,7 +141,7 @@ const DailyActivityCardScreen: FC<Props> = ({ route }: any): JSX.Element => {
             style={styles.btn}
             onPress={() =>
               navigation.navigate('DailyActivityDescriptionScreen', {
-                selectedTaskIds: selectedTaskIds,
+                selectedTaskId: selectedTaskIds,
                 project_id: project_id
               })
             }

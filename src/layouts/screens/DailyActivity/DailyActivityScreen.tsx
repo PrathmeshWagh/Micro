@@ -18,7 +18,6 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
 
     useFocusEffect(
         useCallback(() => {
-            // This code will run when the screen focuses
             getdata();
         }, [])
     );

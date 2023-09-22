@@ -22,7 +22,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const { selectedTaskIds, project_id } = route.params;
+  const { selectedTaskId, project_id } = route.params;
   const [dailyActivity, setDailyActivity] = useState([]);
   const [selectedImageRemark, setSelectedImageRemark] = useState<string>();
   const [remark, setRemark] = useState<string[]>([]);
@@ -34,19 +34,34 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
   const [date, setDate] = useState(new Date())
   const timestamp = date;
   const formattedDate = moment(timestamp).format('DD-MM-YYYY');
-  const [open, setOpen] = useState(false);
   const [isloading, setIsLoading] = useState<boolean>(false);
   const [isDatePickerVisible, setDatePickerVisible] = useState<boolean>(false);
+  const [taskIds, setTaskIds] = useState<number[]>(selectedTaskId);
+  const [selectedImagesMap, setSelectedImagesMap] = useState<Record<number, string[]>>({});
 
-  const handleImageSelection = (imagePath: string, imageId: string) => {
-    if (selectedImages.includes(imagePath)) {
-      setSelectedImages(selectedImages.filter(item => item !== imagePath));
-      setSelectedImageIds(selectedImageIds.filter(id => id !== imageId));
+  const handleImageSelection = (imagePath: string, imageId: string, index: number) => {
+    const sectionSelectedImages = selectedImagesMap[index] || [];
+    let updatedSelectedImageIds = [...selectedImageIds];
+
+    if (sectionSelectedImages.includes(imagePath)) {
+      // If the image is already selected, remove it from the selectedImageIds
+      updatedSelectedImageIds = updatedSelectedImageIds.filter(id => id !== imageId);
     } else {
-      setSelectedImages([...selectedImages, imagePath]);
-      setSelectedImageIds([...selectedImageIds, imageId]);
+      // If the image is not selected, add it to the selectedImageIds
+      updatedSelectedImageIds.push(imageId);
     }
+
+    setSelectedImagesMap({
+      ...selectedImagesMap,
+      [index]: sectionSelectedImages.includes(imagePath)
+        ? sectionSelectedImages.filter(item => item !== imagePath)
+        : [...sectionSelectedImages, imagePath],
+    });
+
+    setSelectedImageIds(updatedSelectedImageIds);
   };
+
+
 
   useEffect(() => {
     Upload();
@@ -56,7 +71,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
   const Upload = async () => {
     const raw = {
       project_id: project_id,
-      task_id: selectedTaskIds,
+      task_id: selectedTaskId,
     }
     try {
       setIsLoading(true);
@@ -84,7 +99,6 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
     }
 
   }
-
 
   const openZoomedImage = (imagePath: string, remark: string) => {
     setZoomedImage(imagePath);
@@ -119,21 +133,30 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
     const taskCompletionValues = Object.values(completion);
     const taskStatusValues = Object.values(status);
 
+    const selectedImageCounts = dailyActivity.map((item, index) => {
+      return {
+        task_id: taskIds[index],
+        image_num: selectedImagesMap[index] ? selectedImagesMap[index].length : 0,
+      };
+    });
+
     const raw = {
       project_id: project_id,
-      task_id: selectedTaskIds,
+      task_id: taskIds,
       image_id: selectedImageIds,
       task_remark: taskRemarkValues,
       area: taskAreaValues,
       plan: taskPlanValues,
       completion: taskCompletionValues,
       status: taskStatusValues,
-      date: formattedDate
+      date: formattedDate,
+      image_num: selectedImageCounts.map((item) => item.image_num),
     }
-    console.log("raw",raw)
+    console.log("raw", raw)
     try {
       setLoading(true);
       const api: any = await postMethod(`add_daily_activity`, raw);
+      console.log(".......", api.data)
       if (api.data.status === true) {
         setLoading(false);
         navigation.dispatch(
@@ -142,7 +165,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
             params: {
               activity: api.data,
               project_id: project_id,
-              date:formattedDate
+              date: formattedDate
             },
           })
         )
@@ -168,6 +191,18 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
 
   }
 
+  const addNewTask = (index: number) => {
+    const updatedDailyActivity = [...dailyActivity];
+    const clonedTask = { ...updatedDailyActivity[index] };
+    clonedTask.task_name = updatedDailyActivity[index].task_name;
+    updatedDailyActivity.splice(index + 1, 0, clonedTask);
+    const currentTaskId = taskIds[index];
+    const updatedTaskIds = [...taskIds];
+    updatedTaskIds.splice(index + 1, 0, currentTaskId);
+    setDailyActivity(updatedDailyActivity);
+    setTaskIds(updatedTaskIds);
+  };
+
 
   return (
     <>
@@ -176,20 +211,10 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
         <ActivityIndicator size="large" color="#000" />
       ) : (
         <>
-          <ScrollView style={styles.container}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-              />
-            }>
+          <ScrollView style={styles.container}>
             <Text style={styles.date}>Date</Text>
             <View style={styles.input}>
               <View style={{ flexDirection: 'row' }}>
-                {/* <Image
-                            style={styles.tinyLogo}
-                            source={require('../../style/Img.calender.png')}
-                        /> */}
                 <Text style={styles.date}>{formattedDate}</Text>
               </View>
               <Feather
@@ -199,7 +224,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
                 style={{ position: 'absolute', right: 20, top: 12 }}
                 onPress={showDatePicker}
               />
-             <DateTimePickerModal
+              <DateTimePickerModal
                 isVisible={isDatePickerVisible}
                 mode="date" // You can change the mode to "datetime" for date and time selection
                 date={date}
@@ -210,9 +235,14 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
             {dailyActivity.map((item, index) => (
               <View key={index}>
                 <View style={styles.cover}>
-                  <Text style={styles.Task}>Task {index + 1}</Text>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={styles.Task}>Task {index + 1}</Text>
+                    <Pressable onPress={() => addNewTask(index)}>
+                      <Text style={styles.plus}>+</Text>
+                    </Pressable>
+                  </View>
                   <Text style={styles.date}>Name</Text>
-                  <Text style={styles.name}> {item.task_name || ''}</Text>
+                  <Text style={styles.name}>{item.task_name || ''}</Text>
 
                   <Text style={styles.date}>Task Remarks</Text>
                   <TextInput
@@ -236,8 +266,12 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
                               <View style={{ backgroundColor: Colors.lightGray, borderRadius: 8, padding: 10 }}>
                                 <View style={{ position: 'absolute', right: 2 }}>
                                   <Checkbox
-                                    status={selectedImages.includes(image.image) ? 'checked' : 'unchecked'}
-                                    onPress={() => handleImageSelection(image.image, image.image_id)}
+                                    status={
+                                      (selectedImagesMap[index] || []).includes(image.image)
+                                        ? 'checked'
+                                        : 'unchecked'
+                                    }
+                                    onPress={() => handleImageSelection(image.image, image.image_id, index)}
                                   />
                                 </View>
                                 <Image style={styles.tinyImg} source={{ uri: image.image }} />
@@ -353,6 +387,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 10,
     fontFamily: 'Roboto-Regular',
+  },
+  plus: {
+    fontFamily: 'Roboto-Bold',
+    fontSize: 28,
+    marginTop: -10,
+    color: Colors.text_primary
   },
   name: {
     height: 50,

@@ -98,7 +98,7 @@ const DrawerLogo = ({ props }: any) => {
                                 style={styles.icon}
                             />)}
                         label={() => (<Text style={styles.RouteName}>Change Password</Text>)}
-                        onPress={() => navigation.navigate('AttendanceScreen')} />
+                        onPress={() => navigation.navigate('ChangePassword')} />
                     <DrawerItem
                         icon={() => (
                             <Image source={require('../style/Img/logout.png')}
