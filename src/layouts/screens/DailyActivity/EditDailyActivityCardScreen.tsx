@@ -20,6 +20,7 @@ const EditDailyActivityCardScreen: FC<Props> = ({ route }): JSX.Element => {
     const navigation = useNavigation();
     const [dailyActivity, setDailyActivity] = useState([]);
     const [selectAll, setSelectAll] = useState<boolean>(false);
+    const [dateNew, setdateNew] = useState<string>();
     useEffect(() => {
         getdata();
     }, []);
@@ -28,8 +29,10 @@ const EditDailyActivityCardScreen: FC<Props> = ({ route }): JSX.Element => {
         setLoading(true);
         const api: any = await getMethod(`edit_daily_activity_task_list/${project_id}/${dailyId}`);
         if (api.status === 200) {
+            console.log("edit_daily_activity_task_list",api.data.date)
             setLoading(false);
-            setDailyActivity(api.data)
+            setdateNew(api.data.date);
+            setDailyActivity(api.data.data)
             setRefreshing(false);
         }
     }
@@ -129,7 +132,8 @@ const EditDailyActivityCardScreen: FC<Props> = ({ route }): JSX.Element => {
                             navigation.navigate('EditDailyActivityScreen', {
                                 selectedTaskIds: [...selectedTaskIds, ...dailyActivity.filter(data => data.selected_task_data === 1).map(data => data.task_id)],
                                 project_id: project_id,
-                                dailyId: dailyId
+                                dailyId: dailyId,
+                                dateNew:dateNew
                             })
                         }
                     >

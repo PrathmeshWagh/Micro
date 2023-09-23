@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FC } from 'react';
 import { ActivityIndicator, FlatList, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { Checkbox, Modal, Portal } from 'react-native-paper';
-import { CommonActions, useNavigation } from '@react-navigation/native';
+import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
 import Snackbar from 'react-native-snackbar';
 import Feather from 'react-native-vector-icons/Feather';
 import moment from 'moment';
@@ -16,55 +16,55 @@ interface Props {
   route: any
 }
 const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
-  const { project_id, dailyId, selectedTaskIds } = route.params;
-  console.log("selectedTaskIds", selectedTaskIds)
-  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const { project_id, dailyId, selectedTaskIds, dateNew } = route.params;
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedImageRemark, setSelectedImageRemark] = useState<string>();
-  const [remark, setRemark] = useState<string[]>([]);
-  const [area, setArea] = useState<string[]>([]);
-  const [plan, setPlan] = useState<string[]>([]);
-  const [completion, setCompletion] = useState<string[]>([]);
-  const [status, setStatus] = useState<string[]>([]);
-  const [selectedImageIds, setSelectedImageIds] = useState<string[]>([]);
-  const [date, setDate] = useState(new Date())
-  const timestamp = date;
-  const formattedDate = moment(timestamp).format('DD-MM-YYYY');
-  const [open, setOpen] = useState(false);
+  const [date, setDate] = useState<string>()
   const [isloading, setIsLoading] = useState<boolean>(false);
   const [dailyActivity, setDailyActivity] = useState([]);
-  const [dateViewReport, setDateViewReport] = useState<string>()
+  const [selectedRemark, setSelectedRemark] = useState<string[]>([]);
+  const [selectedPlan, setSelectedPlan] = useState<string[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+  const [selectedArea, setSelectedArea] = useState<string[]>([]);
+  const [selectedCompletion, setSelectedCompletion] = useState<string[]>([]);
 
-  useEffect(() => {
-    getdata();
-  }, []);
 
-
+  useFocusEffect(
+    useCallback(() => {
+      getdata();
+    }, [])
+  );
 
   useEffect(() => {
     if (dailyActivity.length > 0) {
-      // Assuming dailyActivity is an array of objects like the example data
-      const details = dailyActivity[0]; // You can choose which item to use
-      const {
-        task_remark,
-        area,
-        plan,
-        completion,
-        status,
-        date,
-      } = details;
+      const initialSelectedImagesMap = {};
 
-      // Now you can set the state variables based on the details object
+      dailyActivity.forEach((item, index) => {
+        const selectedImages = item.images
+          .filter((image) => image.image_already_check === 1)
+          .map((image) => image.image_id);
 
-      setRemark(task_remark);
-      setArea(area);
-      setPlan(plan);
-      setCompletion(completion);
-      setStatus(status);
-      // setDate(date);
+        initialSelectedImagesMap[index] = selectedImages;
+      });
+
+      setSelectedImagesMap(initialSelectedImagesMap);
+
+      // ...rest of your code
+    }
+  }, [dailyActivity]);
+
+  useEffect(() => {
+    if (dailyActivity.length > 0) {
+      const details = dailyActivity[0];
+      setSelectedName(details.task_name || ''); // Use API data or empty string as initial value
+      setSelectedRemark(details.task_remark || ''); // Use API data or empty string as initial value
+      setSelectedPlan(details.plan || ''); // Use API data or empty string as initial value
+      setSelectedArea(details.area || ''); // Use API data or empty string as initial value
+      setSelectedCompletion(details.completion || ''); // Use API data or empty string as initial value
+      setSelectedStatus(details.status || ''); // Use API data or empty string as initial value
     }
   }, [dailyActivity]);
 
@@ -88,18 +88,19 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
       project_id: project_id,
       task_id: selectedTaskIds,
       daily_activities_id: dailyId,
-
+      date: dateNew
     }
-    console.log("raw", raw)
+    console.log("raw45", raw)
     try {
-      setLoading(true);
+      setIsLoading(true);
       const api: any = await postMethod(`edit_daily_activity_task_details`, raw);
       if (api.status === 200) {
-        setDailyActivity(api.data);
-        setLoading(false);
-
+        console.log("...............", api.data.date)
+        setDailyActivity(api.data.data);
+        setDate(api.data.date)
+        setIsLoading(false);
       } else {
-        setLoading(false);
+        setIsLoading(false);
         Snackbar.show({
           text: api.data.message,
           duration: Snackbar.LENGTH_SHORT,
@@ -120,11 +121,149 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
   }
 
   const [selectedName, setSelectedName] = useState<string>('');
-  const [selectedRemark, setSelectedRemark] = useState<string>('');
-  const [selectedPlan, setSelectedPlan] = useState<string>('');
-  const [selectedArea, setSelectedArea] = useState<string>('');
-  const [selectedCompletion, setSelectedCompletion] = useState<string>('');
-  const [selectedStatus, setSelectedStatus] = useState<string>('');
+
+
+
+  const addDuplicateTaskSection = (originalTaskIndex: number) => {
+    // Get the original task from the dailyActivity array
+    const originalTask = dailyActivity[originalTaskIndex];
+
+    // Create a duplicate task with the same properties
+    const duplicateTask = {
+      task_name: originalTask.task_name,
+      task_remark: '',
+      images: [...originalTask.images], // Copy the images array
+      area: '',
+      plan: '',
+      completion: '',
+      status: '',
+      isDuplicate: true, // Add a property to indicate it's a duplicate
+      task_id: originalTask.task_id, // Copy the task_id from the original task
+    };
+
+    // Clone the dailyActivity array and insert the duplicate task
+    const updatedDailyActivity = [...dailyActivity];
+    updatedDailyActivity.splice(originalTaskIndex + 1, 0, duplicateTask);
+    setDailyActivity(updatedDailyActivity);
+
+    // Copy the selected images from the original task to the duplicate task
+    setSelectedImagesMap({
+      ...selectedImagesMap,
+      [originalTaskIndex + 1]: selectedImagesMap[originalTaskIndex] || [],
+    });
+  };
+
+
+  const [selectedImagesMap, setSelectedImagesMap] = useState<Record<number, string[]>>({});
+
+  // Function to handle image selection
+  const handleImageSelection = (imageId: string, taskId: number) => {
+    // Copy the existing selected images for this task
+    const selectedImages = selectedImagesMap[taskId] ? [...selectedImagesMap[taskId]] : [];
+
+    // Check if the image is already selected for this task
+    const imageIndex = selectedImages.indexOf(imageId);
+
+    if (imageIndex === -1) {
+      // If not selected, add it to the list
+      selectedImages.push(imageId);
+    } else {
+      // If already selected, remove it from the list
+      selectedImages.splice(imageIndex, 1);
+    }
+
+    // Update the selected images map with the new list
+    setSelectedImagesMap({ ...selectedImagesMap, [taskId]: selectedImages });
+  };
+
+  const AddDescription = async () => {
+    const areaArray: string[] = [];
+    const completionArray: string[] = [];
+    const planArray: string[] = [];
+    const statusArray: string[] = [];
+    const taskRemarkArray: string[] = [];
+    const imageIdArray: string[] = [];
+    const imageNumArray: number[] = [];
+    const taskIdsArray: number[] = [];
+
+    dailyActivity.forEach((item, index) => {
+      areaArray.push(item.area || ''); // Use empty string if area is undefined
+      completionArray.push(item.completion || '');
+      planArray.push(item.plan || '');
+      statusArray.push(item.status || '');
+      taskRemarkArray.push(item.task_remark || '');
+
+      // Push the task_id for each task, and if it's a duplicate, push it twice
+      const taskId = item.task_id; // Use the task_id from the duplicated card
+      if (item.isDuplicate) {
+        taskIdsArray.push(taskId);
+      } else {
+        taskIdsArray.push(taskId);
+      }
+
+      // Populate imageIdArray with selected image IDs from selectedImagesMap
+      const selectedImages = selectedImagesMap[index] || [];
+      selectedImages.forEach((imageId) => {
+        imageIdArray.push(imageId);
+      });
+
+      const selectedImageCount = selectedImages.length;
+      imageNumArray.push(selectedImageCount);
+    });
+
+    const raw = {
+      project_id: project_id,
+      task_id: taskIdsArray, // Updated task_id with duplicates
+      task_remark: taskRemarkArray,
+      area: areaArray,
+      plan: planArray,
+      completion: completionArray,
+      status: statusArray,
+      image_id: imageIdArray, // Populate image_id with selected image IDs
+      image_num: imageNumArray,
+      daily_activities_id: dailyId,
+      date: dateNew
+    };
+
+    console.log("raw222", raw);
+    try {
+      setLoading(true);
+      const api: any = await postMethod('update_daily_activity', raw);
+      if (api.data.status === true) {
+        console.log('...hello....', api.data);
+        setLoading(false);
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: 'EditManPowerReport',
+            params: {
+              projectId: project_id,
+              date: dateNew,
+              taskId: taskIdsArray
+            },
+          })
+        )
+      } else {
+        console.log('.....hiiii..', api.data);
+        setLoading(false);
+        Snackbar.show({
+          text: api.data.message,
+          duration: Snackbar.LENGTH_SHORT,
+          textColor: '#AE1717',
+          backgroundColor: '#F2A6A6',
+        });
+      }
+    } catch (e) {
+      Snackbar.show({
+        text: 'Some Error Occurred' + e,
+        duration: Snackbar.LENGTH_SHORT,
+        textColor: '#AE1717',
+        backgroundColor: '#F2A6A6',
+      });
+    }
+  };
+
+
+
 
   return (
     <>
@@ -142,74 +281,58 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
             }>
             <Text style={styles.date}>Date</Text>
             <View style={styles.input}>
-              <View style={{ flexDirection: 'row' }}>
-                <Text style={styles.date}>{dateViewReport}</Text>
+              <View>
+                <Text style={styles.date}>{dateNew}</Text>
               </View>
-              <Feather
-                name="chevron-down"
-                size={22}
-                color={'#000'}
-                style={{ position: 'absolute', right: 20, top: 12, }}
-                onPress={() => setOpen(true)}
-              />
-              <DatePicker
-                modal
-                open={open}
-                mode="date"
-                date={date}
-                onConfirm={(date) => {
-                  const formattedDate = moment(date).format('DD-MM-YYYY');
-                  setDateViewReport(formattedDate); // Update dateViewReport with the selected date
-                  setDate(date);
-                  setOpen(false);
-                }}
-                onCancel={() => {
-                  setOpen(false);
-                }}
-              />
             </View>
             {dailyActivity.map((item, index) => (
               <View key={index}>
                 <View style={styles.cover}>
-                  <Text style={styles.Task}>Task {index + 1}</Text>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={styles.Task}>Task {index + 1}</Text>
+                    {!item.isDuplicate && ( // Conditionally render the "+" button
+                      <Pressable onPress={() => addDuplicateTaskSection(index)}>
+                        <Text style={styles.plus}>+</Text>
+                      </Pressable>
+                    )}
+                  </View>
                   <Text style={styles.date}>Name</Text>
-                  <TextInput
-                    style={styles.input}
-                    placeholder="Enter Name"
-                    onChangeText={(text) => setSelectedName(text)}
-                    value={selectedName || item.task_name}
-                  />
+                  <Text style={styles.input}>{item.task_name}</Text>
+
                   <Text style={styles.date}>Task Remarks</Text>
 
                   <TextInput
                     style={styles.input}
-                    placeholder="Enter Name"
-                    onChangeText={(text) => setSelectedRemark(text)}
-                    value={selectedRemark || item.task_remark}
+                    placeholder="Enter Remark"
+                    onChangeText={(text) => {
+                      const updatedDailyActivity = [...dailyActivity];
+                      updatedDailyActivity[index].task_remark = text;
+                      setDailyActivity(updatedDailyActivity);
+                    }}
+                    value={item.task_remark}
                   />
                   {item?.images.length > 0 && (
                     <>
                       <Text style={styles.date}>Images</Text>
                       <ScrollView horizontal>
                         {item?.images?.map((image) => (
-                        
+                          <TouchableOpacity key={image.image_id} onPress={() => openZoomedImage(image.image, image.remark)}>
                             <View style={{ margin: 10 }}>
-                              <View style={{ backgroundColor: Colors.lightGray, borderRadius: 8, padding: 10 }}>
-                                <View style={{ position: 'absolute', right: 2 }}>
+                              <View style={{ backgroundColor: Colors.lightGray, borderRadius: 8, padding: 10, }}>
+                                <View style={{ position: 'absolute', right: 2, }}>
                                   <Checkbox
-                                    status={image.image_already_check === 1 ? 'checked' : 'unchecked'}
-                                  // onPress={() => handleImageSelection(image.image, image.image_id)}
+                                    status={selectedImagesMap[index]?.includes(image.image_id) ? 'checked' : 'unchecked'}
+                                    onPress={() => handleImageSelection(image.image_id, index)}
                                   />
                                 </View>
-                                <TouchableOpacity key={image.image_id} onPress={() => openZoomedImage(image.image, image.remark)}>
                                 <Image style={styles.tinyImg} source={{ uri: image.image }} />
-                                </TouchableOpacity>
+
                                 <Text style={styles.remark}>
                                   {image.remark.length >= 5 ? `${image.remark.slice(0, 5)}...` : image.remark}
                                 </Text>
                               </View>
                             </View>
-                         
+                          </TouchableOpacity>
                         ))}
                       </ScrollView>
                     </>
@@ -217,38 +340,54 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
                   <Text style={styles.date}>Area</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Enter Name"
-                    onChangeText={(text) => setSelectedArea(text)}
-                    value={selectedArea || item.area}
+                    placeholder="Enter Area"
+                    onChangeText={(text) => {
+                      const updatedDailyActivity = [...dailyActivity];
+                      updatedDailyActivity[index].area = text;
+                      setDailyActivity(updatedDailyActivity);
+                    }}
+                    value={item.area}
                   />
                   <Text style={styles.date}>Plan</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Enter Name"
-                    onChangeText={(text) => setSelectedPlan(text)}
-                    value={selectedPlan || item.plan}
+                    placeholder="Enter Plan"
+                    onChangeText={(text) => {
+                      const updatedDailyActivity = [...dailyActivity];
+                      updatedDailyActivity[index].plan = text;
+                      setDailyActivity(updatedDailyActivity);
+                    }}
+                    value={item.plan}
                   />
                   <Text style={styles.date}>Completion</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Enter Name"
-                    onChangeText={(text) => setSelectedCompletion(text)}
-                    value={selectedCompletion || item.completion}
+                    placeholder="Enter Completion"
+                    onChangeText={(text) => {
+                      const updatedDailyActivity = [...dailyActivity];
+                      updatedDailyActivity[index].completion = text;
+                      setDailyActivity(updatedDailyActivity);
+                    }}
+                    value={item.completion}
                   />
                   <Text style={styles.date}>Status</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Enter Name"
-                    onChangeText={(text) => setSelectedStatus(text)}
-                    value={selectedStatus || item.status}
+                    placeholder="Enter Status"
+                    onChangeText={(text) => {
+                      const updatedDailyActivity = [...dailyActivity];
+                      updatedDailyActivity[index].status = text;
+                      setDailyActivity(updatedDailyActivity);
+                    }}
+                    value={item.status}
                   />
                 </View>
 
               </View>
             ))}
 
-            {/* <View style={{ paddingBottom: 50 }}></View> */}
-            {/* <Pressable style={styles.btn} onPress={AddDescription}>
+            <View style={{ paddingBottom: 50 }}></View>
+            <Pressable style={styles.btn} onPress={AddDescription}>
               {loading ?
                 (
                   <ActivityIndicator size="small" color={Colors.white} />
@@ -260,7 +399,7 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
                     Submit
                   </Text>
                 )}
-            </Pressable> */}
+            </Pressable>
             <View style={{ paddingBottom: 40 }}></View>
           </ScrollView >
 
@@ -293,6 +432,12 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.screen_bg,
     padding: 24,
+  },
+  plus: {
+    fontFamily: 'Roboto-Bold',
+    fontSize: 28,
+    marginTop: -10,
+    color: Colors.text_primary
   },
   remark: {
     alignSelf: 'center',

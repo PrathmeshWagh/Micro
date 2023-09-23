@@ -23,6 +23,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const { selectedTaskId, project_id } = route.params;
+  console.log(selectedTaskId,project_id);
   const [dailyActivity, setDailyActivity] = useState([]);
   const [selectedImageRemark, setSelectedImageRemark] = useState<string>();
   const [remark, setRemark] = useState<string[]>([]);
@@ -172,6 +173,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
 
       } else {
         setLoading(false);
+        console.log(".......", api.data)
         Snackbar.show({
           text: api.data.message,
           duration: Snackbar.LENGTH_SHORT,
@@ -226,7 +228,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
               />
               <DateTimePickerModal
                 isVisible={isDatePickerVisible}
-                mode="date" // You can change the mode to "datetime" for date and time selection
+                mode="date"
                 date={date}
                 onConfirm={handleDateConfirm}
                 onCancel={hideDatePicker}

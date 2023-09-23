@@ -165,7 +165,7 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
             start_time: startTimes.flat(),
             date: date
         };
-        console.log("raw", raw)
+        console.log("rawrrrrrr", raw)
         try {
             setLoading(true);
             const api: any = await postMethod(`add_manpower_report`, raw);
