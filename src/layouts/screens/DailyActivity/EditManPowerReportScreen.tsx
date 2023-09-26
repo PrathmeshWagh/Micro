@@ -44,10 +44,8 @@ interface Worker {
 }
 const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
   const { date, taskId, projectId } = route.params;
-  console.log("date",date);
-  const [value, setValue] = useState('');
-  const [refreshing, setRefreshing] = useState<boolean>(false);
   const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [numWorkersArray, setNumWorkersArray] = useState<number[]>([]);
   const [typeOfWorkers, setTypeOfWorkers] = useState<string[]>([]);
@@ -95,16 +93,14 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
         updatedManpowerData[index].all_worker_details.splice(numWorkersValue);
       } else {
         // Add new sections if the number of workers has increased
-        for (
-          let i = updatedManpowerData[index].all_worker_details.length;
-          i < numWorkersValue;
-          i++
-        ) {
-          // Initialize each new section's details with empty values
+        for (let i = updatedManpowerData[index].all_worker_details.length; i < numWorkersValue; i++) {
+          // Initialize each new section's details with current date and time
+          const currentDate = new Date();
+          const formattedCurrentTime = formatTime(currentDate);
           updatedManpowerData[index].all_worker_details.push({
             name_of_person: '',
-            start_time: '',
-            end_time: '',
+            start_time: formattedCurrentTime, // Set to current time
+            end_time: formattedCurrentTime, // Set to current time
           });
         }
       }
@@ -123,21 +119,29 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
 
 
 
+
+
   const [startTimes, setStartTimes] = useState<string[][][]>([]);
 
   const [endTimes, setEndTimes] = useState<string[][][]>([]);
 
-  const [workers, setWorkers] = useState<Worker[]>([]);
   const handleAddSection = () => {
     const newWorker: Worker = {
       workerType: '',
       name: '',
       numWorkers: '',
       showTextBox: false,
-      startTime: '',
-      endTime: '',
+      startTime: '', // Initialize as empty string
+      endTime: '',   // Initialize as empty string
       all_worker_details: [], // Initialize all_worker_details as an empty array
     };
+
+    // Initialize start time and end time if available from API data
+    const apiManpower = manpowerData[selectedWorkerIndex];
+    if (apiManpower) {
+      newWorker.startTime = apiManpower.start_time || ''; // Use API start time if available
+      newWorker.endTime = apiManpower.end_time || '';     // Use API end time if available
+    }
 
     // Add the new worker section to the manpowerData state
     setManpowerData([...manpowerData, newWorker]);
@@ -149,6 +153,18 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     setPersonNameFields([...personNameFields, []]);
     setStartTimeFields([...startTimeFields, []]);
     setEndTimeFields([...endTimeFields, []]);
+
+    // Initialize startTimes and endTimes arrays
+    const currentDate = new Date();
+    const formattedCurrentTime = formatTime(currentDate).toString(); // Ensure it's a string
+    setStartTimes((prevStartTimes) => [
+      ...prevStartTimes,
+      [newWorker.startTime || formattedCurrentTime], // Use API start time if available, otherwise current time
+    ] as string[][][]);
+    setEndTimes((prevEndTimes) => [
+      ...prevEndTimes,
+      [newWorker.endTime || formattedCurrentTime], // Use API end time if available, otherwise current time
+    ] as string[][][]);
   };
 
 
@@ -159,13 +175,14 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     const formattedTime = formatTime(date);
     if (selectedWorkerIndex !== -1) {
       const updatedStartTimes = [...startTimes];
-      updatedStartTimes[selectedWorkerIndex] = updatedStartTimes[selectedWorkerIndex] || [];
+
+      if (!updatedStartTimes[selectedWorkerIndex]) {
+        updatedStartTimes[selectedWorkerIndex] = [];
+      }
+
       updatedStartTimes[selectedWorkerIndex][selectedSectionIndex] = formattedTime;
-      console.log("updatedStartTimes", updatedStartTimes)
 
       setStartTimes(updatedStartTimes);
-
-      // Do not update the selectedStartTime state
     }
     setStartTimePickerVisible(false);
   };
@@ -190,19 +207,21 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     setSelectedSectionIndex(sectionIndex);
 
     // Reset the selected start time for the current worker
-    setSelectedStartTime(startTimes[workerIndex] ? startTimes[workerIndex][sectionIndex] || '' : '');
+    setSelectedStartTime(String(startTimes[workerIndex] ? startTimes[workerIndex][sectionIndex] || '' : ''));
 
     setStartTimePickerVisible(true);
   };
+
   const handleEndTimeChange = (workerIndex: number, sectionIndex: number) => {
     setSelectedWorkerIndex(workerIndex);
     setSelectedSectionIndex(sectionIndex);
 
     // Reset the selected end time for the current worker
-    setSelectedEndTime(endTimes[workerIndex] ? endTimes[workerIndex][sectionIndex] || '' : '');
+    setSelectedEndTime(String(endTimes[workerIndex] ? endTimes[workerIndex][sectionIndex] || '' : ''));
 
     setEndTimePickerVisible(true);
   };
+
 
   const getdata = async () => {
 
@@ -220,6 +239,7 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
           ...manpower,
           all_worker_details: manpower.all_worker_details || [], // Ensure this property exists
         }));
+        console.log("........api.data.man_power_report_id", api.data.man_power_report_id)
         setNumWorkersArray(initialNumWorkersArray);
         setManpowerData(initialManpowerData);
         setManpowerId(api.data.man_power_report_id)
@@ -293,13 +313,56 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
 
   const AddReport = async () => {
     try {
+      // Validate fields
+      for (const manpower of manpowerData) {
+        if (!manpower.types_of_worker) {
+          Snackbar.show({
+            text: 'Please select Worker Type for all workers',
+            duration: Snackbar.LENGTH_SHORT,
+            textColor: 'white',
+            backgroundColor: 'red',
+          });
+          return; // Stop submission if Worker Type is missing
+        }
+
+        if (manpower.types_of_worker === 'other' && !manpower.types_of_worker_name) {
+          Snackbar.show({
+            text: 'Please enter Name for workers with "Other" Worker Type',
+            duration: Snackbar.LENGTH_SHORT,
+            textColor: 'white',
+            backgroundColor: 'red',
+          });
+          return; // Stop submission if Name is missing for "Other" Worker Type
+        }
+
+        if (!manpower.no_of_worker) {
+          Snackbar.show({
+            text: 'Please enter Number of Workers for all workers',
+            duration: Snackbar.LENGTH_SHORT,
+            textColor: 'white',
+            backgroundColor: 'red',
+          });
+          return; // Stop submission if Number of Workers is missing
+        }
+
+        for (const workerDetail of manpower.all_worker_details) {
+          if (!workerDetail.name_of_person) {
+            Snackbar.show({
+              text: 'Please enter Name of Person for all workers',
+              duration: Snackbar.LENGTH_SHORT,
+              textColor: 'white',
+              backgroundColor: 'red',
+            });
+            return; // Stop submission if Name of Person is missing
+          }
+
+        }
+      }
       setLoading(true);
       const formattedData = prepareDataForAPI();
       console.log("formattedData", formattedData)
       const api: any = await postMethod(`update_man_power_report`, formattedData);
-      console.log('data', api.data);
       if (api.data.status === true) {
-        console.log('data', api.data);
         setLoading(false);
         Snackbar.show({
           text: api.data.message,
@@ -307,6 +370,14 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
           textColor: 'white',
           backgroundColor: 'green',
         });
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: 'TopTabNavigation',
+            params: {
+              id: project_id
+            },
+          })
+        )
       } else {
         setLoading(false);
         Snackbar.show({
@@ -328,10 +399,9 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
 
 
 
-
   return (
     <>
-      <Appbar title={'Manpower Report'} />
+      <Appbar title={'Edit Manpower Report'} />
       <ScrollView style={styles.container}>
         <Text style={styles.Manpower}>Manpower Reports</Text>
 
@@ -371,7 +441,7 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                     updatedManpowerData[index].types_of_worker_name = text;
                     setManpowerData(updatedManpowerData);
                   }}
-                  value={manpower.types_of_worker_name || ''}
+                  value={String(manpower.types_of_worker_name) || ''}
                   placeholder=""
                 />
               </>
@@ -427,7 +497,7 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                     onPress={() => handleEndTimeChange(index, sectionIndex)}
                   />
                 </View>
-              </View >
+              </View>
 
 
             ))

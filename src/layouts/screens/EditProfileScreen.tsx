@@ -104,7 +104,7 @@ const ProfileScreen = ({ navigation, route }: any) => {
       <View style={styles.container}>
         <View style={styles.align}>
           <Pressable onPress={() => navigation.goBack()}>
-            <IonIcon style={styles.icon} name="arrow-back" size={28} color={'white'} />
+            <IonIcon  name="arrow-back" size={28} color={'white'} />
           </Pressable>
         </View>
       </View>

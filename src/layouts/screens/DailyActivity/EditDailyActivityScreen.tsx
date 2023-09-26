@@ -253,6 +253,7 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
         });
       }
     } catch (e) {
+      console.log('.....catch..');
       Snackbar.show({
         text: 'Some Error Occurred' + e,
         duration: Snackbar.LENGTH_SHORT,
