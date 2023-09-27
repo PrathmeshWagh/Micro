@@ -51,7 +51,7 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
                 <Text style={styles.addText}>+ Add</Text>
             </Pressable>
             {loading ? (
-                <ActivityIndicator size="large" color="#000" />
+                <ActivityIndicator size="large" color={Colors.brand_primary} />
             ) : (
                 <>
                     <ScrollView style={styles.container}

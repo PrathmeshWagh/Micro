@@ -63,7 +63,7 @@ const TaskDetailScreen = ({ route }: any) => {
     <View>
       <Appbar title={'Task'} />
       {loading ? (
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color={Colors.brand_primary} />
       ) : (
         <ScrollView style={styles.container}>
           <Pressable>

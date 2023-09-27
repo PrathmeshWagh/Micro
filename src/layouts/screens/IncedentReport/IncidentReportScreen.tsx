@@ -94,7 +94,7 @@ const IncidentReport = ({ route }: any) => {
   return (
     <>
       {loading ? (
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color={Colors.brand_primary} />
       ) : (
         <View style={styles.cover}>
           <Pressable style={styles.add} onPress={() => navigation.navigate('IncidentFormScreen', {

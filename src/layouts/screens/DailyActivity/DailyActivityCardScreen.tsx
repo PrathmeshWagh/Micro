@@ -66,7 +66,7 @@ const DailyActivityCardScreen: FC<Props> = ({ route }: any): JSX.Element => {
     <>
       <Appbar title={'Daily Activity'} />
       {loading ? (
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color={Colors.brand_primary} />
       ) : (
         <>
           <ScrollView style={styles.cover}

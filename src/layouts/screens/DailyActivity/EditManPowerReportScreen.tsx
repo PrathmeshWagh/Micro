@@ -47,6 +47,7 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [loader, setLoader] = useState<boolean>(false);
   const [numWorkersArray, setNumWorkersArray] = useState<number[]>([]);
   const [typeOfWorkers, setTypeOfWorkers] = useState<string[]>([]);
   const [typesOfWorkersName, setTypesOfWorkersName] = useState<string[]>([]);
@@ -231,7 +232,7 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
     }
     console.log("Purba", raw)
     try {
-      setLoading(true);
+      setLoader(true);
       const api: any = await postMethod(`edit_man_power_report`, raw);
       if (api.status === 200) {
         const initialNumWorkersArray = api.data.data?.map((manpower) => parseInt(manpower.no_of_worker, 10));
@@ -243,9 +244,9 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
         setNumWorkersArray(initialNumWorkersArray);
         setManpowerData(initialManpowerData);
         setManpowerId(api.data.man_power_report_id)
-        setLoading(false);
+        setLoader(false);
       } else {
-        setLoading(false);
+        setLoader(false);
         Snackbar.show({
           text: api.data.message,
           duration: Snackbar.LENGTH_SHORT,
@@ -374,7 +375,7 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
           CommonActions.navigate({
             name: 'TopTabNavigation',
             params: {
-              id: project_id
+              id: projectId
             },
           })
         )
@@ -402,130 +403,141 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
   return (
     <>
       <Appbar title={'Edit Manpower Report'} />
-      <ScrollView style={styles.container}>
-        <Text style={styles.Manpower}>Manpower Reports</Text>
+      {loader ? (
+        <ActivityIndicator size="large" color={Colors.brand_primary} />
+      ) : (
+        <>
+          <ScrollView style={styles.container}>
+            <Text style={styles.Manpower}>Manpower Reports</Text>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, }}>
-          <Text style={styles.date}>Worker Type </Text>
-          <Pressable onPress={handleAddSection}>
-            <Text style={styles.plus}>+</Text>
-          </Pressable>
-        </View>
-        {manpowerData.map((manpower, index) => (
-          <>
-            <View key={index} style={styles.card}>
-              <Dropdown
-                style={styles.dropdown}
-                placeholderStyle={styles.placeholderStyle}
-                iconStyle={styles.iconStyle}
-                data={data}
-                maxHeight={300}
-                labelField="label"
-                valueField="value"
-                placeholder="Select item"
-                value={manpower.types_of_worker}
-                onChange={(selectedValue) => {
-                  const updatedManpowerData = [...manpowerData];
-                  updatedManpowerData[index].types_of_worker = selectedValue.value;
-                  setManpowerData(updatedManpowerData);
-                }}
-              />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, }}>
+              <Text style={styles.date}>Worker Type </Text>
+              <Pressable onPress={handleAddSection}>
+                <Text style={styles.plus}>+</Text>
+              </Pressable>
             </View>
-            {manpower.types_of_worker === 'other' && (
+            {manpowerData.map((manpower, index) => (
               <>
-                <Text style={styles.date}>Name</Text>
-                <TextInput
-                  style={styles.input}
-                  onChangeText={(text) => {
-                    const updatedManpowerData = [...manpowerData];
-                    updatedManpowerData[index].types_of_worker_name = text;
-                    setManpowerData(updatedManpowerData);
-                  }}
-                  value={String(manpower.types_of_worker_name) || ''}
-                  placeholder=""
-                />
-              </>
-            )}
-            <Text style={styles.date}>Number of Worker</Text>
-            <TextInput
-              style={styles.input}
-              onChangeText={(text) => handleNumWorkersChange(text, index)}
-              value={numWorkersArray[index] ? numWorkersArray[index].toString() : ''}
-              placeholder=""
-              keyboardType="numeric"
-            />
-            {manpower.all_worker_details.map((workerDetail, sectionIndex) => (
-              <View key={sectionIndex} style={styles.align}>
-                <Text style={styles.date}>{`Name of Person ${sectionIndex + 1}`}</Text>
-                <TextInput
-                  style={styles.input}
-                  onChangeText={(text) => {
-                    const updatedManpowerData = [...manpowerData];
-                    updatedManpowerData[index].all_worker_details[sectionIndex].name_of_person = text;
-                    setManpowerData(updatedManpowerData);
-                  }}
-                  value={workerDetail.name_of_person || ''}
-                  placeholder=""
-                />
-                <Text style={styles.date}>Start Time {sectionIndex + 1}</Text>
-                <View style={styles.input}>
-                  <Text style={styles.date}>
-
-                    {startTimes[index] && startTimes[index][sectionIndex]
-                      ? startTimes[index][sectionIndex]
-                      : workerDetail.start_time}
-                  </Text>
-                  <Feather
-                    name="clock"
-                    size={22}
-                    color={'#000'}
-                    style={{ position: 'absolute', right: 20, top: 12, }}
-                    onPress={() => handleStartTimeChange(index, sectionIndex)} />
-                </View>
-                <Text style={styles.date}>End Time {sectionIndex + 1}</Text>
-                <View style={styles.input}>
-                  <Text style={styles.date}>
-                    {endTimes[index] && endTimes[index][sectionIndex]
-                      ? endTimes[index][sectionIndex]
-                      : workerDetail.end_time}
-                  </Text>
-                  <Feather
-                    name="clock"
-                    size={22}
-                    color={'#000'}
-                    style={{ position: 'absolute', right: 20, top: 12 }}
-                    onPress={() => handleEndTimeChange(index, sectionIndex)}
+                <View key={index} style={styles.card}>
+                  <Dropdown
+                    style={styles.dropdown}
+                    placeholderStyle={styles.placeholderStyle}
+                    iconStyle={styles.iconStyle}
+                    data={data}
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder="Select item"
+                    value={manpower.types_of_worker}
+                    onChange={(selectedValue) => {
+                      const updatedManpowerData = [...manpowerData];
+                      updatedManpowerData[index].types_of_worker = selectedValue.value;
+                      setManpowerData(updatedManpowerData);
+                    }}
                   />
                 </View>
-              </View>
+                {manpower.types_of_worker === 'other' && (
+                  <>
+                    <Text style={styles.date}>Name</Text>
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={(text) => {
+                        const updatedManpowerData = [...manpowerData];
+                        updatedManpowerData[index].types_of_worker_name = text;
+                        setManpowerData(updatedManpowerData);
+                      }}
+                      value={String(manpower.types_of_worker_name) || ''}
+                      placeholder=""
+                    />
+                  </>
+                )}
+                <Text style={styles.date}>Number of Worker</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={(text) => handleNumWorkersChange(text, index)}
+                  value={numWorkersArray[index] ? numWorkersArray[index].toString() : ''}
+                  placeholder=""
+                  keyboardType="numeric"
+                />
+                {manpower.all_worker_details.map((workerDetail, sectionIndex) => (
+                  <View key={sectionIndex} style={styles.align}>
+                    <Text style={styles.date}>{`Name of Person ${sectionIndex + 1}`}</Text>
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={(text) => {
+                        const updatedManpowerData = [...manpowerData];
+                        updatedManpowerData[index].all_worker_details[sectionIndex].name_of_person = text;
+                        setManpowerData(updatedManpowerData);
+                      }}
+                      value={workerDetail.name_of_person || ''}
+                      placeholder=""
+                    />
+                    <Text style={styles.date}>Start Time {sectionIndex + 1}</Text>
+                    <View style={styles.input}>
+                      <Text style={styles.date}>
+
+                        {startTimes[index] && startTimes[index][sectionIndex]
+                          ? startTimes[index][sectionIndex]
+                          : workerDetail.start_time}
+                      </Text>
+                      <Feather
+                        name="clock"
+                        size={22}
+                        color={'#000'}
+                        style={{ position: 'absolute', right: 20, top: 12, }}
+                        onPress={() => handleStartTimeChange(index, sectionIndex)} />
+                    </View>
+                    <Text style={styles.date}>End Time {sectionIndex + 1}</Text>
+                    <View style={styles.input}>
+                      <Text style={styles.date}>
+                        {endTimes[index] && endTimes[index][sectionIndex]
+                          ? endTimes[index][sectionIndex]
+                          : workerDetail.end_time}
+                      </Text>
+                      <Feather
+                        name="clock"
+                        size={22}
+                        color={'#000'}
+                        style={{ position: 'absolute', right: 20, top: 12 }}
+                        onPress={() => handleEndTimeChange(index, sectionIndex)}
+                      />
+                    </View>
+                  </View>
 
 
-            ))
-            }
+                ))
+                }
 
-          </>
+              </>
 
-        ))}
+            ))}
 
-        <View style={{ marginBottom: 40 }}></View>
-        <Pressable style={styles.btn} onPress={AddReport}>
-          <Text style={styles.btnText}>
-            Submit
-          </Text>
-        </Pressable>
-        <DateTimePickerModal
-          isVisible={startTimePickerVisible}
-          mode="time"
-          onConfirm={handleStartTimeConfirm}
-          onCancel={() => setStartTimePickerVisible(false)}
-        />
-        <DateTimePickerModal
-          isVisible={endTimePickerVisible} // Use separate state for end time picker
-          mode="time"
-          onConfirm={handleEndTimeConfirm}
-          onCancel={() => setEndTimePickerVisible(false)} // Use separate state for end time picker
-        />
-      </ScrollView >
+            <View style={{ marginBottom: 40 }}></View>
+            <Pressable style={styles.btn} onPress={AddReport}>
+              {loading ? (
+                <ActivityIndicator size="small" color={Colors.white} />
+              ) : (
+
+                <Text style={styles.btnText}>
+                  Submit
+                </Text>
+              )}
+            </Pressable>
+            <DateTimePickerModal
+              isVisible={startTimePickerVisible}
+              mode="time"
+              onConfirm={handleStartTimeConfirm}
+              onCancel={() => setStartTimePickerVisible(false)}
+            />
+            <DateTimePickerModal
+              isVisible={endTimePickerVisible} // Use separate state for end time picker
+              mode="time"
+              onConfirm={handleEndTimeConfirm}
+              onCancel={() => setEndTimePickerVisible(false)} // Use separate state for end time picker
+            />
+          </ScrollView >
+        </>
+      )}
     </>
   );
 };

@@ -42,7 +42,7 @@ const JobDescriptionScreen = ({ props, route }: any) => {
   return (
     <>
       {loading ? (
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color={Colors.brand_primary} />
       ) : (
         <ScrollView style={styles.cover}
           refreshControl={
@@ -67,6 +67,21 @@ const JobDescriptionScreen = ({ props, route }: any) => {
                   }
                 >
                   <Card style={styles.card}>
+                    <View style={styles.status}>
+                      <Text style={[
+                        styles.statusText,
+                        {
+                          backgroundColor:
+                            data?.status === 'Completed' ? 'purple' :
+                              data?.status === 'Pending' || data?.status === 'In Progress' ? 'orange' :
+                                data?.status === 'Pending Approval' ? '#77C3EC' :
+                                  data?.status === 'New' ? Colors.brand_primary : 'transparent'
+                        }
+                      ]}>
+                        {data?.status}
+                      </Text>
+                    </View>
+
                     <View>
                       <Text style={styles.jobSheet}>{data?.task_title}</Text>
                       <Text style={styles.address}>{data?.task_description}</Text>
@@ -113,6 +128,21 @@ const styles = StyleSheet.create({
     // marginBottom: 24,
     flex: 1,
     backgroundColor: Colors.card_bg
+  },
+  status: {
+    justifyContent: 'flex-end',
+    flexDirection: 'row',
+    marginTop: -18,
+    marginRight: -18,
+    marginBottom: 15
+  },
+  statusText: {
+    borderWidth: 1,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    borderRadius: 10,
+    borderColor: Colors.white,
+    color: Colors.white
   },
   startDate: {
     color: Colors.text_primary,

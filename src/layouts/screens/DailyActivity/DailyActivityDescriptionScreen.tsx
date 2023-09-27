@@ -210,7 +210,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
     <>
       <Appbar title={'Daily Activity'} />
       {isloading ? (
-        <ActivityIndicator size="large" color="#000" />
+        <ActivityIndicator size="large" color={Colors.brand_primary} />
       ) : (
         <>
           <ScrollView style={styles.container}>

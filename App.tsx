@@ -4,10 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {Provider as PaperProvider} from 'react-native-paper';
 import AppNavigation from "./src/layouts/navigation/AppNavigation";
 import { CombinedDefaultTheme } from './src/utils/theme';
-import SplashScreen from 'react-native-splash-screen'
 import {AuthContext } from './src/utils/appContext.js';
-import { getStorageData } from './src/utils/helper';
-import AuthNavigation from './src/layouts/navigation/AuthNavigation';
 
 
 export default function App() {

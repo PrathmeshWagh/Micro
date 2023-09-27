@@ -31,7 +31,7 @@ const IncidentReportDescriptionScreen = ({ route }: any) => {
         <View>
             <Appbar title={'Incident Report'} />
             {loading ? (
-                <ActivityIndicator size="large" color="#000" />
+                <ActivityIndicator size="large" color={Colors.brand_primary} />
             ) : (
                 <ScrollView style={styles.container}>
                     <Card style={styles.card}>

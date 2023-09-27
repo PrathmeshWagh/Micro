@@ -66,7 +66,7 @@ const PendingScreen = ({ navigation }: any) => {
         <View>
             <Appbar title={'Pending'} />
             {loading ? (
-                <ActivityIndicator size="large" color="#000" />
+                <ActivityIndicator size="large" color={Colors.brand_primary} />
             ) : (
 
                 <FlatList
