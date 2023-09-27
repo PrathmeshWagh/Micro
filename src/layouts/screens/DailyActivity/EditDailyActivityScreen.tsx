@@ -5,9 +5,6 @@ import { ActivityIndicator, FlatList, Image, Pressable, RefreshControl, ScrollVi
 import { Checkbox, Modal, Portal } from 'react-native-paper';
 import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
 import Snackbar from 'react-native-snackbar';
-import Feather from 'react-native-vector-icons/Feather';
-import moment from 'moment';
-import DatePicker from 'react-native-date-picker';
 import { postMethod } from '../../../utils/helper';
 import Appbar from '../../../components/Appbar';
 import Colors from '../../../style/Colors/colors';
@@ -30,6 +27,8 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
   const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
   const [selectedArea, setSelectedArea] = useState<string[]>([]);
   const [selectedCompletion, setSelectedCompletion] = useState<string[]>([]);
+  const [selectedName, setSelectedName] = useState<string>('');
+  const [selectedImagesMap, setSelectedImagesMap] = useState<Record<number, string[]>>({});
 
 
   useFocusEffect(
@@ -47,7 +46,13 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
           .filter((image) => image.image_already_check === 1)
           .map((image) => image.image_id);
 
-        initialSelectedImagesMap[index] = selectedImages;
+        if (item.isDuplicate) {
+          // For duplicate tasks, initialize with an empty array
+          initialSelectedImagesMap[index] = [];
+        } else {
+          // For non-duplicate tasks, initialize with selected images
+          initialSelectedImagesMap[index] = selectedImages;
+        }
       });
 
       setSelectedImagesMap(initialSelectedImagesMap);
@@ -55,6 +60,7 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
       // ...rest of your code
     }
   }, [dailyActivity]);
+
 
   useEffect(() => {
     if (dailyActivity.length > 0) {
@@ -120,9 +126,6 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
 
   }
 
-  const [selectedName, setSelectedName] = useState<string>('');
-
-
 
   const addDuplicateTaskSection = (originalTaskIndex: number) => {
     // Get the original task from the dailyActivity array
@@ -141,20 +144,20 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
       task_id: originalTask.task_id, // Copy the task_id from the original task
     };
 
+    // Clear the selected images for the duplicated task
+    setSelectedImagesMap({
+      ...selectedImagesMap,
+      [originalTaskIndex + 1]: [], // Clear selected images for the duplicated task
+    });
+
     // Clone the dailyActivity array and insert the duplicate task
     const updatedDailyActivity = [...dailyActivity];
     updatedDailyActivity.splice(originalTaskIndex + 1, 0, duplicateTask);
     setDailyActivity(updatedDailyActivity);
-
-    // Copy the selected images from the original task to the duplicate task
-    setSelectedImagesMap({
-      ...selectedImagesMap,
-      [originalTaskIndex + 1]: selectedImagesMap[originalTaskIndex] || [],
-    });
   };
 
 
-  const [selectedImagesMap, setSelectedImagesMap] = useState<Record<number, string[]>>({});
+
 
   // Function to handle image selection
   const handleImageSelection = (imageId: string, taskId: number) => {
