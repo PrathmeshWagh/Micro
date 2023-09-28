@@ -428,6 +428,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.lightGray,
     backgroundColor: Colors.lightGray,
     borderRadius: 8,
+    color:Colors.black
   },
   inputRemark: {
     height: 80,
@@ -436,7 +437,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.lightGray,
     backgroundColor: Colors.lightGray,
     borderRadius: 8,
-    textAlignVertical: 'top'
+    textAlignVertical: 'top',
+    color:Colors.black
   },
   cover: {
     backgroundColor: Colors.white,

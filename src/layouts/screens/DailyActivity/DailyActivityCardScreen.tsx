@@ -1,7 +1,7 @@
 import React from 'react';
 import { FC } from 'react';
 import { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl, Image, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl,ActivityIndicator } from 'react-native';
 import { Card, Avatar, Checkbox } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import { useNavigation } from '@react-navigation/native';
@@ -15,7 +15,6 @@ interface Props {
 const DailyActivityCardScreen: FC<Props> = ({ route }: any): JSX.Element => {
   const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
   const [refreshing, setRefreshing] = useState<boolean>(false);
-  const [checked, setChecked] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const navigation = useNavigation();
   const [dailyActivity, setDailyActivity] = useState([]);
@@ -59,8 +58,6 @@ const DailyActivityCardScreen: FC<Props> = ({ route }: any): JSX.Element => {
     }
     setSelectAll(!selectAll);
   };
-
-
 
   return (
     <>

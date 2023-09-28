@@ -168,7 +168,6 @@ const AddOderScreen = ({ navigation, route }: any) => {
           onChangeText={setRemarks}
           value={remarks}
           multiline={true}
-          placeholder="Remarks"
         />
         <Pressable onPress={() => open()}>
           <Text style={styles.inputText}>Upload Images  <IonIcon name="camera" color={Colors.text_primary} size={20} /></Text>
@@ -247,7 +246,8 @@ fontFamily:'Roboto-Regular'
     borderColor: Colors.white,
     backgroundColor: Colors.white,
     borderRadius: 2,
-    elevation: 5
+    elevation: 5,
+    color:Colors.text_primary
   },
   inputR: {
     height: 120,
@@ -260,7 +260,8 @@ fontFamily:'Roboto-Regular'
     backgroundColor: Colors.white,
     borderRadius: 2,
     elevation: 8,
-    textAlignVertical:'top'
+    textAlignVertical:'top',
+    color:Colors.text_primary
   },
   inputText: {
     marginHorizontal: 12,

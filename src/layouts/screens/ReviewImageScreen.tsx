@@ -67,14 +67,17 @@ const ReviewImageScreen = ({ route, navigation }: any) => {
                         style={styles.input}
                         onChangeText={setName}
                         value={name}
-                        placeholder="Name"
+                        placeholder="Enter Name"
+                        placeholderTextColor={Colors.text_secondary}
                     />
                     <TextInput
                         style={styles.input2}
                         multiline={true}
                         onChangeText={setRemark}
                         value={remark}
-                        placeholder="Remarks"
+                        placeholder="Enter Remarks"
+                        placeholderTextColor={Colors.text_secondary}
+
                     />
                     <Pressable
                         onPress={Details}
@@ -103,6 +106,7 @@ padding:30
         borderColor: Colors.lightGray,
         backgroundColor:Colors.lightGray,
         padding: 10,
+        color: Colors.text_primary
     },
     input2: {
         height: 100,
@@ -111,7 +115,8 @@ padding:30
         borderColor: Colors.lightGray,
         backgroundColor:Colors.lightGray,
         padding: 10,
-        textAlignVertical: 'top'
+        textAlignVertical: 'top',
+        color: Colors.text_primary
     },
     uploadButton: {
         borderWidth: 1,

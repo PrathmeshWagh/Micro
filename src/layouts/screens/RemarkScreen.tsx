@@ -345,7 +345,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.lightGray,
         padding: 10,
         height:200,
-        textAlignVertical:'top'
+        textAlignVertical:'top',
+        color: Colors.text_primary
       
     },
 });

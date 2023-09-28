@@ -67,14 +67,12 @@ const ResetPasswordScreen = ({ navigation, route }: any) => {
           style={styles.input}
           onChangeText={setNewPsw}
           value={newPsw}
-          placeholder="New Password"
         />
         <Text style={styles.email}>Confirm Password</Text>
         <TextInput
           style={styles.input}
           onChangeText={setConfirmPsw}
           value={confirmPsw}
-          placeholder="Confirm New Password"
         />
         <Pressable style={styles.add} onPress={ResetPsw}>
           {
@@ -104,7 +102,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: 'white',
     backgroundColor: 'white',
-    elevation: 8
+    elevation: 8,
+    color: Colors.text_primary
   },
   addText: {
     color: 'white',

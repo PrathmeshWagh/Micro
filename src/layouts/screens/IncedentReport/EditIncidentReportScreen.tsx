@@ -567,10 +567,6 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                         <Text style={styles.text}>Date of Report Submission</Text>
                         <View style={styles.dateCard}>
                             <View style={{ flexDirection: 'row' }}>
-                                {/* <Image
-                            style={styles.tinyLogo}
-                            source={require('../../style/Img.calender.png')}
-                        /> */}
                                 <Text style={styles.date}>{dateViewReport}</Text>
                             </View>
                             <Feather
@@ -636,6 +632,8 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                             <Dropdown
                                 style={styles.dropdown}
                                 placeholderStyle={styles.placeholderStyle}
+                                itemTextStyle={{ color: Colors.text_primary }}
+                                selectedTextStyle={{ color: Colors.text_primary }}
                                 iconStyle={styles.iconStyle}
                                 data={event}
                                 maxHeight={300}
@@ -665,6 +663,8 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                                 style={styles.dropdown}
                                 placeholderStyle={styles.placeholderStyle}
                                 iconStyle={styles.iconStyle}
+                                itemTextStyle={{ color: Colors.text_primary }}
+                                selectedTextStyle={{ color: Colors.text_primary }}
                                 data={injury}
                                 maxHeight={300}
                                 labelField="label"
@@ -676,11 +676,12 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                         </View>
                         <Text style={styles.text}>Damage Property</Text>
                         <View style={styles.card}>
-                            {/* {renderLabel()} */}
                             <Dropdown
                                 style={styles.dropdown}
                                 placeholderStyle={styles.placeholderStyle}
                                 iconStyle={styles.iconStyle}
+                                itemTextStyle={{ color: Colors.text_primary }}
+                                selectedTextStyle={{ color: Colors.text_primary }}
                                 data={damage}
                                 maxHeight={300}
                                 labelField="label"
@@ -730,6 +731,8 @@ const EditIncidentReportScreen: FC<Props> = ({ route, navigation }): JSX.Element
                                 style={styles.dropdown}
                                 placeholderStyle={styles.placeholderStyle}
                                 iconStyle={styles.iconStyle}
+                                itemTextStyle={{ color: Colors.text_primary }}
+                                selectedTextStyle={{ color: Colors.text_primary }}
                                 data={Injured}
                                 maxHeight={300}
                                 labelField="label"
@@ -1173,7 +1176,7 @@ const styles = StyleSheet.create({
     },
     placeholderStyle: {
         fontSize: 16,
-        color: 'black'
+        color: Colors.text_secondary
     },
     date: {
         fontSize: 16,
@@ -1210,7 +1213,8 @@ const styles = StyleSheet.create({
         borderColor: Colors.white,
         backgroundColor: Colors.white,
         borderRadius: 2,
-        elevation: 8
+        elevation: 8,
+        color: Colors.text_primary
     },
     inputField: {
         height: 150,
@@ -1221,13 +1225,16 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.white,
         borderRadius: 2,
         elevation: 8,
-        textAlignVertical: 'top'
+        textAlignVertical: 'top',
+        color: Colors.text_primary
+
     },
 
     text: {
         marginTop: 10,
         fontFamily: 'Roboto-Medium',
         marginLeft: 10,
+        color: Colors.text_primary
 
     },
     Btntext: {

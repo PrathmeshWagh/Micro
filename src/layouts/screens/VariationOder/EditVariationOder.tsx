@@ -304,7 +304,6 @@ const EditVariationOrder: React.FC<EditVariationOrderProps> = ({ navigation, rou
                         onChangeText={setRemarks}
                         value={remarks}
                         multiline={true}
-                        placeholder="Remarks"
                     />
                     <Text style={styles.inputText}>Images</Text>
                     <View style={styles.imgCard}>
@@ -436,7 +435,8 @@ const styles = StyleSheet.create({
         borderColor: Colors.white,
         backgroundColor: Colors.white,
         borderRadius: 2,
-        elevation: 5
+        elevation: 5,
+        color:Colors.text_primary
     },
     inputR: {
         height: 120,
@@ -449,7 +449,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.white,
         borderRadius: 2,
         elevation: 8,
-        textAlignVertical: 'top'
+        textAlignVertical: 'top',
+        color:Colors.text_primary
     },
     inputText: {
         marginHorizontal: 12,

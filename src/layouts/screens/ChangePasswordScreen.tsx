@@ -66,6 +66,7 @@ const ChangePasswordScreen = ({ navigation }: any) => {
           onChangeText={setOldPass}
           value={oldPass}
           placeholder="Change Password"
+          placeholderTextColor={Colors.text_secondary}
 
         />
         <TextInput
@@ -73,6 +74,7 @@ const ChangePasswordScreen = ({ navigation }: any) => {
           onChangeText={setNewPass}
           value={newPass}
           placeholder="New Password"
+          placeholderTextColor={Colors.text_secondary}
 
         />
         <TextInput
@@ -80,6 +82,7 @@ const ChangePasswordScreen = ({ navigation }: any) => {
           onChangeText={setReNewPass}
           value={ReNewPass}
           placeholder="Re-enter New Password"
+          placeholderTextColor={Colors.text_secondary}
 
         />
         <Pressable style={styles.add} onPress={ChangePassword}>
@@ -108,7 +111,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: 'white',
     backgroundColor: 'white',
-    elevation: 8
+    elevation: 8,
+    color:Colors.text_primary
   },
   addText: {
     color: 'white',
@@ -120,7 +124,6 @@ const styles = StyleSheet.create({
     borderColor: '#041B8E',
     backgroundColor: Colors.brand_primary,
     height: 45,
-
     padding: 10,
     marginHorizontal: 14,
     borderRadius: 8,

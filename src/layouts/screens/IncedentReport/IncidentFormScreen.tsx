@@ -347,7 +347,6 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                         onChangeText={setCompany}
                         value={company}
                         placeholder=""
-
                     />
                     <Text style={styles.text}>Name Of Person Reporting</Text>
                     <TextInput
@@ -438,6 +437,8 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                             style={styles.dropdown}
                             placeholderStyle={styles.placeholderStyle}
                             iconStyle={styles.iconStyle}
+                            itemTextStyle={{ color: Colors.text_primary }}
+                            selectedTextStyle={{ color: Colors.text_primary }}
                             data={event}
                             maxHeight={300}
                             labelField="label"
@@ -466,6 +467,8 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                             style={styles.dropdown}
                             placeholderStyle={styles.placeholderStyle}
                             iconStyle={styles.iconStyle}
+                            itemTextStyle={{ color: Colors.text_primary }}
+                            selectedTextStyle={{ color: Colors.text_primary }}
                             data={injury}
                             maxHeight={300}
                             labelField="label"
@@ -482,6 +485,8 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                             style={styles.dropdown}
                             placeholderStyle={styles.placeholderStyle}
                             iconStyle={styles.iconStyle}
+                            itemTextStyle={{ color: Colors.text_primary }}
+                            selectedTextStyle={{ color: Colors.text_primary }}
                             data={damage}
                             maxHeight={300}
                             labelField="label"
@@ -531,6 +536,8 @@ const IncidentFormScreen: FC<Props> = ({ navigation, route }: any): JSX.Element 
                             style={styles.dropdown}
                             placeholderStyle={styles.placeholderStyle}
                             iconStyle={styles.iconStyle}
+                            itemTextStyle={{ color: Colors.text_primary }}
+                            selectedTextStyle={{ color: Colors.text_primary }}
                             data={Injured}
                             maxHeight={300}
                             labelField="label"
@@ -959,7 +966,9 @@ const styles = StyleSheet.create({
         borderColor: Colors.white,
         backgroundColor: Colors.white,
         borderRadius: 2,
-        elevation: 8
+        elevation: 8,
+        color: Colors.text_primary
+
     },
     inputField: {
         height: 150,
@@ -970,14 +979,16 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.white,
         borderRadius: 2,
         elevation: 8,
-        textAlignVertical: 'top'
+        textAlignVertical: 'top',
+        color: Colors.text_primary
+
     },
 
     text: {
         marginTop: 10,
         fontFamily: 'Roboto-Medium',
         marginLeft: 10,
-
+        color: Colors.text_primary
     },
     Btntext: {
         fontFamily: 'Roboto-Medium',

@@ -423,6 +423,8 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                     style={styles.dropdown}
                     placeholderStyle={styles.placeholderStyle}
                     iconStyle={styles.iconStyle}
+                    itemTextStyle={{ color: Colors.text_primary }}
+                    selectedTextStyle={{ color: Colors.text_primary }}
                     data={data}
                     maxHeight={300}
                     labelField="label"
@@ -446,7 +448,7 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                         updatedManpowerData[index].types_of_worker_name = text;
                         setManpowerData(updatedManpowerData);
                       }}
-                      value={String(manpower.types_of_worker_name) || ''}
+                      value={manpower.types_of_worker_name || ''}
                       placeholder=""
                     />
                   </>

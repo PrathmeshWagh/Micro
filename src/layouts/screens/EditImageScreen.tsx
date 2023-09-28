@@ -209,6 +209,7 @@ const EditImageScreen: FC<Props> = ({ route }: any): JSX.Element => {
                                 onChangeText={setName}
                                 value={name}
                                 placeholder="Name"
+                                placeholderTextColor={Colors.text_secondary}
                             />
                             <TextInput
                                 style={styles.input2}

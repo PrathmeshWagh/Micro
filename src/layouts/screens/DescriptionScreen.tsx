@@ -7,15 +7,15 @@ import { getMethod, postMethod } from '../../utils/helper';
 import { AuthContext } from '../../utils/appContext';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 
-const DescriptionScreen = ({route }: any, props: any) => {
+const DescriptionScreen = ({ route }: any, props: any) => {
   const { id } = route.params;
   const [details, setDetails] = useState('');
   const [loading, setLoading] = useState(false);
   const [load, setLoad] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   console.log("id", id);
- const navigation = useNavigation();
- const [refreshing, setRefreshing] = useState<boolean>(false);
+  const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
   useEffect(() => {
     getdata();
@@ -43,7 +43,7 @@ const DescriptionScreen = ({route }: any, props: any) => {
           name: 'TopTabNavigation',
           params: { id: details?.project_id, }
         })
-        
+
       )
 
       //console.log("apiData",projects)
@@ -77,12 +77,12 @@ const DescriptionScreen = ({route }: any, props: any) => {
 
 
       <ScrollView style={styles.container}
-       refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-        />
-       }>
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }>
         {loading ? (
           <ActivityIndicator size="large" color="#000" />
         ) : (
@@ -130,7 +130,7 @@ const DescriptionScreen = ({route }: any, props: any) => {
             <View style={styles.align2}>
               {details?.project_start_user_id === null ? (
                 <Pressable style={styles.button} onPress={StartProject}>
-                  {isLoading ? (
+                  {load ? (
                     <ActivityIndicator size="small" color={Colors.white} style={styles.loader} />
                   ) : (
                     <Text style={styles.startProject}>Start Project</Text>
@@ -180,7 +180,7 @@ export default DescriptionScreen;
 const styles = StyleSheet.create({
   container: {
     padding: 14,
-    backgroundColor:Colors.screen_bg
+    backgroundColor: Colors.screen_bg
   },
   loader: {
     marginTop: 8

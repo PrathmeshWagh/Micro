@@ -22,7 +22,6 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
       const api: any = await postMethod(`forgot_password`, raw);
       if (api.data.status === true) {
         setLoading(false);
-        console.log("api", api.data)
         Snackbar.show({
           text: "OTP is sent to your Email",
           duration: Snackbar.LENGTH_SHORT,
@@ -42,8 +41,8 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
         Snackbar.show({
           text: api.data.message,
           duration: Snackbar.LENGTH_SHORT,
-          textColor: '#AE1717',
-          backgroundColor: '#F2A6A6',
+          textColor: 'white',
+          backgroundColor: 'red',
         });
       }
     }
@@ -68,6 +67,7 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
           onChangeText={setEmail}
           value={email}
           placeholder="Email"
+          placeholderTextColor={Colors.text_secondary}
         />
         <Pressable
           onPress={ForgotPsw}
@@ -78,7 +78,7 @@ const ForgotPasswordScreen = ({ navigation }: any) => {
             )
               :
               (
-                <Text style={styles.addText}>Save Details</Text>
+                <Text style={styles.addText}>Submit</Text>
 
               )
 
@@ -102,7 +102,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: 'white',
     backgroundColor: 'white',
-    elevation: 8
+    elevation: 8,
+    color:Colors.text_primary
   },
   addText: {
     color: 'white',

@@ -307,7 +307,6 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
 
                   <TextInput
                     style={styles.input}
-                    placeholder="Enter Remark"
                     onChangeText={(text) => {
                       const updatedDailyActivity = [...dailyActivity];
                       updatedDailyActivity[index].task_remark = text;
@@ -344,7 +343,6 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
                   <Text style={styles.date}>Area</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Enter Area"
                     onChangeText={(text) => {
                       const updatedDailyActivity = [...dailyActivity];
                       updatedDailyActivity[index].area = text;
@@ -355,7 +353,6 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
                   <Text style={styles.date}>Plan</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Enter Plan"
                     onChangeText={(text) => {
                       const updatedDailyActivity = [...dailyActivity];
                       updatedDailyActivity[index].plan = text;
@@ -366,7 +363,6 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
                   <Text style={styles.date}>Completion</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Enter Completion"
                     onChangeText={(text) => {
                       const updatedDailyActivity = [...dailyActivity];
                       updatedDailyActivity[index].completion = text;
@@ -377,7 +373,6 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
                   <Text style={styles.date}>Status</Text>
                   <TextInput
                     style={styles.input}
-                    placeholder="Enter Status"
                     onChangeText={(text) => {
                       const updatedDailyActivity = [...dailyActivity];
                       updatedDailyActivity[index].status = text;
@@ -447,6 +442,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 10,
     fontFamily: 'Roboto-Regular',
+    color:Colors.text_primary
   },
   name: {
     height: 50,
@@ -480,6 +476,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.lightGray,
     backgroundColor: Colors.lightGray,
     borderRadius: 8,
+    color:Colors.text_primary,
   },
   inputRemark: {
     height: 80,
@@ -488,7 +485,8 @@ const styles = StyleSheet.create({
     borderColor: Colors.lightGray,
     backgroundColor: Colors.lightGray,
     borderRadius: 8,
-    textAlignVertical: 'top'
+    textAlignVertical: 'top',
+    color:Colors.text_primary
   },
   cover: {
     backgroundColor: Colors.white,

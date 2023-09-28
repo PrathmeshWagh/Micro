@@ -225,6 +225,8 @@ const ManpowerReportScreen: FC = ({ route }: any): JSX.Element => {
                                 style={styles.dropdown}
                                 placeholderStyle={styles.placeholderStyle}
                                 iconStyle={styles.iconStyle}
+                                itemTextStyle={{color:Colors.text_primary}}
+                                selectedTextStyle={{color:Colors.text_primary}}
                                 data={data}
                                 maxHeight={300}
                                 labelField="label"
@@ -402,7 +404,7 @@ const styles = StyleSheet.create({
     },
     placeholderStyle: {
         fontSize: 16,
-        color: 'black'
+        color: Colors.text_primary,
     },
     card: {
         marginTop: 10,
@@ -412,6 +414,7 @@ const styles = StyleSheet.create({
     },
     dropdown: {
         paddingHorizontal: 8,
+        color: Colors.text_primary,
     },
     input: {
         height: 45,
@@ -420,6 +423,7 @@ const styles = StyleSheet.create({
         borderColor: Colors.lightGray,
         backgroundColor: Colors.lightGray,
         borderRadius: 2,
+        color:Colors.black
     },
     date: {
         fontFamily: 'Roboto-Medium',
