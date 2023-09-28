@@ -101,7 +101,7 @@ const EditDailyActivityScreen: FC<Props> = ({ route }): JSX.Element => {
       setIsLoading(true);
       const api: any = await postMethod(`edit_daily_activity_task_details`, raw);
       if (api.status === 200) {
-        console.log("...............", api.data.date)
+        console.log("...............",api.data.date)
         setDailyActivity(api.data.data);
         setDate(api.data.date)
         setIsLoading(false);
