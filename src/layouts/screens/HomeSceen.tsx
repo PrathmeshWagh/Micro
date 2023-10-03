@@ -81,7 +81,7 @@ const HomeScreen = ({ navigation }: any) => {
             <Text style={styles.boxText}>Pending</Text>
           </Surface>
         </Pressable>
-
+        <Pressable onPress={() => navigation.navigate('HistoryScreen')}>
         <Surface style={styles.surface} elevation={4}>
           <Image
             style={styles.boxIcon}
@@ -89,6 +89,7 @@ const HomeScreen = ({ navigation }: any) => {
           />
           <Text style={styles.boxText}>History</Text>
         </Surface>
+        </Pressable>
       </View>
       {/* <Card style={styles.card}>
         <Text style={styles.cardTitle}>Card Title</Text>

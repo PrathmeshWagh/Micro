@@ -51,6 +51,7 @@ import ViewDailyActivityScreen from '../screens/DailyActivity/ViewDailyActivityS
 import EditDailyActivityCardScreen from '../screens/DailyActivity/EditDailyActivityCardScreen';
 import EditDailyActivityScreen from '../screens/DailyActivity/EditDailyActivityScreen';
 import EditManPowerReport from '../screens/DailyActivity/EditManPowerReportScreen';
+import HistoryScreen from '../screens/HistoryScreen';
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const TabTop = createMaterialTopTabNavigator();
@@ -125,6 +126,7 @@ function AppNavigation() {
         <Stack.Screen name="EditDailyActivityCardScreen" component={EditDailyActivityCardScreen} />
         <Stack.Screen name="EditDailyActivityScreen" component={EditDailyActivityScreen} />
         <Stack.Screen name="EditManPowerReport" component={EditManPowerReport} />
+        <Stack.Screen name="HistoryScreen" component={HistoryScreen} />
 
       </Stack.Navigator>
     )

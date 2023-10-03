@@ -131,7 +131,7 @@ const OtpVerificationScreen = ({ navigation, route }: any) => {
           />
         </KeyboardAvoidingView>
         <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
-          <Text style={styles.resend}>If you didn’t receive any code !</Text>
+          <Text style={styles.resend}>If you didn't receive the 4 digit OTP, click</Text>
           <Pressable onPress={OtpResend}>
             {
               load ? (

@@ -26,7 +26,6 @@ const ViewImageScreen = ({ route, navigation }: any) => {
 
     useFocusEffect(
         useCallback(() => {
-            // This code will run when the screen focuses
             getdata(); // Refresh your data when the screen is in focus
         }, [])
     );
@@ -39,7 +38,6 @@ const ViewImageScreen = ({ route, navigation }: any) => {
             // console.log("apiData", api.data)
             setLoading(false);
             setViewImage(api?.data)
-            //  console.log("apiData", viewImage)
         }
     }
 
@@ -101,14 +99,13 @@ const ViewImageScreen = ({ route, navigation }: any) => {
     };
 
     const renderItem = (props: any) => {
-        // console.log("props", props.item.file)
         return (
             <Card style={styles.card}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     {props.item.check_edit_delete === 1 && (
                         <>
                             <Pressable
-                                style={{ marginLeft: 280 }}
+                                style={{ marginLeft: 250 }}
                                 onPress={() =>
                                     navigation.dispatch(
                                         CommonActions.navigate({
@@ -216,7 +213,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.white,
         padding: 20,
         borderRadius: 20,
-
+        margin: 3
     },
     tinyImage: {
         height: 100,

@@ -10,7 +10,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export interface UserData {
-    avatar: string;
     token: string;
     user_details: {
         email: string;
@@ -18,6 +17,7 @@ export interface UserData {
         full_name: string;
         id: number;
         last_name: string;
+        avatar: string;
     };
 }
 

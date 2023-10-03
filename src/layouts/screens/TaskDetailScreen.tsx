@@ -182,6 +182,7 @@ const TaskDetailScreen = ({ route }: any) => {
                 )}
               </Pressable>
             ) : null}
+            <View style={{marginBottom:200}}></View>
           </View>
         </ScrollView >
       )}
@@ -194,7 +195,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 14,
     backgroundColor: Colors.white,
-    marginBottom: 200
+    
   },
   text: {
     fontFamily: 'Roboto-Medium',
