@@ -105,7 +105,7 @@ const HistoryScreen = ({ navigation }: any) => {
             <View>
                 <Appbar title={'History'} />
                 {loading ? (
-                    <ActivityIndicator size="large" color="#000" />
+                    <ActivityIndicator size="large" color={Colors.brand_primary} />
                 ) : (
                     <View style={{ backgroundColor: Colors.screen_bg }}>
                         <FlatList

@@ -84,7 +84,7 @@ const DescriptionScreen = ({ route }: any, props: any) => {
           />
         }>
         {loading ? (
-          <ActivityIndicator size="large" color="#000" />
+          <ActivityIndicator size="large" color={Colors.brand_primary} />
         ) : (
           <>
             <Card style={styles.card}>

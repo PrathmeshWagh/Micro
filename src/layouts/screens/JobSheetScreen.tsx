@@ -114,7 +114,7 @@ const JobSheetScreen = ({ navigation }: any) => {
         <Text style={styles.pageName}>Job Sheet</Text>
       </View>
       {loading ? (
-        <ActivityIndicator size="large" color="#000" />
+          <ActivityIndicator size="large" color={Colors.brand_primary} />
       ) : (
 
         <View style={{ paddingBottom: 250, height: '100%', backgroundColor: Colors.screen_bg }}>
