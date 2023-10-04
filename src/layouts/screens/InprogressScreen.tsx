@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, FlatList, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
 import Appbar from '../../components/Appbar';
 import { Card, Avatar } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
@@ -11,8 +11,8 @@ import { AuthContext } from '../../utils/appContext';
 
 const InprogressScreen = ({ navigation }: any) => {
     const [projects, setProjects] = useState([]);
-    const { user, setUser } = useContext(AuthContext);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         getdata();
@@ -20,15 +20,20 @@ const InprogressScreen = ({ navigation }: any) => {
 
     const getdata = async () => {
         setLoading(true);
-        const api: any = await getMethod(`show_progress_project`, user.token);
+        const api: any = await getMethod(`show_progress_project`);
         if (api.status === 200) {
-            console.log("api",api.data)
+            console.log("api", api.data)
             setLoading(false);
             setProjects(api.data)
         }
     }
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await getdata();
+        setRefreshing(false);
+    };
+
     const renderItem = (props: any) => {
-        //console.log('props',props.item.project_id)
         return (
             <View style={styles.container}>
                 <Pressable onPress={() => navigation.navigate('DescriptionScreen', {
@@ -40,10 +45,13 @@ const InprogressScreen = ({ navigation }: any) => {
                             <Text style={styles.address}>{props.item.project_address}</Text>
                             <Text style={styles.team}>Team members</Text>
                             <View style={styles.align}>
-                                <Avatar.Image size={24} source={{ uri: props.item.user_data[0].profile }} />
-                                <Avatar.Image size={24} source={require('../../style/Img/woman.png')} />
-                                {/* <Avatar.Image size={24} source={require('../../style/Img/profile.png')} />
-            <Avatar.Image size={24} source={require('../../style/Img/woman.png')} /> */}
+                                {
+                                    props.item.user_data.slice(0, 4).map((img, index) => (
+                                        <View key={index}>
+                                            <Avatar.Image size={24} source={{ uri: img.profile }} />
+                                        </View>
+                                    ))
+                                }
                             </View>
                             <View style={styles.align}>
                                 <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
@@ -64,19 +72,30 @@ const InprogressScreen = ({ navigation }: any) => {
         )
     }
     return (
-        <View>
-            <Appbar title={'Inprogress'} />
-            {loading ? (
-                <ActivityIndicator size="large" color="#000" />
-            ) : (
-
-                <FlatList
-                    data={projects}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.id}
-                />
-            )}
-        </View>
+        <ScrollView
+        refreshControl={
+           <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[Colors.brand_primary]}
+           />
+        }
+     >
+            <View>
+                <Appbar title={'Inprogress'} />
+                {loading ? (
+                    <ActivityIndicator size="large" color={Colors.brand_primary} />
+                ) : (
+                    <View style={styles.container}>
+                        <FlatList
+                            data={projects}
+                            renderItem={renderItem}
+                            keyExtractor={item => item.id}
+                        />
+                    </View>
+                )}
+            </View>
+        </ScrollView>
     );
 }
 
@@ -143,7 +162,8 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap'
     },
     container: {
-        padding: 14
+        flex: 1,
+        padding: 10,
     },
     calender: {
         marginVertical: 5,

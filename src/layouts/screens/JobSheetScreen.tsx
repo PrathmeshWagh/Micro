@@ -60,11 +60,15 @@ const JobSheetScreen = ({ navigation }: any) => {
               <Text style={styles.address}>{props.item.project_address}</Text>
               <Text style={styles.team}>Team members</Text>
               <View style={styles.align}>
-                <Avatar.Image size={24} source={{ uri: props.item.user_data[0].profile }} />
-                <Avatar.Image size={24} source={require('../../style/Img/woman.png')} />
-                {/* <Avatar.Image size={24} source={require('../../style/Img/profile.png')} />
-            <Avatar.Image size={24} source={require('../../style/Img/woman.png')} /> */}
+                {
+                  props.item.user_data.slice(0, 4).map((img, index) => (
+                    <View key={index}>
+                      <Avatar.Image size={24} source={{ uri: img.profile }} />
+                    </View>
+                  ))
+                }
               </View>
+
               <View style={styles.align}>
                 <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
                 <Text style={styles.date}>{props.item.project_date_start}</Text>
@@ -114,7 +118,7 @@ const JobSheetScreen = ({ navigation }: any) => {
         <Text style={styles.pageName}>Job Sheet</Text>
       </View>
       {loading ? (
-          <ActivityIndicator size="large" color={Colors.brand_primary} />
+        <ActivityIndicator size="large" color={Colors.brand_primary} />
       ) : (
 
         <View style={{ paddingBottom: 250, height: '100%', backgroundColor: Colors.screen_bg }}>

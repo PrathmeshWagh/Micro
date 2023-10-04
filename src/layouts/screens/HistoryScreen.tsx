@@ -14,7 +14,7 @@ import { ScrollView } from 'react-native';
 
 const HistoryScreen = ({ navigation }: any) => {
     const [projects, setProjects] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState<boolean>(false);
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
     useEffect(() => {
@@ -32,39 +32,26 @@ const HistoryScreen = ({ navigation }: any) => {
     }
     const onRefresh = async () => {
         setRefreshing(true);
-        try {
-            await getdata();
-        } catch (error) {
-            console.log('Error refreshing:', error);
-        }
+        await getdata();
         setRefreshing(false);
     };
 
     const renderItem = (props: any) => {
         return (
             <View style={styles.container}>
-                {/* <Pressable
-                    onPress={() =>
-                        navigation.dispatch(
-                            CommonActions.navigate({
-                                name: 'DescriptionScreen',
-                                params: {
-                                    id: props.item.project_id,
-                                },
-                            })
-                        )
-                    }
-                > */}
                 <Card style={styles.card}>
                     <View>
                         <Text style={styles.jobSheet}>{props.item.project_title}</Text>
                         <Text style={styles.address}>{props.item.project_address}</Text>
                         <Text style={styles.team}>Team members</Text>
                         <View style={styles.align}>
-                            <Avatar.Image size={24} source={{ uri: props.item.user_data[0].profile }} />
-                            <Avatar.Image size={24} source={require('../../style/Img/woman.png')} />
-                            {/* <Avatar.Image size={24} source={require('../../style/Img/profile.png')} />
-            <Avatar.Image size={24} source={require('../../style/Img/woman.png')} /> */}
+                            {
+                                props.item.user_data.slice(0, 4).map((img, index) => (
+                                    <View key={index}>
+                                        <Avatar.Image size={24} source={{ uri: img.profile }} />
+                                    </View>
+                                ))
+                            }
                         </View>
                         <View style={styles.align}>
                             <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
@@ -101,23 +88,25 @@ const HistoryScreen = ({ navigation }: any) => {
 
 
     return (
-        <ScrollView>
+        <ScrollView
+        refreshControl={
+           <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[Colors.brand_primary]}
+           />
+        }
+     >
             <View>
                 <Appbar title={'History'} />
                 {loading ? (
                     <ActivityIndicator size="large" color={Colors.brand_primary} />
                 ) : (
-                    <View style={{ backgroundColor: Colors.screen_bg }}>
+                    <View style={styles.container}>
                         <FlatList
                             data={projects}
                             renderItem={renderItem}
                             keyExtractor={(item) => item.id}
-                            refreshControl={
-                                <RefreshControl
-                                    refreshing={refreshing}
-                                    onRefresh={onRefresh}
-                                />
-                            }
                         />
                     </View>
                 )}
@@ -188,7 +177,8 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap'
     },
     container: {
-        padding: 14
+        flex: 1,
+        padding: 10,
     },
     calender: {
         marginVertical: 5,

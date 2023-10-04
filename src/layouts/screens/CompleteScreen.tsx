@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, FlatList, ActivityIndicator, ScrollView, RefreshControl } from 'react-native';
 import Appbar from '../../components/Appbar';
 import { Card, Avatar } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
@@ -7,12 +7,11 @@ import Feather from 'react-native-vector-icons/Feather';
 import Colors from '../../style/Colors/colors';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import { getMethod, getStorageData } from '../../utils/helper';
-import { AuthContext } from '../../utils/appContext';
 
 const CompleteScreen = ({ navigation }: any) => {
     const [projects, setProjects] = useState([]);
-    const { user, setUser } = useContext(AuthContext);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         getdata();
@@ -20,62 +19,78 @@ const CompleteScreen = ({ navigation }: any) => {
 
     const getdata = async () => {
         setLoading(true);
-        const api: any = await getMethod(`show_complete_project`, user.token);
+        const api: any = await getMethod(`show_complete_project`);
         if (api.status === 200) {
             setLoading(false);
             setProjects(api.data)
         }
     }
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await getdata();
+        setRefreshing(false);
+    };
+
     const renderItem = (props: any) => {
-        //console.log('props',props.item.project_id)
         return (
             <View style={styles.container}>
-                <Pressable onPress={() => navigation.navigate('DescriptionScreen', {
-                    id: props.item.project_id,
-                })}>
-                    <Card style={styles.card}>
-                        <View>
-                            <Text style={styles.jobSheet}>{props.item.project_title}</Text>
-                            <Text style={styles.address}>{props.item.project_address}</Text>
-                            <Text style={styles.team}>Team members</Text>
-                            <View style={styles.align}>
-                                <Avatar.Image size={24} source={{ uri: props.item.user_data[0].profile }} />
-                                <Avatar.Image size={24} source={require('../../style/Img/woman.png')} />
-                                {/* <Avatar.Image size={24} source={require('../../style/Img/profile.png')} />
-            <Avatar.Image size={24} source={require('../../style/Img/woman.png')} /> */}
-                            </View>
-                            <View style={styles.align}>
-                                <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
-                                <Text style={styles.date}>{props.item.project_date_start}</Text>
+                <Card style={styles.card}>
+                    <View>
+                        <Text style={styles.jobSheet}>{props.item.project_title}</Text>
+                        <Text style={styles.address}>{props.item.project_address}</Text>
+                        <Text style={styles.team}>Team members</Text>
+                        <View style={styles.align}>
+                            {
+                                props.item.user_data.slice(0, 4).map((img, index) => (
+                                    <View key={index}>
+                                        <Avatar.Image size={24} source={{ uri: img.profile }} />
+                                    </View>
+                                ))
+                            }
+                        </View>
+
+                        <View style={styles.align}>
+                            <IonIcon style={styles.icon} name="calendar" size={18} color={'gray'} style={styles.calender} />
+                            <Text style={styles.date}>{props.item.project_date_start}</Text>
+                        </View>
+                    </View>
+                    <View>
+                        <View style={styles.indecator}>
+                            <View style={styles.taskIconAlign}>
+                                <Feather style={styles.taskicon} name="check-square" size={18} color={'gray'} style={styles.calender} />
+                                <Text style={styles.task}>{props.item.total_task}</Text>
                             </View>
                         </View>
-                        <View>
-                            <View style={styles.indecator}>
-                                <View style={styles.taskIconAlign}>
-                                    <Feather style={styles.taskicon} name="check-square" size={18} color={'gray'} style={styles.calender} />
-                                    <Text style={styles.task}>{props.item.total_task}</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </Card>
-                </Pressable>
+                    </View>
+                </Card>
             </View>
         )
     }
     return (
-        <View>
-            <Appbar title={'Complete'} />
-            {loading ? (
-                <ActivityIndicator size="large" color="#000" />
-            ) : (
-
-                <FlatList
-                    data={projects}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.id}
+        <ScrollView
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    colors={[Colors.brand_primary]}
                 />
-            )}
-        </View>
+            }
+        >
+            <View>
+                <Appbar title={'Complete'} />
+                {loading ? (
+                    <ActivityIndicator size="large" color={Colors.brand_primary} />
+                ) : (
+                    <View style={styles.container}>
+                        <FlatList
+                            data={projects}
+                            renderItem={renderItem}
+                            keyExtractor={item => item.id}
+                        />
+                    </View>
+                )}
+            </View>
+        </ScrollView>
     );
 }
 
@@ -142,7 +157,8 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap'
     },
     container: {
-        padding: 14
+        flex: 1,
+        padding: 10,
     },
     calender: {
         marginVertical: 5,
