@@ -9,7 +9,6 @@ import Colors from '../../style/Colors/colors';
 import FastImage from 'react-native-fast-image';
 import Appbar from '../../components/Appbar';
 import Snackbar from 'react-native-snackbar';
-import { AuthContext } from '../../utils/appContext';
 import { FormPostMethod, getMethod, postMethod, storeData } from '../../utils/helper';
 
 import { CommonActions, useNavigation } from '@react-navigation/native';

@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TextInput, Pressable, Button, Alert, ScrollView, TouchableOpacity, ActivityIndicator, SafeAreaView } from 'react-native';
 import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
-import { AuthContext } from '../../utils/appContext';
 import ImagePicker from 'react-native-image-crop-picker';
 import PhotoEditor from 'react-native-photo-editor';
 import RNFS from 'react-native-fs';

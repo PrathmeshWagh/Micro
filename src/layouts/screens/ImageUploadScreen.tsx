@@ -8,7 +8,6 @@ import Colors from '../../style/Colors/colors';
 import FastImage from 'react-native-fast-image';
 import Appbar from '../../components/Appbar';
 import Snackbar from 'react-native-snackbar';
-import { AuthContext } from '../../utils/appContext';
 import { FormPostMethod, postMethod, storeData } from '../../utils/helper';
 import moment from 'moment';
 import axios from 'axios';

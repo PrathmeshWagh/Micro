@@ -4,7 +4,6 @@ import { Card } from 'react-native-paper';
 import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
 import { getMethod, postMethod } from '../../utils/helper';
-import { AuthContext } from '../../utils/appContext';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 
 const DescriptionScreen = ({ route }: any, props: any) => {

@@ -4,7 +4,6 @@ import Appbar from '../../components/Appbar';
 import Colors from '../../style/Colors/colors';
 import { Card } from 'react-native-paper';
 import { getMethod, postMethod } from '../../utils/helper';
-import { AuthContext } from '../../utils/appContext';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { CommonActions, useFocusEffect } from '@react-navigation/native';

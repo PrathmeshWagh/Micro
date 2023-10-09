@@ -3,7 +3,6 @@ import { Text, View, StyleSheet, Image } from "react-native";
 import Colors from "../style/Colors/colors";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { AuthContext } from "../utils/appContext";
 import { getStorageData, postMethod, storeData } from "../utils/helper";
 import Snackbar from "react-native-snackbar";
 import AsyncStorage from '@react-native-async-storage/async-storage';

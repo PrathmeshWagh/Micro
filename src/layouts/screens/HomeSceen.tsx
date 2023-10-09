@@ -4,11 +4,9 @@ import { View, Text, Button } from 'react-native';
 import Colors from '../../style/Colors/colors';
 import { Card, Surface } from 'react-native-paper';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../../utils/appContext';
 import { getStorageData } from '../../utils/helper';
 import { UserData } from '../../components/DrawerLogo';
 const HomeScreen = ({ navigation }: any) => {
-  // const navigation=useNavigation();
   const [userDetails, setUserDetails] = useState<UserData>()
 
   useFocusEffect(

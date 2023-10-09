@@ -7,11 +7,9 @@ import Feather from 'react-native-vector-icons/Feather';
 import Colors from '../../style/Colors/colors';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import { getMethod, getStorageData } from '../../utils/helper';
-import { AuthContext } from '../../utils/appContext';
 
 const PendingScreen = ({ navigation }: any) => {
     const [projects, setProjects] = useState([]);
-    const { user, setUser } = useContext(AuthContext);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
 

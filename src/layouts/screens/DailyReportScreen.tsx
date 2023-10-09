@@ -10,11 +10,9 @@ import { Dropdown } from 'react-native-element-dropdown';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { FormPostMethod, getStorageData } from '../../utils/helper';
 import Snackbar from 'react-native-snackbar';
-import { AuthContext } from '../../utils/appContext';
 import { UserData } from '../../components/DrawerLogo';
 
 const DailyReportScreen = ({ route, navigation }: any) => {
-    const { user, setUser } = useContext(AuthContext);
     //   console.log(user.user_details.full_name,"aaaaaaaa")
 
     const { taskId, project_id } = route.params;

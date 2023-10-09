@@ -8,7 +8,6 @@ import Colors from '../../style/Colors/colors';
 import JobDescriptionScreen from '../../ScreenComponent/Tabs/JobDescriptionScreen';
 import VarientationOderScreen from '../../ScreenComponent/Tabs/VarientationOderScreen';
 import { getMethod } from '../../utils/helper';
-import { AuthContext } from '../../utils/appContext';
 
 const windowHeight = Dimensions.get('window').height;
 const windowWidth = Dimensions.get('window').width;
@@ -20,7 +19,6 @@ const identity = (v: unknown): string => v + ''
 //     return 
 //   }
 const TaskScreen = ({ navigation, route }: any) => {
-  const { user, setUser } = useContext(AuthContext);
   const { id } = route.params;
   const [task, setTask] = useState([]);
   const [loading, setLoading] = useState(true);

@@ -4,7 +4,6 @@ import {NavigationContainer} from '@react-navigation/native';
 import {Provider as PaperProvider} from 'react-native-paper';
 import AppNavigation from "./src/layouts/navigation/AppNavigation";
 import { CombinedDefaultTheme } from './src/utils/theme';
-import {AuthContext } from './src/utils/appContext.js';
 
 
 export default function App() {
@@ -16,13 +15,11 @@ export default function App() {
     //   }, []);
      
     return (
-      <AuthContext.Provider value={{ user, setUser }}>
         <PaperProvider theme={CombinedDefaultTheme}>
         <NavigationContainer theme={CombinedDefaultTheme}>
               <AppNavigation /> 
             </NavigationContainer>
         </PaperProvider>
-        </AuthContext.Provider>
     );
 }
 // const Launchscreen = async () => {

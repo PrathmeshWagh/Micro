@@ -7,7 +7,6 @@ import Feather from 'react-native-vector-icons/Feather';
 import Colors from '../../style/Colors/colors';
 import CircularProgress from 'react-native-circular-progress-indicator';
 import { getMethod, getStorageData } from '../../utils/helper';
-import { AuthContext } from '../../utils/appContext';
 import axios from 'axios';
 import { CommonActions } from '@react-navigation/native';
 import { ScrollView } from 'react-native';

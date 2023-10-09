@@ -5,17 +5,12 @@ import { TextInput } from 'react-native-paper';
 import Colors from '../../style/Colors/colors';
 import { postMethod, storeData } from '../../utils/helper';
 import Snackbar from 'react-native-snackbar';
-import { AuthContext } from '../../utils/appContext';
 import Feather from 'react-native-vector-icons/Feather';
 
 const LoginScreen = ({ navigation }: any) => {
-  const [passwordVisible, setPasswordVisible] = useState(true);
   const [loading, setLoading] = useState(false);
-  const { user, setUser } = useContext(AuthContext);
-  // console.log('user', user)
   const onSubmit = async (data: any) => {
     Keyboard.dismiss()
-    // console.log("hide", data);
     LogIn(data)
 
   }
@@ -34,7 +29,6 @@ const LoginScreen = ({ navigation }: any) => {
         console.log('data', api.data)
         setLoading(false);
         await storeData(api.data)
-        setUser(api.data)
         navigation.reset({
           routes: [{ name: 'DrawerNavigtaion' }]
         })
