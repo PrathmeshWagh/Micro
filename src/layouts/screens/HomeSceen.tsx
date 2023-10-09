@@ -91,12 +91,6 @@ const HomeScreen = ({ navigation }: any) => {
         </Surface>
         </Pressable>
       </View>
-      {/* <Card style={styles.card}>
-        <Text style={styles.cardTitle}>Card Title</Text>
-        <Text style={styles.cardText}>1 Yishun Industrial Street 1, #07-36 A'Posh Bizhub, Singapore 768160</Text>
-        <Text style={styles.AddTask}>Add  Task</Text>
-      </Card> */}
-
     </ScrollView>
   );
 };
