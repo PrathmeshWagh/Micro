@@ -20,5 +20,9 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-</dict>
+	<key>C-Bundle</key>
+    <dict>
+        <key>CFBundleDisplayName</key>
+        <string>MicroAire</string>
+    </dict>
 </plist>
