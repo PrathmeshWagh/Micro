@@ -44,7 +44,7 @@ const ProfileScreen = ({ navigation }: any) => {
             <View style={styles.container} >
               <View style={styles.align}>
                 <Pressable onPress={() => navigation.openDrawer()}>
-                  <IonIcon style={styles.icon} name="ios-menu-outline" size={28} color={'white'} />
+                  <IonIcon style={styles.icon} name="menu-outline" size={28} color={'white'} />
                 </Pressable>
                 <View style={styles.Img}>
                   <Avatar.Image size={84} source={{ uri: profile.avatar }} />

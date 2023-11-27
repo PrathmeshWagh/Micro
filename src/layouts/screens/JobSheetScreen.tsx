@@ -107,7 +107,7 @@ const JobSheetScreen = ({ navigation }: any) => {
       <View style={styles.containerAppbar}>
         <View style={styles.align2}>
           <Pressable onPress={() => navigation.openDrawer()}>
-            <IonIcon style={styles.icon} name="ios-menu-outline" size={28} color={'white'} />
+            <IonIcon style={styles.icon} name="menu-outline" size={28} color={'white'} />
           </Pressable>
           <Image
             style={styles.tinyLogo}
