@@ -59,6 +59,7 @@ const TabTop = createMaterialTopTabNavigator();
 function AppNavigation() {
   const windowWidth = Dimensions.get('window').width;
   const [auth, setAuth] = useState('')
+  console.log('auth',auth)
   const [load, setLoad] = useState(true);
 
   useEffect(() => {

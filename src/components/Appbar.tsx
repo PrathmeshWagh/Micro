@@ -1,16 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, useWindowDimensions } from 'react-native';
 import Colors from '../style/Colors/colors';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { CommonActions, useNavigation } from "@react-navigation/native";
 
+
+
 const Appbar = ({ title }: any) => {
   const navigation = useNavigation();
+  const { width, height } = useWindowDimensions();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container,{height:height/7}]}>
       <View style={styles.align}>
-      <Pressable onPress={() =>navigation.dispatch(CommonActions.goBack())}>
+        <Pressable onPress={() => navigation.dispatch(CommonActions.goBack())}>
           <IonIcon style={styles.icon} name="arrow-back" size={28} color={'white'} />
         </Pressable>
         <Image
@@ -27,9 +30,8 @@ export default Appbar;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.brand_primary,
-    height: 150,
     width: "100%",
-    padding: 14
+   
   },
   tinyLogo: {
     width: 22,
@@ -40,14 +42,15 @@ const styles = StyleSheet.create({
   },
   align: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    paddingHorizontal:10,
+    paddingTop:10
   },
   pageName: {
     alignSelf: 'center',
     fontSize: 28,
     color: Colors.white,
     fontFamily: 'Roboto-Bold',
-    marginTop: 20
 
   }
 })

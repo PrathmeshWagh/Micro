@@ -1,13 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, Pressable, Image, StyleSheet, ScrollView, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, Image, StyleSheet, ScrollView, TextInput, ActivityIndicator, useWindowDimensions } from 'react-native';
 import Colors from '../../style/Colors/colors';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { Avatar } from 'react-native-paper';
 import { getMethod } from '../../utils/helper';
 import { useFocusEffect } from '@react-navigation/native';
+
+
 const ProfileScreen = ({ navigation }: any) => {
   const [profile, setProfile] = useState([]);
   const [loading, setLoading] = useState(true);
+  const {width, height} = useWindowDimensions()
 
 
   useFocusEffect(
@@ -41,7 +44,7 @@ const ProfileScreen = ({ navigation }: any) => {
           <ActivityIndicator size="large" color={Colors.brand_primary} />
         ) : (
           <>
-            <View style={styles.container} >
+            <View style={[styles.container,{height:height/4}]} >
               <View style={styles.align}>
                 <Pressable onPress={() => navigation.openDrawer()}>
                   <IonIcon style={styles.icon} name="menu-outline" size={28} color={'white'} />
@@ -94,9 +97,9 @@ export default ProfileScreen;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: Colors.brand_primary,
-    height: 200,
     width: "100%",
     padding: 14,
+   
   },
   ChngPsw: {
     color: Colors.brand_primary,
