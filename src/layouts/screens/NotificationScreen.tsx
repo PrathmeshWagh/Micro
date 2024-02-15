@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, ScrollView, Platform, PushNotificationIOS } from "react-native";
 import { Text, View } from "react-native";
 import Appbar from "../../components/Appbar";
 import Colors from "../../style/Colors/colors";
 import PushNotification from "react-native-push-notification";
+import { OneSignal } from "react-native-onesignal";
 
 const NotificationScreen = () => {
-
+    useEffect(() => {
+        OneSignal.Notifications.addEventListener('click', (event) => {
+            console.log('OneSignal: notification clicked:', event);
+          });
+    }, []);
 
     return (
         <View>
