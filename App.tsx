@@ -19,7 +19,7 @@ export default function App() {
     return (
         <PaperProvider theme={CombinedDefaultTheme}>
         <NavigationContainer theme={CombinedDefaultTheme}>
-              <AppNavigation /> 
+              <AppNavigation />
             </NavigationContainer>
         </PaperProvider>
     );
