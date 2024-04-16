@@ -29,6 +29,7 @@ export const postMethod = async (url, body) => {
         const setHeader = () => {
             if ( StoredData !== null) {
                 return `Bearer ${StoredData.token}`;
+                
             }
         };
         if (internet.isInternetReachable) {
@@ -45,7 +46,9 @@ export const postMethod = async (url, body) => {
     } catch (e) {
         console.log('postMethod error reason is =>', e);
         return e;
+        
     }
+    
 };
 
 
