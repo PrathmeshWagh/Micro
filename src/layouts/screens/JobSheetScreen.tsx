@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, FlatList, ActivityIndicator, Dimensions, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, FlatList, ActivityIndicator, Dimensions, RefreshControl, Platform } from 'react-native';
 import Appbar from '../../components/Appbar';
 import { Card, Avatar } from 'react-native-paper';
 import IonIcon from 'react-native-vector-icons/Ionicons'
@@ -105,7 +105,7 @@ const JobSheetScreen = ({ navigation }: any) => {
   return (
     <View>
       <View style={styles.containerAppbar}>
-        <View style={styles.align2}>
+        <View style={[styles.align2,Platform.OS === 'ios' ? {marginTop:50}: null]}>
           <Pressable onPress={() => navigation.openDrawer()}>
             <IonIcon style={styles.icon} name="menu-outline" size={28} color={'white'} />
           </Pressable>
@@ -160,9 +160,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 50
   },
-  align2: {
+align2: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+  
   },
   pageName: {
     alignSelf: 'center',

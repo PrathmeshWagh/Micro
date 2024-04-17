@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Pressable, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable, useWindowDimensions,Platform} from 'react-native';
 import Colors from '../style/Colors/colors';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { CommonActions, useNavigation } from "@react-navigation/native";
@@ -8,11 +8,11 @@ import { CommonActions, useNavigation } from "@react-navigation/native";
 
 const Appbar = ({ title }: any) => {
   const navigation = useNavigation();
-  const { width, height } = useWindowDimensions();
+  const { width, height } = useWindowDimensions()
 
   return (
     <View style={[styles.container,{height:height/7}]}>
-      <View style={styles.align}>
+      <View style={[styles.align,Platform.OS === 'ios' ? {marginTop:50}: null]}>
         <Pressable onPress={() => navigation.dispatch(CommonActions.goBack())}>
           <IonIcon style={styles.icon} name="arrow-back" size={28} color={'white'} />
         </Pressable>
@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal:10,
-    paddingTop:10
+    
+
   },
   pageName: {
     alignSelf: 'center',

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, Pressable, Image, StyleSheet, ScrollView, TextInput, ActivityIndicator, useWindowDimensions } from 'react-native';
+import { View, Text, Pressable, Image, StyleSheet, ScrollView, TextInput,Platform, ActivityIndicator, useWindowDimensions } from 'react-native';
 import Colors from '../../style/Colors/colors';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { Avatar } from 'react-native-paper';
@@ -45,7 +45,7 @@ const ProfileScreen = ({ navigation }: any) => {
         ) : (
           <>
             <View style={[styles.container,{height:height/4}]} >
-              <View style={styles.align}>
+              <View style={[styles.align,Platform.OS === 'ios' ? {marginTop:50}: null]}>
                 <Pressable onPress={() => navigation.openDrawer()}>
                   <IonIcon style={styles.icon} name="menu-outline" size={28} color={'white'} />
                 </Pressable>
@@ -135,7 +135,8 @@ const styles = StyleSheet.create({
   },
   align: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+   
   },
   pageName: {
     fontSize: 24,

@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Touchable, TouchableOpacity } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Touchable, TouchableOpacity,Platform } from 'react-native';
 import { View, Text, Button } from 'react-native';
 import Colors from '../../style/Colors/colors';
 import { Card, Surface } from 'react-native-paper';
@@ -28,7 +28,7 @@ const HomeScreen = ({ navigation }: any) => {
   };
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.tabBar}>
+      <View style={[styles.tabBar,Platform.OS === 'ios' ? {marginTop:50}: null]}>
         <Pressable onPress={() => navigation.openDrawer()}>
           <Image
             style={styles.icon}
@@ -48,7 +48,7 @@ const HomeScreen = ({ navigation }: any) => {
       />
 
       <Text style={styles.name}>Hi, {userDetails?.user_details?.first_name}{" "}{userDetails?.user_details?.last_name}</Text>
-      <View style={styles.align}>
+      <View style={[styles.align]}>
         <Pressable onPress={() => navigation.navigate('CompleteScreen')}>
           <Surface style={styles.surface} elevation={4}>
             <Image

@@ -69,7 +69,7 @@ const DrawerLogo = ({ props }: any) => {
     }
 
     return (
-        <View style={{ flex: 1, marginTop: -4 }}>
+        <View style={{ flex: 1, marginTop:-4 }}>
             <DrawerContentScrollView {...props}>
                 <View style={styles.drawerContent}>
                     <View style={{ flexDirection: 'row' }}>
