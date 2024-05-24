@@ -64,7 +64,10 @@ function AppNavigation() {
 
   useEffect(() => {
     getUserData()
-    SplashScreen.hide();
+    setTimeout(() =>{
+      SplashScreen.hide();
+    },3000)
+    
   }, [])
 
   const getUserData = async () => {
