@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, Pressable, Image, StyleSheet, ScrollView, TextInput,Platform, ActivityIndicator, useWindowDimensions } from 'react-native';
+import { View, Text, Pressable, Image, StyleSheet, ScrollView, TextInput, Platform, ActivityIndicator, useWindowDimensions } from 'react-native';
 import Colors from '../../style/Colors/colors';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { Avatar } from 'react-native-paper';
@@ -10,12 +10,12 @@ import { useFocusEffect } from '@react-navigation/native';
 const ProfileScreen = ({ navigation }: any) => {
   const [profile, setProfile] = useState([]);
   const [loading, setLoading] = useState(true);
-  const {width, height} = useWindowDimensions()
+  const { width, height } = useWindowDimensions()
 
 
   useFocusEffect(
     useCallback(() => {
-      getdata(); 
+      getdata();
     }, [])
   );
 
@@ -44,8 +44,8 @@ const ProfileScreen = ({ navigation }: any) => {
           <ActivityIndicator size="large" color={Colors.brand_primary} />
         ) : (
           <>
-            <View style={[styles.container,{height:height/4}]} >
-              <View style={[styles.align,Platform.OS === 'ios' ? {marginTop:50}: null]}>
+            <View style={[styles.container, { height: height / 4 }]} >
+              <View style={[styles.align, Platform.OS === 'ios' ? { marginTop: 50 } : null]}>
                 <Pressable onPress={() => navigation.openDrawer()}>
                   <IonIcon style={styles.icon} name="menu-outline" size={28} color={'white'} />
                 </Pressable>
@@ -53,10 +53,12 @@ const ProfileScreen = ({ navigation }: any) => {
                   <Avatar.Image size={84} source={{ uri: profile.avatar }} />
                   <Text style={styles.pageName}>{profile.first_name}{" "}{profile.last_name}</Text>
                 </View>
-                <Image
-                  style={styles.tinyLogo}
-                  source={require('../../style/Img/bell2.png')}
-                />
+                <Pressable onPress={() => navigation.navigate('NotificationScreen')}>
+                  <Image
+                    style={styles.tinyLogo}
+                    source={require('../../style/Img/bell2.png')}
+                  />
+                </Pressable>
               </View>
             </View >
 
@@ -99,7 +101,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.brand_primary,
     width: "100%",
     padding: 14,
-   
+
   },
   ChngPsw: {
     color: Colors.brand_primary,
@@ -136,7 +138,7 @@ const styles = StyleSheet.create({
   align: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-   
+
   },
   pageName: {
     fontSize: 24,

@@ -71,7 +71,7 @@ const TaskDetailScreen = ({ route }: any) => {
               <View>
                 <Text style={styles.jobSheet}>{taskDetails?.task_title}</Text>
                 <Text style={styles.address}>{taskDetails?.task_description}</Text>
-                <Text style={styles.team}>T-eam members</Text>
+                <Text style={styles.team}>Team members</Text>
                 <View style={styles.align}>
                   {
                     taskDetails?.user_data.map((data, index) => (

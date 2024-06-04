@@ -14,10 +14,12 @@ const CustomTopTabBar = ({ state, descriptors, project_id, navigation }: any) =>
                     <IonIcon style={styles.icon} name="arrow-back" size={28} color={'white'} />
                 </Pressable>
                 <Text style={styles.pageName}>Task</Text>
-                <Image
+                <Pressable onPress={() => navigation.navigate('NotificationScreen')}>
+                  <Image
                     style={styles.tinyLogo}
                     source={require('../style/Img/bell2.png')}
-                />
+                  />
+                </Pressable>
             </View>
             <View style={styles.container}>
                 {state.routes.map((route: { key: string | number; name: any; }, index: React.Key | null | undefined) => {

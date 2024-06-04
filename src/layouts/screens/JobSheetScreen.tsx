@@ -109,10 +109,12 @@ const JobSheetScreen = ({ navigation }: any) => {
           <Pressable onPress={() => navigation.openDrawer()}>
             <IonIcon style={styles.icon} name="menu-outline" size={28} color={'white'} />
           </Pressable>
+          <Pressable onPress={() => navigation.navigate('NotificationScreen')}>
           <Image
             style={styles.tinyLogo}
             source={require('../../style/Img/bell2.png')}
           />
+        </Pressable>
         </View>
         <Text style={styles.pageName}>Job Sheet</Text>
       </View>
