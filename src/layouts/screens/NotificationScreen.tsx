@@ -147,20 +147,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Roboto-Medium',
     marginBottom: 10,
+    color:Colors.text_primary
+
   },
   date: {
     fontSize: 14,
     fontFamily: 'Roboto-Regular',
     marginBottom: 10,
+    color:Colors.text_secondary
+
   },
   title: {
     fontSize: 14,
     fontFamily: 'Roboto-Regular',
     marginBottom: 10,
+    color:Colors.text_primary
+
   },
   content: {
     fontSize: 14,
     fontFamily: 'Roboto-Regular',
     marginBottom: 10,
+    color:Colors.text_primary
   },
 });
