@@ -7,25 +7,38 @@ import { postMethod, storeData } from '../../utils/helper';
 import Snackbar from 'react-native-snackbar';
 import Feather from 'react-native-vector-icons/Feather';
 import uuid from 'react-native-uuid';
+import { OneSignal } from 'react-native-onesignal';
 
 
 
 const LoginScreen = ({ navigation }: any) => {
   const [loading, setLoading] = useState(false);
+  const [playerId, setPlayerId] = useState('');
+  useEffect(() => {
+    // Get the push subscription status when component mounts
+    const getPushSubscriptionStatus = async () => {
+      try {
+        const optedIn = await OneSignal.User.pushSubscription.getIdAsync();
+        console.log('Push subscription status:', optedIn);
+        setPlayerId(optedIn);
+      } catch (error) {
+        console.error('Error checking push subscription status:', error);
+      }
+    };
 
+    getPushSubscriptionStatus();
+  }, []); // Run this effect only once when component mounts
   const onSubmit = async (data) => {
     Keyboard.dismiss();
     LogIn(data);
   };
 
   const LogIn = async (props) => {
-    const id = uuid.v4();
-    console.log("id", id)
 
     const raw = {
       email: props.email,
       password: props.password,
-      onesignal_player_id: id,
+      onesignal_player_id: playerId,
     };
 
     try {
