@@ -12,5 +12,7 @@ class Colors {
     static text_primary = '#454444';
     static text_secondary = '#777777';
     static error = '#E03232';
+    static green = '#9CD052';
+
 }
 export default Colors;

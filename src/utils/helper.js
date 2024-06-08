@@ -104,3 +104,29 @@ export const FormPostMethod = async (url, body) => {
         return e;
     }
 };
+export const deleteMethod = async (url,body) => {
+    console.log("...",url +body)
+    try {
+        let internet = await NetInfo.fetch();
+        let StoredData = await getStorageData();
+        const setHeader = () => {
+            if ( StoredData.token !== null) {
+                return `Bearer ${StoredData.token}`;
+            }
+        };
+        if (internet.isInternetReachable) {
+            return await axios.delete(baseURL + url, {
+                headers: {
+                    Authorization: setHeader(),
+                    'Accept': 'application/json',
+                },
+            });
+        } else {
+            console.log('getMethod error reason is internet =>', internet);
+            return internet.isInternetReachable;
+        }
+    } catch (e) {
+        console.log('getMethod error reason is =>', e);
+        return e;
+    }
+};

@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { FC } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Colors from '../../../style/Colors/colors';
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import Feather from 'react-native-vector-icons/Feather'
-import { getMethod } from '../../../utils/helper';
+import { deleteMethod, getMethod } from '../../../utils/helper';
 import { CommonActions, useFocusEffect, useNavigation } from '@react-navigation/native';
+import Snackbar from 'react-native-snackbar';
 
 
 interface Props { }
@@ -36,6 +37,40 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
         getdata();
         setRefreshing(false);
     };
+    const handleDelete = (dailyId: string) => {
+        Alert.alert(
+            'Confirm Deletion',
+            'Are you sure you want to delete this data?',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Delete',
+                    onPress: () => deleteDailyActivities(dailyId),
+                    style: 'destructive',
+                },
+            ],
+            { cancelable: true }
+        );
+    };
+    const deleteDailyActivities = async (dailyId: string) => {
+        setLoading(true);
+        const api: any = await deleteMethod(`delete_daily_activity/${dailyId}`);
+        if (api.status === 200) {
+            setLoading(false);
+            console.log("api",api.data)
+            setRefreshing(true);
+            Snackbar.show({
+                text: api.data.message,
+                duration: Snackbar.LENGTH_SHORT,
+                textColor: Colors.white,
+                backgroundColor: Colors.green,
+            });
+            setRefreshing(false);
+        }
+    }
     return (
         <>
             <Pressable style={styles.add} onPress={() =>
@@ -84,7 +119,11 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
                                     <Text style={styles.upload}>Uploaded By:</Text>
                                     <Text style={styles.name}>{item.uploaded_by}</Text>
                                 </View>
-                                <View>
+                                <View style={{ flexDirection: 'row', alignSelf: 'flex-end' }}>
+                                    <Pressable
+                                        onPress={() => handleDelete(item.daily_activities_id)}>
+                                        <Feather name="trash-2" size={22} color={Colors.error} style={styles.edit} />
+                                    </Pressable>
                                     <Pressable
                                         onPress={() =>
                                             navigation.dispatch(
@@ -99,6 +138,7 @@ const DailyActivityScreen: FC<Props> = ({ route }: any): JSX.Element => {
                                         }>
                                         <Feather name="edit-3" size={22} color={Colors.brand_primary} style={styles.edit} />
                                     </Pressable>
+
                                 </View>
                             </Pressable>
 
@@ -140,7 +180,7 @@ const styles = StyleSheet.create({
     },
     edit: {
         // flexDirection: 'row',
-        alignSelf: 'flex-end',
+        // alignSelf: 'flex-end',
         padding: 10
     },
     time: {
