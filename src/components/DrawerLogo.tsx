@@ -24,7 +24,7 @@ export interface UserData {
 const DrawerLogo = ({ props }: any) => {
     const [userDetails, setUserDetails] = useState<UserData>()
     const navigation: any = useNavigation();
-
+    const [playerId, setPlayerId] = useState('');
     useFocusEffect(
         useCallback(() => {
             getStoredData();
@@ -35,6 +35,7 @@ const DrawerLogo = ({ props }: any) => {
         try {
             const storedData = await getStorageData();
             setUserDetails(storedData)
+            setPlayerId(storedData.playerId)
         }
         catch (error) {
             console.log('Error retrieving images:', error);
@@ -43,8 +44,11 @@ const DrawerLogo = ({ props }: any) => {
 
 
     const LogOut = async () => {
+        const raw = {
+            onesignal_player_id: playerId,
+        };
         try {
-            const api: any = await postMethod(`logout`);
+            const api: any = await postMethod(`logout`, raw);
             if (api.status === 200) {
                 await AsyncStorage.removeItem('user_data');
                 navigation.navigate("Login")
@@ -69,7 +73,7 @@ const DrawerLogo = ({ props }: any) => {
     }
 
     return (
-        <View style={{ flex: 1, marginTop:-4 }}>
+        <View style={{ flex: 1, marginTop: -4 }}>
             <DrawerContentScrollView {...props}>
                 <View style={styles.drawerContent}>
                     <View style={{ flexDirection: 'row' }}>

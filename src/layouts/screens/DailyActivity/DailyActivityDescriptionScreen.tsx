@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FC } from 'react';
 import { ActivityIndicator, FlatList, Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-
 import { Checkbox, Modal, Portal } from 'react-native-paper';
 import { CommonActions, useNavigation } from '@react-navigation/native';
 import Snackbar from 'react-native-snackbar';
@@ -23,7 +22,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const { selectedTaskId, project_id } = route.params;
-  console.log(selectedTaskId,project_id);
+  console.log(selectedTaskId, project_id);
   const [dailyActivity, setDailyActivity] = useState([]);
   const [selectedImageRemark, setSelectedImageRemark] = useState<string>();
   const [remark, setRemark] = useState<string[]>([]);
@@ -39,6 +38,7 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
   const [isDatePickerVisible, setDatePickerVisible] = useState<boolean>(false);
   const [taskIds, setTaskIds] = useState<number[]>(selectedTaskId);
   const [selectedImagesMap, setSelectedImagesMap] = useState<Record<number, string[]>>({});
+  const [userAddedTasks, setUserAddedTasks] = useState<number[]>([]); // Track user-added tasks
 
   const handleImageSelection = (imagePath: string, imageId: string, index: number) => {
     const sectionSelectedImages = selectedImagesMap[index] || [];
@@ -62,12 +62,9 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
     setSelectedImageIds(updatedSelectedImageIds);
   };
 
-
-
   useEffect(() => {
     Upload();
   }, []);
-
 
   const Upload = async () => {
     const raw = {
@@ -98,7 +95,6 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
         backgroundColor: '#F2A6A6',
       });
     }
-
   }
 
   const openZoomedImage = (imagePath: string, remark: string) => {
@@ -109,11 +105,13 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
   const closeZoomedImage = () => {
     setZoomedImage(null);
   };
+
   const onRefresh = () => {
     setRefreshing(true);
     Upload();
     setRefreshing(false);
   };
+
   const showDatePicker = () => {
     setDatePickerVisible(true);
   };
@@ -170,7 +168,6 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
             },
           })
         )
-
       } else {
         setLoading(false);
         console.log(".......", api.data)
@@ -190,7 +187,6 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
         backgroundColor: '#F2A6A6',
       });
     }
-
   }
 
   const addNewTask = (index: number) => {
@@ -203,8 +199,23 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
     updatedTaskIds.splice(index + 1, 0, currentTaskId);
     setDailyActivity(updatedDailyActivity);
     setTaskIds(updatedTaskIds);
+    setUserAddedTasks([...userAddedTasks, index + 1]); // Track the new user-added task
   };
 
+  const removeNewTask = (index: number) => {
+    if (userAddedTasks.length === 0) return; // No user-added tasks to remove
+    const lastUserAddedTaskIndex = userAddedTasks[userAddedTasks.length - 1];
+    if (index === lastUserAddedTaskIndex) {
+      const updatedDailyActivity = [...dailyActivity];
+      updatedDailyActivity.splice(index, 1);
+      const updatedTaskIds = [...taskIds];
+      updatedTaskIds.splice(index, 1);
+      const updatedUserAddedTasks = userAddedTasks.slice(0, -1); // Remove the last user-added task index
+      setDailyActivity(updatedDailyActivity);
+      setTaskIds(updatedTaskIds);
+      setUserAddedTasks(updatedUserAddedTasks);
+    }
+  };
 
   return (
     <>
@@ -239,9 +250,25 @@ const DailyActivityDescriptionScreen: FC<Props> = ({ route }: any): JSX.Element 
                 <View style={styles.cover}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={styles.Task}>Task {index + 1}</Text>
-                    <Pressable onPress={() => addNewTask(index)}>
-                      <Text style={styles.plus}>+</Text>
-                    </Pressable>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                      {userAddedTasks.includes(index) && (
+                        <Feather
+                          name="minus"
+                          size={22}
+                          color={'#000'}
+                          onPress={() => removeNewTask(index)}
+                          style={styles.minus}
+                        />
+                      )}
+
+                      <Feather
+                        name="plus"
+                        size={22}
+                        color={'#000'}
+                        onPress={() => addNewTask(index)}
+                        style={styles.minus}
+                      />
+                    </View>
                   </View>
                   <Text style={styles.date}>Name</Text>
                   <Text style={styles.name}>{item.task_name || ''}</Text>
@@ -392,8 +419,15 @@ const styles = StyleSheet.create({
   },
   plus: {
     fontFamily: 'Roboto-Bold',
+    fontSize: 26,
+    marginTop: -10,
+    color: Colors.text_primary
+  },
+  minus: {
+    fontFamily: 'Roboto-Bold',
     fontSize: 28,
     marginTop: -10,
+    marginLeft: 20,
     color: Colors.text_primary
   },
   name: {
@@ -428,7 +462,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.lightGray,
     backgroundColor: Colors.lightGray,
     borderRadius: 8,
-    color:Colors.black
+    color: Colors.black
   },
   inputRemark: {
     height: 80,
@@ -438,7 +472,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lightGray,
     borderRadius: 8,
     textAlignVertical: 'top',
-    color:Colors.black
+    color: Colors.black
   },
   cover: {
     backgroundColor: Colors.white,
