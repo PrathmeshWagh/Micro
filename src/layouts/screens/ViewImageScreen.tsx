@@ -100,7 +100,7 @@ const ViewImageScreen = ({ route, navigation }) => {
         try {
             // Get Android version
             const androidVersion = parseInt(DeviceInfo.getSystemVersion(), 10);
-            
+
             // Request appropriate permission based on Android version
             if (androidVersion >= 13) {
                 // Request READ_MEDIA_IMAGES for Android 13 and above
@@ -134,26 +134,26 @@ const ViewImageScreen = ({ route, navigation }) => {
             return false;
         }
     };
-    
+
     const downloadAndSaveImage = async (imageURI) => {
         const granted = await requestStoragePermission();
         if (!granted) {
             Alert.alert('Permission Denied', 'You need to grant storage permission to download the image.');
             return;
         }
-    
+
         const { config, fs } = RNFetchBlob;
         let PictureDir = fs.dirs.PictureDir;
         const fileName = imageURI.split('/').pop();
         const path = `${PictureDir}/${fileName}`;
-    
+
         try {
             const res = await config({
                 fileCache: true,
                 appendExt: 'jpg', // or the appropriate extension for your images
                 path: path,
             }).fetch('GET', imageURI);
-    
+
             if (res.info().status === 200) {
                 // Image downloaded successfully, save it to the gallery
                 await RNFetchBlob.fs.scanFile([{ path: path, mime: 'image/jpeg' }])
@@ -175,44 +175,15 @@ const ViewImageScreen = ({ route, navigation }) => {
         }
     };
 
-    
-           
+
+
 
 
 
     const renderItem = ({ item }) => {
         return (
             <Card style={styles.card}>
-                <View style={{ flexDirection: 'row', marginLeft: 220 }}>
-                    <Pressable onPress={() => downloadAndSaveImage(item.file)}>
-                        <AntDesign
-                            name="download"
-                            size={22}
-                            color={'red'}
-                            style={{ marginHorizontal: 10 }}
-                        />
-                    </Pressable>
-                    {item.check_edit_delete === 1 && (
-                        <>
-                            <Pressable onPress={() => navigation.navigate('EditImageScreen', { data: item })}>
-                                <AntDesign
-                                    name="edit"
-                                    size={22}
-                                    color={'red'}
-                                    style={{ marginRight: 10, }}
-                                />
-                            </Pressable>
-                            <Pressable onPress={() => confirmDelete(item)} style={{ marginRight: 60 }}>
-                                <Ionicons
-                                    name="trash-bin"
-                                    size={22}
-                                    color={'red'}
-                                />
-                            </Pressable>
-                        </>
-                    )}
 
-                </View>
                 <View style={{ flexDirection: 'row' }}>
                     <Pressable onPress={() => openModal(item.file)}>
                         <Image
@@ -226,6 +197,37 @@ const ViewImageScreen = ({ route, navigation }) => {
                         <Text style={styles.date}>Date: {item.date}</Text>
                         <Text style={styles.name}>Uploaded By: {item.upload_by}</Text>
                     </View>
+                </View>
+
+                <View style={{ flexDirection: 'row', alignSelf:'center' }}>
+                    <Pressable onPress={() => downloadAndSaveImage(item.file)}>
+                        <AntDesign
+                            name="download"
+                            size={22}
+                            color={'red'}
+                            style={{ marginHorizontal: 20,marginTop:-10  }}
+                        />
+                    </Pressable>
+                    {item.check_edit_delete === 1 && (
+                        <>
+                            <Pressable onPress={() => navigation.navigate('EditImageScreen', { data: item })}>
+                                <AntDesign
+                                    name="edit"
+                                    size={22}
+                                    color={'red'}
+                                    style={{ marginRight: 20,marginTop:-10 }}
+                                />
+                            </Pressable>
+                            <Pressable onPress={() => confirmDelete(item)} style={{ marginRight: 60 ,marginTop:-10 }}>
+                                <Ionicons
+                                    name="trash-bin"
+                                    size={22}
+                                    color={'red'}
+                                />
+                            </Pressable>
+                        </>
+                    )}
+
                 </View>
             </Card>
         );
