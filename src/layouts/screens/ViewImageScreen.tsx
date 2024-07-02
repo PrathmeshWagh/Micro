@@ -10,6 +10,7 @@ import { CommonActions, useFocusEffect } from '@react-navigation/native';
 import CameraRoll from '@react-native-camera-roll/camera-roll';
 import RNFS from 'react-native-fs';
 import RNFetchBlob from "rn-fetch-blob";
+import DeviceInfo from 'react-native-device-info';
 
 const ViewImageScreen = ({ route, navigation }) => {
     const { taskId } = route.params;
@@ -95,28 +96,45 @@ const ViewImageScreen = ({ route, navigation }) => {
         setModalImageURI(null);
     };
 
-    // Function to check and request storage permissions on Android
-
     const requestStoragePermission = async () => {
         try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-                {
-                    title: 'Storage Permission',
-                    message: 'This app needs access to your storage to download photos.',
-                    buttonNeutral: 'Ask Me Later',
-                    buttonNegative: 'Cancel',
-                    buttonPositive: 'OK',
-                },
-            );
-            return granted === PermissionsAndroid.RESULTS.GRANTED;
+            // Get Android version
+            const androidVersion = parseInt(DeviceInfo.getSystemVersion(), 10);
+            
+            // Request appropriate permission based on Android version
+            if (androidVersion >= 13) {
+                // Request READ_MEDIA_IMAGES for Android 13 and above
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+                    {
+                        title: 'Storage Permission',
+                        message: 'This app needs access to your storage to download photos.',
+                        buttonNeutral: 'Ask Me Later',
+                        buttonNegative: 'Cancel',
+                        buttonPositive: 'OK',
+                    },
+                );
+                return granted === PermissionsAndroid.RESULTS.GRANTED;
+            } else {
+                // Request WRITE_EXTERNAL_STORAGE for Android below 13
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                    {
+                        title: 'Storage Permission',
+                        message: 'This app needs access to your storage to download photos.',
+                        buttonNeutral: 'Ask Me Later',
+                        buttonNegative: 'Cancel',
+                        buttonPositive: 'OK',
+                    },
+                );
+                return granted === PermissionsAndroid.RESULTS.GRANTED;
+            }
         } catch (err) {
             console.error('Storage permission error:', err);
             return false;
         }
     };
-
-
+    
     const downloadAndSaveImage = async (imageURI) => {
         const granted = await requestStoragePermission();
         if (!granted) {
@@ -156,6 +174,10 @@ const ViewImageScreen = ({ route, navigation }) => {
             Alert.alert('Download Error', 'An error occurred while downloading the image.');
         }
     };
+
+    
+           
+
 
 
     const renderItem = ({ item }) => {

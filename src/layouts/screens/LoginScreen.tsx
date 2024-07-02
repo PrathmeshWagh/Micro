@@ -3,7 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { View, Text, StyleSheet, Image, ScrollView, Pressable, Keyboard, ActivityIndicator, NativeModules } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import Colors from '../../style/Colors/colors';
-import { postMethod, storeData } from '../../utils/helper';
+import { FormPostMethod, postMethod, storeData } from '../../utils/helper';
 import Snackbar from 'react-native-snackbar';
 import Feather from 'react-native-vector-icons/Feather';
 import uuid from 'react-native-uuid';
@@ -44,18 +44,18 @@ const LoginScreen = ({ navigation }: any) => {
     try {
       setLoading(true);
       const api = await postMethod(`login`, raw);
-      if (api.data.status === 'success') {
-        console.log('data', api.data);
+      if (api?.data.status === 'success') {
+        console.log('data', api?.data);
 
         setLoading(false);
-        await storeData(api.data);
+        await storeData(api?.data);
         navigation.reset({
           routes: [{ name: 'DrawerNavigtaion' }]
         });
       } else {
         setLoading(false);
         Snackbar.show({
-          text: api.data.message,
+          text: api?.data.message,
           duration: Snackbar.LENGTH_SHORT,
           textColor: '#AE1717',
           backgroundColor: '#F2A6A6',
